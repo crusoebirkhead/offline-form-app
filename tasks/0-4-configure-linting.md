@@ -1,7 +1,7 @@
 # Task 0.4: Configure ESLint and Prettier
 
 **Phase:** 0 — Project Scaffolding
-**Status:** Not Started
+**Status:** Done
 **Depends on:** 0.1
 
 ---
@@ -20,7 +20,7 @@ Set up ESLint and Prettier with sensible defaults for a React Native TypeScript 
 
 ## Acceptance Criteria
 
-- [ ] `npm run lint` runs ESLint across `src/` without crashing
-- [ ] `npm run format` runs Prettier across `src/`
-- [ ] No lint errors on the current (empty/placeholder) codebase
-- [ ] TypeScript files are covered by both ESLint and Prettier
+- [x] `npm run lint` runs ESLint across `src/` without crashing
+- [x] `npm run format` runs Prettier across `src/`
+- [x] No lint errors on the current (empty/placeholder) codebase
+- [x] TypeScript files are covered by both ESLint and Prettier

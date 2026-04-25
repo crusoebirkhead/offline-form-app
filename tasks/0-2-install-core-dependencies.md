@@ -1,7 +1,7 @@
 # Task 0.2: Install Core Dependencies
 
 **Phase:** 0 — Project Scaffolding
-**Status:** Not Started
+**Status:** Done
 **Depends on:** 0.1
 
 ---
@@ -39,7 +39,7 @@ Install the following packages:
 
 ## Acceptance Criteria
 
-- [ ] All packages install without peer dependency conflicts
-- [ ] `npx expo start` still launches cleanly after installation
-- [ ] `package.json` lists all dependencies above
-- [ ] TypeScript can import each package without type errors (install `@types/*` where needed)
+- [x] All packages install without peer dependency conflicts
+- [x] `npx expo start` still launches cleanly after installation (`expo-doctor` — 17/17 checks passed)
+- [x] `package.json` lists all dependencies above
+- [x] TypeScript can import each package without type errors (install `@types/*` where needed)

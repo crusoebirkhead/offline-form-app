@@ -1,7 +1,7 @@
 # Task 0.3: Set Up Project Structure
 
 **Phase:** 0 — Project Scaffolding
-**Status:** Not Started
+**Status:** Done
 **Depends on:** 0.1
 
 ---
@@ -34,6 +34,6 @@ src/
 
 ## Acceptance Criteria
 
-- [ ] All directories listed above exist
-- [ ] Path alias `@/` resolves to `src/` in TypeScript imports
-- [ ] Project still compiles after `tsconfig.json` changes
+- [x] All directories listed above exist
+- [x] Path alias `@/` resolves to `src/` in TypeScript imports
+- [x] Project still compiles after `tsconfig.json` changes

@@ -1,7 +1,7 @@
 # Task 0.1: Initialize Expo Project
 
 **Phase:** 0 — Project Scaffolding
-**Status:** Not Started
+**Status:** Complete
 
 ---
 
@@ -17,8 +17,8 @@ Create a new Expo project with the TypeScript blank template. This is the founda
 
 ## Acceptance Criteria
 
-- [ ] Expo project initializes without errors
-- [ ] `npx expo start` launches the dev server
+- [x] Expo project initializes without errors
+- [x] `npx expo start` launches the dev server
 - [ ] App renders the default screen on iOS Simulator
 - [ ] App renders the default screen on Android Emulator
-- [ ] `tsconfig.json` is present and TypeScript compiles cleanly
+- [x] `tsconfig.json` is present and TypeScript compiles cleanly
