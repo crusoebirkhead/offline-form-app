@@ -1,0 +1,112 @@
+{
+  "title": "Standard Assessment",
+  "path": "assessment/standard",
+  "display": "form",
+  "components": [
+    {
+      "type": "textfield",
+      "key": "patientName",
+      "label": "Patient Name",
+      "input": true,
+      "validate": { "required": true, "maxLength": 200 }
+    },
+    {
+      "type": "datetime",
+      "key": "assessmentDate",
+      "label": "Assessment Date",
+      "input": true,
+      "validate": { "required": true }
+    },
+    {
+      "type": "select",
+      "key": "assessmentType",
+      "label": "Assessment Type",
+      "input": true,
+      "data": {
+        "values": [
+          { "label": "Initial", "value": "initial" },
+          { "label": "Reassessment", "value": "reassessment" },
+          { "label": "Discharge", "value": "discharge" }
+        ]
+      },
+      "validate": { "required": true }
+    },
+    {
+      "type": "textarea",
+      "key": "chiefComplaint",
+      "label": "Chief Complaint",
+      "input": true,
+      "rows": 3,
+      "validate": { "required": true, "maxLength": 2000 }
+    },
+    {
+      "type": "panel",
+      "key": "vitalSigns",
+      "title": "Vital Signs",
+      "components": [
+        {
+          "type": "number",
+          "key": "bloodPressureSystolic",
+          "label": "Blood Pressure (Systolic)",
+          "input": true,
+          "validate": { "min": 50, "max": 300 }
+        },
+        {
+          "type": "number",
+          "key": "bloodPressureDiastolic",
+          "label": "Blood Pressure (Diastolic)",
+          "input": true,
+          "validate": { "min": 20, "max": 200 }
+        },
+        {
+          "type": "number",
+          "key": "heartRate",
+          "label": "Heart Rate (bpm)",
+          "input": true,
+          "validate": { "min": 20, "max": 250 }
+        },
+        {
+          "type": "number",
+          "key": "temperature",
+          "label": "Temperature (F)",
+          "input": true,
+          "validate": { "min": 90.0, "max": 110.0 }
+        },
+        {
+          "type": "number",
+          "key": "respiratoryRate",
+          "label": "Respiratory Rate",
+          "input": true,
+          "validate": { "min": 5, "max": 60 }
+        }
+      ]
+    },
+    {
+      "type": "textarea",
+      "key": "clinicalNotes",
+      "label": "Clinical Notes",
+      "input": true,
+      "rows": 6,
+      "validate": { "maxLength": 5000 }
+    },
+    {
+      "type": "select",
+      "key": "followUpRequired",
+      "label": "Follow-Up Required",
+      "input": true,
+      "data": {
+        "values": [
+          { "label": "Yes", "value": "yes" },
+          { "label": "No", "value": "no" }
+        ]
+      }
+    },
+    {
+      "type": "textfield",
+      "key": "assessorSignature",
+      "label": "Assessor Signature",
+      "input": true,
+      "validate": { "required": true }
+    }
+  ]
+}

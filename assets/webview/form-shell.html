@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Form</title>
+  <link rel="stylesheet" href="assets/formio.form.min.css" />
+  <link rel="stylesheet" href="formio-theme.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 12px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+      color: #1a1a1a;
+      background: #fff;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    #formio-container {
+      min-height: 100px;
+    }
+
+    #formio-container:empty::after {
+      content: "Loading form\2026";
+      display: block;
+      padding: 24px;
+      text-align: center;
+      color: #888;
+    }
+
+    .formio-component { margin-bottom: 8px; }
+
+    .formio-error-wrapper {
+      padding: 16px;
+      margin: 12px 0;
+      background: #fef2f2;
+      border: 1px solid #fca5a5;
+      border-radius: 6px;
+      color: #991b1b;
+    }
+  </style>
+</head>
+<body>
+  <div id="formio-container"></div>
+
+  <script src="assets/formio.form.min.js"></script>
+  <script>
+    (function () {
+      "use strict";
+
+      var formInstance = null;
+
+      function postMessage(type, payload) {
+        if (window.ReactNativeWebView && window.ReactNativeWebView.postMessage) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({ type: type, payload: payload }));
+        }
+      }
+
+      function postError(message, detail) {
+        postMessage("FORM_ERROR", { message: message, detail: detail || null });
+      }
+
+      /**
+       * Render a Form.io form from a JSON schema.
+       * Optionally pre-fill with an existing submission.
+       */
+      window.loadForm = function loadForm(schema, submission) {
+        var container = document.getElementById("formio-container");
+        container.innerHTML = "";
+
+        if (formInstance) {
+          formInstance.destroy();
+          formInstance = null;
+        }
+
+        Formio.createForm(container, schema, {
+          noAlerts: true,
+          readOnly: false,
+          renderMode: "form",
+          sanitize: true
+        })
+          .then(function (form) {
+            formInstance = form;
+
+            if (submission) {
+              form.submission = { data: submission };
+            }
+
+            form.on("change", function (changed) {
+              postMessage("FORM_CHANGE", {
+                data: form.submission.data,
+                changed: changed ? changed.changed : null,
+                isValid: form.checkValidity(form.submission.data, true)
+              });
+            });
+
+            form.on("submit", function (sub) {
+              postMessage("FORM_SUBMIT", { data: sub.data });
+            });
+
+            form.on("error", function (errors) {
+              postMessage("FORM_VALIDATION_ERROR", {
+                errors: Array.isArray(errors)
+                  ? errors.map(function (e) { return e.message || String(e); })
+                  : [String(errors)]
+              });
+            });
+
+            postMessage("FORM_READY", { components: schema.components ? schema.components.length : 0 });
+          })
+          .catch(function (err) {
+            container.innerHTML =
+              '<div class="formio-error-wrapper">Failed to load form: ' +
+              (err.message || String(err)).replace(/[<>&"]/g, function (c) {
+                return { "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;" }[c];
+              }) +
+              "</div>";
+            postError("Failed to load form", err.message || String(err));
+          });
+      };
+
+      /**
+       * Return the current form submission data, or null if no form is loaded.
+       */
+      window.getSubmission = function getSubmission() {
+        if (!formInstance) {
+          return null;
+        }
+        return formInstance.submission.data;
+      };
+
+      /**
+       * Listen for messages sent from React Native via injectJavaScript / postMessage.
+       * Expected message format: { type: string, payload: any }
+       */
+      function handleMessage(event) {
+        var msg;
+        try {
+          msg = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
+        } catch (_) {
+          return;
+        }
+
+        if (!msg || !msg.type) return;
+
+        switch (msg.type) {
+          case "LOAD_FORM":
+            window.loadForm(msg.payload.schema, msg.payload.submission || null);
+            break;
+
+          case "GET_SUBMISSION":
+            postMessage("SUBMISSION_RESULT", { data: window.getSubmission() });
+            break;
+
+          case "SET_SUBMISSION":
+            if (formInstance && msg.payload && msg.payload.data) {
+              formInstance.submission = { data: msg.payload.data };
+            }
+            break;
+
+          case "SET_READ_ONLY":
+            if (formInstance) {
+              formInstance.readOnly = !!msg.payload.readOnly;
+              formInstance.redraw();
+            }
+            break;
+
+          case "VALIDATE_FORM":
+            if (formInstance) {
+              var isValid = formInstance.checkValidity(formInstance.submission.data, true);
+              var validationErrors = [];
+              if (!isValid) {
+                formInstance.errors.forEach(function (err) {
+                  if (err.messages && Array.isArray(err.messages)) {
+                    err.messages.forEach(function (m) {
+                      validationErrors.push(m.message || String(m));
+                    });
+                  } else {
+                    validationErrors.push(err.message || String(err));
+                  }
+                });
+              }
+              postMessage("FORM_VALIDATION_ERROR", { errors: validationErrors });
+            }
+            break;
+
+          default:
+            break;
+        }
+      }
+
+      document.addEventListener("message", handleMessage);
+      window.addEventListener("message", handleMessage);
+
+      postMessage("SHELL_READY", null);
+    })();
+  </script>
+</body>
+</html>

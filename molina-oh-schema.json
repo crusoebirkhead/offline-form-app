@@ -1,0 +1,4822 @@
+{
+   "_id":"69b86123addbe0314d66c87f",
+   "title":"Molina HHA OH",
+   "name":"MolinaHHAOH",
+   "path":"molina-hha-oh",
+   "type":"form",
+   "display":"form",
+   "tags":[
+      
+   ],
+   "owner":"69a7a6410d2f096eba250ae4",
+   "components":[
+      {
+         "type":"textfield",
+         "key":"requestID",
+         "label":"Request ID",
+         "input":true,
+         "tableView":true
+      },
+      {
+         "type":"textfield",
+         "key":"authNumber",
+         "label":"Auth number",
+         "input":true,
+         "tableView":true
+      },
+      {
+         "type":"panel",
+         "key":"memberName",
+         "title":"Member name",
+         "input":false,
+         "components":[
+            {
+               "type":"textfield",
+               "key":"first",
+               "label":"First",
+               "input":true,
+               "tableView":true
+            },
+            {
+               "label":"First And Last",
+               "applyMaskOn":"change",
+               "disabled":true,
+               "tableView":true,
+               "calculateValue":"value = data.first + \" \" + data.last;",
+               "validateWhenHidden":false,
+               "key":"firstAndLast",
+               "type":"textfield",
+               "input":true,
+               "widget.type":"input"
+            },
+            {
+               "type":"textfield",
+               "key":"last",
+               "label":"Last",
+               "input":true,
+               "tableView":true
+            },
+            {
+               "type":"textfield",
+               "key":"middle",
+               "label":"Middle",
+               "input":true,
+               "tableView":true
+            },
+            {
+               "label":"Middle Initial",
+               "applyMaskOn":"change",
+               "disabled":true,
+               "tableView":true,
+               "calculateValue":"value = data.middle ? data.middle.charAt(0).toUpperCase() : '';",
+               "validateWhenHidden":false,
+               "key":"middleInitial",
+               "type":"textfield",
+               "input":true,
+               "widget.type":"input"
+            },
+            {
+               "type":"textfield",
+               "key":"prefix",
+               "label":"Prefix",
+               "input":true,
+               "tableView":true
+            },
+            {
+               "type":"textfield",
+               "key":"suffix",
+               "label":"Suffix",
+               "input":true,
+               "tableView":true
+            }
+         ],
+         "tableView":false,
+         "label":"Panel"
+      },
+      {
+         "type":"number",
+         "key":"memberAge",
+         "label":"Member age",
+         "input":true,
+         "tableView":false
+      },
+      {
+         "label":"Was an interpreter used?",
+         "optionsLabelPosition":"right",
+         "inline":true,
+         "tableView":false,
+         "values":[
+            {
+               "label":"Yes",
+               "value":"Yes",
+               "shortcut":""
+            },
+            {
+               "label":"No",
+               "value":"No",
+               "shortcut":""
+            }
+         ],
+         "validate":{
+            "required":true
+         },
+         "validateWhenHidden":false,
+         "key":"wasAnInterpreterUsed",
+         "type":"radio",
+         "input":true
+      },
+      {
+         "label":"WhyNot",
+         "optionsLabelPosition":"right",
+         "tableView":false,
+         "defaultValue":{
+            "Member/caregiver speaks English":false,
+            "Member preferred a family/friend/caregiver to interpret":false,
+            "Therapist is fluent in member's preferred language":false
+         },
+         "values":[
+            {
+               "label":"Member/caregiver speaks English",
+               "value":"Member/caregiver speaks English",
+               "shortcut":""
+            },
+            {
+               "label":"Member preferred a family/friend/caregiver to interpret",
+               "value":"Member preferred a family/friend/caregiver to interpret",
+               "shortcut":""
+            },
+            {
+               "label":"Therapist is fluent in member's preferred language",
+               "value":"Therapist is fluent in member's preferred language",
+               "shortcut":""
+            }
+         ],
+         "validate":{
+            "required":true
+         },
+         "validateWhenHidden":false,
+         "key":"whyNot",
+         "conditional":{
+            "show":true,
+            "conjunction":"all",
+            "conditions":[
+               {
+                  "component":"wasAnInterpreterUsed",
+                  "operator":"isEqual",
+                  "value":"No"
+               }
+            ]
+         },
+         "type":"selectboxes",
+         "input":true,
+         "inputType":"checkbox"
+      },
+      {
+         "label":"Language spoken",
+         "applyMaskOn":"change",
+         "tableView":true,
+         "validate":{
+            "required":true
+         },
+         "validateWhenHidden":false,
+         "key":"languageSpoken",
+         "conditional":{
+            "show":true,
+            "conjunction":"all",
+            "conditions":[
+               {
+                  "component":"whyNot",
+                  "operator":"isNotEmpty"
+               }
+            ]
+         },
+         "type":"textfield",
+         "input":true,
+         "widget.type":"input"
+      },
+      {
+         "label":"Language and interpreter ID (if available)",
+         "applyMaskOn":"change",
+         "tableView":true,
+         "validate":{
+            "required":true
+         },
+         "validateWhenHidden":false,
+         "key":"languageAndInterpreterIDifAvailable",
+         "conditional":{
+            "show":true,
+            "conjunction":"all",
+            "conditions":[
+               {
+                  "component":"wasAnInterpreterUsed",
+                  "operator":"isEqual",
+                  "value":"Yes"
+               }
+            ]
+         },
+         "type":"textfield",
+         "input":true,
+         "widget.type":"input"
+      },
+      {
+         "label":"Assessment summary",
+         "applyMaskOn":"change",
+         "autoExpand":false,
+         "tableView":true,
+         "validate":{
+            "required":true
+         },
+         "validateWhenHidden":false,
+         "key":"assessmentSummary",
+         "type":"textarea",
+         "input":true
+      },
+      {
+         "type":"panel",
+         "key":"recentHistory",
+         "title":"Recent history",
+         "input":false,
+         "components":[
+            {
+               "label":"Is the member/caregiver requesting an increase or decrease in hours?",
+               "widget":"choicesjs",
+               "tableView":true,
+               "data":{
+                  "values":[
+                     {
+                        "label":"Yes",
+                        "value":"Yes"
+                     },
+                     {
+                        "label":"No",
+                        "value":"No"
+                     },
+                     {
+                        "label":"Unknown",
+                        "value":"Unknown"
+                     }
+                  ]
+               },
+               "validate":{
+                  "required":true
+               },
+               "validateWhenHidden":false,
+               "key":"isTheMembercaregiverRequestingAnIncreaseOrDecreaseInHours",
+               "type":"select",
+               "input":true
+            },
+            {
+               "label":"HHA hours currently receiving (per week)",
+               "applyMaskOn":"change",
+               "mask":false,
+               "tableView":false,
+               "delimiter":false,
+               "requireDecimal":false,
+               "inputFormat":"plain",
+               "truncateMultipleSpaces":false,
+               "validate":{
+                  "required":true
+               },
+               "validateWhenHidden":false,
+               "key":"hHAHoursCurrentlyReceivingperWeek",
+               "type":"number",
+               "input":true
+            },
+            {
+               "label":"HHA hours requested (per week)",
+               "applyMaskOn":"change",
+               "mask":false,
+               "tableView":false,
+               "delimiter":false,
+               "requireDecimal":false,
+               "inputFormat":"plain",
+               "truncateMultipleSpaces":false,
+               "validate":{
+                  "required":true
+               },
+               "validateWhenHidden":false,
+               "key":"hHAHoursRequestedperWeek",
+               "conditional":{
+                  "show":true,
+                  "conjunction":"all",
+                  "conditions":[
+                     {
+                        "component":"isTheMembercaregiverRequestingAnIncreaseOrDecreaseInHours",
+                        "operator":"isEqual",
+                        "value":"Yes"
+                     }
+                  ]
+               },
+               "type":"number",
+               "input":true
+            },
+            {
+               "label":"Describe any recent change in status",
+               "applyMaskOn":"change",
+               "tableView":true,
+               "validate":{
+                  "required":true
+               },
+               "validateWhenHidden":false,
+               "key":"describeAnyRecentChangeInStatus",
+               "type":"textfield",
+               "input":true,
+               "widget.type":"input"
+            },
+            {
+               "label":"Does the member have any upcoming or recent procedures or treatments?",
+               "optionsLabelPosition":"right",
+               "inline":true,
+               "tableView":false,
+               "values":[
+                  {
+                     "label":"Yes",
+                     "value":"Yes",
+                     "shortcut":""
+                  },
+                  {
+                     "label":"No",
+                     "value":"No",
+                     "shortcut":""
+                  }
+               ],
+               "validate":{
+                  "required":true
+               },
+               "validateWhenHidden":false,
+               "key":"doesTheMemberHaveAnyUpcomingOrRecentProceduresOrTreatments",
+               "type":"radio",
+               "input":true
+            },
+            {
+               "label":"ProcedureOrTreatment",
+               "reorder":false,
+               "addAnotherPosition":"bottom",
+               "layoutFixed":false,
+               "enableRowGroups":false,
+               "initEmpty":false,
+               "tableView":false,
+               "defaultValue":[
+                  {
+                     "procedure":"",
+                     "type":"",
+                     "date":""
+                  }
+               ],
+               "validateWhenHidden":false,
+               "key":"procedureOrTreatment",
+               "conditional":{
+                  "show":true,
+                  "conjunction":"all",
+                  "conditions":[
+                     {
+                        "component":"doesTheMemberHaveAnyUpcomingOrRecentProceduresOrTreatments",
+                        "operator":"isEqual",
+                        "value":"Yes"
+                     }
+                  ]
+               },
+               "type":"datagrid",
+               "input":true,
+               "components":[
+                  {
+                     "label":"Procedure",
+                     "applyMaskOn":"change",
+                     "tableView":true,
+                     "validate":{
+                        "required":true
+                     },
+                     "validateWhenHidden":false,
+                     "key":"procedure",
+                     "type":"textfield",
+                     "input":true,
+                     "widget.type":"input"
+                  },
+                  {
+                     "label":"Type",
+                     "widget":"choicesjs",
+                     "tableView":true,
+                     "data":{
+                        "values":[
+                           {
+                              "label":"Previous",
+                              "value":"Previous"
+                           },
+                           {
+                              "label":"Upcoming",
+                              "value":"Upcoming"
+                           }
+                        ]
+                     },
+                     "validate":{
+                        "required":true
+                     },
+                     "validateWhenHidden":false,
+                     "key":"type",
+                     "type":"select",
+                     "input":true
+                  },
+                  {
+                     "type":"datetime",
+                     "key":"date",
+                     "label":"Date",
+                     "input":true,
+                     "tableView":false,
+                     "widget":{
+                        "type":"calendar",
+                        "displayInTimezone":"viewer",
+                        "locale":"en",
+                        "useLocaleSettings":false,
+                        "allowInput":true,
+                        "mode":"single",
+                        "enableTime":true,
+                        "noCalendar":false,
+                        "format":"yyyy-MM-dd hh:mm a",
+                        "hourIncrement":1,
+                        "minuteIncrement":1,
+                        "time_24hr":false,
+                        "minDate":null,
+                        "maxDate":null
+                     }
+                  }
+               ],
+               "_migrationNote":"Cognito repeating section → Form.io DataGrid. Consider EditGrid if per-row edit/save UX is needed."
+            },
+            {
+               "type":"hidden",
+               "key":"hHAHoursRequestedperWeekIncrementBy",
+               "label":"[CALCULATED] HHA hours requested (per week) IncrementBy",
+               "input":true,
+               "_migrationNote":"Cognito computed field — implement calculated value in Form.io",
+               "tableView":false
+            },
+            {
+               "type":"hidden",
+               "key":"hHAHoursCurrentlyReceivingperWeekIncrementBy",
+               "label":"[CALCULATED] HHA hours currently receiving (per week) IncrementBy",
+               "input":true,
+               "_migrationNote":"Cognito computed field — implement calculated value in Form.io",
+               "tableView":false
+            }
+         ],
+         "tableView":false,
+         "label":"Panel"
+      },
+      {
+         "type":"panel",
+         "key":"support",
+         "title":"Support",
+         "input":false,
+         "components":[
+            {
+               "label":"Formal caregiver support?",
+               "optionsLabelPosition":"right",
+               "inline":true,
+               "tableView":false,
+               "values":[
+                  {
+                     "label":"Yes",
+                     "value":"Yes",
+                     "shortcut":""
+                  },
+                  {
+                     "label":"No",
+                     "value":"No",
+                     "shortcut":""
+                  }
+               ],
+               "validate":{
+                  "required":true
+               },
+               "validateWhenHidden":false,
+               "key":"formalCaregiverSupport",
+               "type":"radio",
+               "input":true
+            },
+            {
+               "label":"FormalCaregivers",
+               "reorder":false,
+               "addAnotherPosition":"bottom",
+               "layoutFixed":false,
+               "enableRowGroups":false,
+               "initEmpty":false,
+               "tableView":false,
+               "defaultValue":[
+                  {
+                     "name":"",
+                     "relationship":"",
+                     "doesThisCaregiverLiveWithTheMember":"",
+                     "daysThatCaregivingIsProvided":{
+                        "Sunday":false,
+                        "Monday":false,
+                        "Tuesday":false,
+                        "Wednesday":false,
+                        "Thursday":false,
+                        "Friday":false,
+                        "Saturday":false
+                     },
+                     "dailyCaregivingSchedule":""
+                  }
+               ],
+               "validateWhenHidden":false,
+               "key":"formalCaregivers",
+               "conditional":{
+                  "show":true,
+                  "conjunction":"all",
+                  "conditions":[
+                     {
+                        "component":"formalCaregiverSupport",
+                        "operator":"isEqual",
+                        "value":"Yes"
+                     }
+                  ]
+               },
+               "type":"datagrid",
+               "input":true,
+               "components":[
+                  {
+                     "label":"Name",
+                     "applyMaskOn":"change",
+                     "tableView":true,
+                     "validate":{
+                        "required":true
+                     },
+                     "validateWhenHidden":false,
+                     "key":"name",
+                     "type":"textfield",
+                     "input":true,
+                     "widget.type":"input"
+                  },
+                  {
+                     "label":"Relationship",
+                     "widget":"choicesjs",
+                     "tableView":true,
+                     "data":{
+                        "values":[
+                           {
+                              "label":"Spouse/significant other",
+                              "value":"Spouse/significant other"
+                           },
+                           {
+                              "label":"Parent/legal guardian",
+                              "value":"Parent/legal guardian"
+                           },
+                           {
+                              "label":"Child",
+                              "value":"Child"
+                           },
+                           {
+                              "label":"Sibling",
+                              "value":"Sibling"
+                           },
+                           {
+                              "label":"Relative",
+                              "value":"Relative"
+                           },
+                           {
+                              "label":"Friend",
+                              "value":"Friend"
+                           },
+                           {
+                              "label":"Roommate",
+                              "value":"Roommate"
+                           },
+                           {
+                              "label":"Tenant",
+                              "value":"Tenant"
+                           },
+                           {
+                              "label":"Agency personnel",
+                              "value":"Agency personnel"
+                           }
+                        ]
+                     },
+                     "validate":{
+                        "required":true
+                     },
+                     "validateWhenHidden":false,
+                     "key":"relationship",
+                     "type":"select",
+                     "input":true
+                  },
+                  {
+                     "label":"Does this caregiver live with the member?",
+                     "optionsLabelPosition":"right",
+                     "inline":true,
+                     "tableView":false,
+                     "values":[
+                        {
+                           "label":"Yes",
+                           "value":"Yes",
+                           "shortcut":""
+                        },
+                        {
+                           "label":"No",
+                           "value":"No",
+                           "shortcut":""
+                        }
+                     ],
+                     "validate":{
+                        "required":true
+                     },
+                     "validateWhenHidden":false,
+                     "key":"doesThisCaregiverLiveWithTheMember",
+                     "type":"radio",
+                     "input":true
+                  },
+                  {
+                     "label":"DaysThatCaregivingIsProvided",
+                     "optionsLabelPosition":"right",
+                     "tableView":false,
+                     "values":[
+                        {
+                           "label":"Sunday",
+                           "value":"Sunday",
+                           "shortcut":""
+                        },
+                        {
+                           "label":"Monday",
+                           "value":"Monday",
+                           "shortcut":""
+                        },
+                        {
+                           "label":"Tuesday",
+                           "value":"Tuesday",
+                           "shortcut":""
+                        },
+                        {
+                           "label":"Wednesday",
+                           "value":"Wednesday",
+                           "shortcut":""
+                        },
+                        {
+                           "label":"Thursday",
+                           "value":"Thursday",
+                           "shortcut":""
+                        },
+                        {
+                           "label":"Friday",
+                           "value":"Friday",
+                           "shortcut":""
+                        },
+                        {
+                           "label":"Saturday",
+                           "value":"Saturday",
+                           "shortcut":""
+                        }
+                     ],
+                     "validate":{
+                        "required":true
+                     },
+                     "validateWhenHidden":false,
+                     "key":"daysThatCaregivingIsProvided",
+                     "type":"selectboxes",
+                     "input":true,
+                     "inputType":"checkbox",
+                     "defaultValue":{
+                        "Sunday":false,
+                        "Monday":false,
+                        "Tuesday":false,
+                        "Wednesday":false,
+                        "Thursday":false,
+                        "Friday":false,
+                        "Saturday":false
+                     }
+                  },
+                  {
+                     "label":"Daily caregiving schedule",
+                     "applyMaskOn":"change",
+                     "autoExpand":false,
+                     "tableView":true,
+                     "validate":{
+                        "required":true
+                     },
+                     "validateWhenHidden":false,
+                     "key":"dailyCaregivingSchedule",
+                     "type":"textarea",
+                     "input":true
+                  }
+               ],
+               "_migrationNote":"Cognito repeating section → Form.io DataGrid. Consider EditGrid if per-row edit/save UX is needed."
+            },
+            {
+               "label":"Informal caregiver support?",
+               "optionsLabelPosition":"right",
+               "inline":true,
+               "tableView":false,
+               "values":[
+                  {
+                     "label":"Yes",
+                     "value":"Yes",
+                     "shortcut":""
+                  },
+                  {
+                     "label":"No",
+                     "value":"No",
+                     "shortcut":""
+                  }
+               ],
+               "validate":{
+                  "required":true
+               },
+               "validateWhenHidden":false,
+               "key":"informalCaregiverSupport",
+               "type":"radio",
+               "input":true
+            },
+            {
+               "label":"InformalCaregivers",
+               "reorder":false,
+               "addAnotherPosition":"bottom",
+               "layoutFixed":false,
+               "enableRowGroups":false,
+               "initEmpty":false,
+               "tableView":false,
+               "defaultValue":[
+                  {
+                     "name":"",
+                     "relationship":"",
+                     "doesThisCaregiverLiveWithTheMember":"",
+                     "doesThisCaregiverWork":"",
+                     "doTheyWorkFromHome":"",
+                     "workSchedule":"",
+                     "daysThatCaregivingIsProvided":{
+                        "Sunday":false,
+                        "Monday":false,
+                        "Tuesday":false,
+                        "Wednesday":false,
+                        "Thursday":false,
+                        "Friday":false,
+                        "Saturday":false
+                     },
+                     "dailyCaregivingSchedule":""
+                  }
+               ],
+               "validateWhenHidden":false,
+               "key":"informalCaregivers",
+               "conditional":{
+                  "show":true,
+                  "conjunction":"all",
+                  "conditions":[
+                     {
+                        "component":"informalCaregiverSupport",
+                        "operator":"isEqual",
+                        "value":"Yes"
+                     }
+                  ]
+               },
+               "type":"datagrid",
+               "input":true,
+               "components":[
+                  {
+                     "label":"Name",
+                     "applyMaskOn":"change",
+                     "tableView":true,
+                     "validate":{
+                        "required":true
+                     },
+                     "validateWhenHidden":false,
+                     "key":"name",
+                     "type":"textfield",
+                     "input":true,
+                     "widget.type":"input"
+                  },
+                  {
+                     "label":"Relationship",
+                     "widget":"choicesjs",
+                     "tableView":true,
+                     "data":{
+                        "values":[
+                           {
+                              "label":"Spouse/significant other",
+                              "value":"Spouse/significant other"
+                           },
+                           {
+                              "label":"Parent/legal guardian",
+                              "value":"Parent/legal guardian"
+                           },
+                           {
+                              "label":"Child",
+                              "value":"Child"
+                           },
+                           {
+                              "label":"Sibling",
+                              "value":"Sibling"
+                           },
+                           {
+                              "label":"Relative",
+                              "value":"Relative"
+                           },
+                           {
+                              "label":"Friend",
+                              "value":"Friend"
+                           },
+                           {
+                              "label":"Roommate",
+                              "value":"Roommate"
+                           },
+                           {
+                              "label":"Tenant",
+                              "value":"Tenant"
+                           },
+                           {
+                              "label":"Agency personnel",
+                              "value":"Agency personnel"
+                           }
+                        ]
+                     },
+                     "validate":{
+                        "required":true
+                     },
+                     "validateWhenHidden":false,
+                     "key":"relationship",
+                     "type":"select",
+                     "input":true
+                  },
+                  {
+                     "label":"Does this caregiver live with the member?",
+                     "optionsLabelPosition":"right",
+                     "inline":true,
+                     "tableView":false,
+                     "values":[
+                        {
+                           "label":"Yes",
+                           "value":"Yes",
+                           "shortcut":""
+                        },
+                        {
+                           "label":"No",
+                           "value":"No",
+                           "shortcut":""
+                        }
+                     ],
+                     "validate":{
+                        "required":true
+                     },
+                     "validateWhenHidden":false,
+                     "key":"doesThisCaregiverLiveWithTheMember",
+                     "type":"radio",
+                     "input":true
+                  },
+                  {
+                     "label":"Does this caregiver work?",
+                     "optionsLabelPosition":"right",
+                     "inline":true,
+                     "tableView":false,
+                     "values":[
+                        {
+                           "label":"Yes",
+                           "value":"Yes",
+                           "shortcut":""
+                        },
+                        {
+                           "label":"No",
+                           "value":"No",
+                           "shortcut":""
+                        }
+                     ],
+                     "validate":{
+                        "required":true
+                     },
+                     "validateWhenHidden":false,
+                     "key":"doesThisCaregiverWork",
+                     "type":"radio",
+                     "input":true
+                  },
+                  {
+                     "label":"Do they work from home?",
+                     "optionsLabelPosition":"right",
+                     "inline":true,
+                     "tableView":false,
+                     "values":[
+                        {
+                           "label":"Yes",
+                           "value":"Yes",
+                           "shortcut":""
+                        },
+                        {
+                           "label":"No",
+                           "value":"No",
+                           "shortcut":""
+                        }
+                     ],
+                     "validate":{
+                        "required":true
+                     },
+                     "validateWhenHidden":false,
+                     "key":"doTheyWorkFromHome",
+                     "conditional":{
+                        "show":true,
+                        "conjunction":"all",
+                        "conditions":[
+                           {
+                              "component":"informalCaregivers.doesThisCaregiverWork",
+                              "operator":"isEqual",
+                              "value":"Yes"
+                           }
+                        ]
+                     },
+                     "type":"radio",
+                     "input":true
+                  },
+                  {
+                     "label":"Work schedule",
+                     "applyMaskOn":"change",
+                     "autoExpand":false,
+                     "tableView":true,
+                     "validate":{
+                        "required":true
+                     },
+                     "validateWhenHidden":false,
+                     "key":"workSchedule",
+                     "conditional":{
+                        "show":true,
+                        "conjunction":"all",
+                        "conditions":[
+                           {
+                              "component":"informalCaregivers.doesThisCaregiverWork",
+                              "operator":"isEqual",
+                              "value":"Yes"
+                           }
+                        ]
+                     },
+                     "type":"textarea",
+                     "input":true
+                  },
+                  {
+                     "label":"DaysThatCaregivingIsProvided",
+                     "optionsLabelPosition":"right",
+                     "tableView":false,
+                     "values":[
+                        {
+                           "label":"Sunday",
+                           "value":"Sunday",
+                           "shortcut":""
+                        },
+                        {
+                           "label":"Monday",
+                           "value":"Monday",
+                           "shortcut":""
+                        },
+                        {
+                           "label":"Tuesday",
+                           "value":"Tuesday",
+                           "shortcut":""
+                        },
+                        {
+                           "label":"Wednesday",
+                           "value":"Wednesday",
+                           "shortcut":""
+                        },
+                        {
+                           "label":"Thursday",
+                           "value":"Thursday",
+                           "shortcut":""
+                        },
+                        {
+                           "label":"Friday",
+                           "value":"Friday",
+                           "shortcut":""
+                        },
+                        {
+                           "label":"Saturday",
+                           "value":"Saturday",
+                           "shortcut":""
+                        }
+                     ],
+                     "validate":{
+                        "required":true
+                     },
+                     "validateWhenHidden":false,
+                     "key":"daysThatCaregivingIsProvided",
+                     "type":"selectboxes",
+                     "input":true,
+                     "inputType":"checkbox",
+                     "defaultValue":{
+                        "Sunday":false,
+                        "Monday":false,
+                        "Tuesday":false,
+                        "Wednesday":false,
+                        "Thursday":false,
+                        "Friday":false,
+                        "Saturday":false
+                     }
+                  },
+                  {
+                     "label":"Daily caregiving schedule",
+                     "applyMaskOn":"change",
+                     "autoExpand":false,
+                     "tableView":true,
+                     "validate":{
+                        "required":true
+                     },
+                     "validateWhenHidden":false,
+                     "key":"dailyCaregivingSchedule",
+                     "type":"textarea",
+                     "input":true
+                  }
+               ],
+               "_migrationNote":"Cognito repeating section → Form.io DataGrid. Consider EditGrid if per-row edit/save UX is needed."
+            },
+            {
+               "type":"textfield",
+               "key":"nameAndRelationshipOfEveryoneWhoLivesWithTheMember",
+               "label":"Name and relationship of everyone who lives with the member",
+               "input":true,
+               "tableView":true
+            },
+            {
+               "label":"Is member less than 21 years old?",
+               "optionsLabelPosition":"right",
+               "inline":true,
+               "tableView":false,
+               "values":[
+                  {
+                     "label":"Yes",
+                     "value":"Yes",
+                     "shortcut":""
+                  },
+                  {
+                     "label":"No",
+                     "value":"No",
+                     "shortcut":""
+                  }
+               ],
+               "validate":{
+                  "required":true
+               },
+               "validateWhenHidden":false,
+               "key":"isMemberLessThan21YearsOld",
+               "type":"radio",
+               "input":true
+            },
+            {
+               "label":"If the formal caregiver is someone other than parent/legal guardian, why can’t the parent/legal guardian provide care during the hours the formal caregiver is present? (i.e., at work, at hemodialysis, cultural reasons, etc.)",
+               "applyMaskOn":"change",
+               "tableView":true,
+               "validate":{
+                  "required":true
+               },
+               "validateWhenHidden":false,
+               "key":"ifTheFormalCaregiverIsSomeoneOtherThanParentlegalGuardianWhyCantTheParentlegalGuardianProvideCareDuringTheHoursTheFormalCaregiverIsPresentieAtWorkAtHemodialysisCulturalReasonsEtc",
+               "conditional":{
+                  "show":true,
+                  "conjunction":"all",
+                  "conditions":[
+                     {
+                        "component":"isMemberLessThan21YearsOld",
+                        "operator":"isEqual",
+                        "value":"Yes"
+                     }
+                  ]
+               },
+               "type":"textfield",
+               "input":true,
+               "widget.type":"input"
+            },
+            {
+               "label":"Number of siblings",
+               "applyMaskOn":"change",
+               "mask":false,
+               "tableView":false,
+               "delimiter":false,
+               "requireDecimal":false,
+               "inputFormat":"plain",
+               "truncateMultipleSpaces":false,
+               "validate":{
+                  "required":true
+               },
+               "validateWhenHidden":false,
+               "key":"numberOfSiblings",
+               "conditional":{
+                  "show":true,
+                  "conjunction":"all",
+                  "conditions":[
+                     {
+                        "component":"isMemberLessThan21YearsOld",
+                        "operator":"isEqual",
+                        "value":"Yes"
+                     }
+                  ]
+               },
+               "type":"number",
+               "input":true
+            },
+            {
+               "label":"Do any of the siblings have special care needs?",
+               "optionsLabelPosition":"right",
+               "inline":true,
+               "tableView":false,
+               "values":[
+                  {
+                     "label":"Yes",
+                     "value":"Yes",
+                     "shortcut":""
+                  },
+                  {
+                     "label":"No",
+                     "value":"No",
+                     "shortcut":""
+                  }
+               ],
+               "validate":{
+                  "required":true
+               },
+               "validateWhenHidden":false,
+               "key":"doAnyOfTheSiblingsHaveSpecialCareNeeds",
+               "conditional":{
+                  "show":true,
+                  "conjunction":"all",
+                  "conditions":[
+                     {
+                        "component":"numberOfSiblings",
+                        "operator":"greaterThan",
+                        "value":0
+                     }
+                  ]
+               },
+               "type":"radio",
+               "input":true
+            },
+            {
+               "label":"Brief description of sibling care needs",
+               "applyMaskOn":"change",
+               "autoExpand":false,
+               "tableView":true,
+               "validate":{
+                  "required":true
+               },
+               "validateWhenHidden":false,
+               "key":"briefDescriptionOfSiblingCareNeeds",
+               "conditional":{
+                  "show":true,
+                  "conjunction":"all",
+                  "conditions":[
+                     {
+                        "component":"doAnyOfTheSiblingsHaveSpecialCareNeeds",
+                        "operator":"isEqual",
+                        "value":"Yes"
+                     },
+                     {
+                        "component":"numberOfSiblings",
+                        "operator":"greaterThan",
+                        "value":0
+                     }
+                  ]
+               },
+               "type":"textarea",
+               "input":true
+            },
+            {
+               "label":"Hours per day alone without assistance",
+               "applyMaskOn":"change",
+               "tableView":true,
+               "validate":{
+                  "required":true
+               },
+               "validateWhenHidden":false,
+               "key":"hoursPerDayAloneWithoutAssistance",
+               "type":"textfield",
+               "input":true,
+               "widget.type":"input"
+            },
+            {
+               "type":"hidden",
+               "key":"numberOfSiblingsIncrementBy",
+               "label":"[CALCULATED] Number of siblings IncrementBy",
+               "input":true,
+               "_migrationNote":"Cognito computed field — implement calculated value in Form.io",
+               "tableView":false
+            }
+         ],
+         "tableView":false,
+         "label":"Panel"
+      },
+      {
+         "type":"panel",
+         "key":"activitiesOfDailyLivingTimeRecommendations",
+         "title":"Activities of daily living time recommendations",
+         "input":false,
+         "components":[
+            {
+               "label":"Bathing",
+               "applyMaskOn":"change",
+               "tableView":true,
+               "validateWhenHidden":false,
+               "key":"bathing1",
+               "type":"textfield",
+               "input":true,
+               "widget.type":"input"
+            },
+            {
+               "label":"Personal Hygiene",
+               "applyMaskOn":"change",
+               "tableView":true,
+               "validateWhenHidden":false,
+               "key":"bathing2",
+               "type":"textfield",
+               "input":true,
+               "widget.type":"input"
+            },
+            {
+               "label":"Dressing (Upper and Lower)",
+               "applyMaskOn":"change",
+               "tableView":true,
+               "validateWhenHidden":false,
+               "key":"dressingUpperAndLower1",
+               "type":"textfield",
+               "input":true,
+               "widget.type":"input"
+            },
+            {
+               "label":"Walking, Personal Mobility and Stairs",
+               "applyMaskOn":"change",
+               "tableView":true,
+               "validateWhenHidden":false,
+               "key":"walkingPersonalMobilityAndStairs1",
+               "type":"textfield",
+               "input":true,
+               "widget.type":"input"
+            },
+            {
+               "label":"Exercise",
+               "applyMaskOn":"change",
+               "tableView":true,
+               "validateWhenHidden":false,
+               "key":"exercise1",
+               "type":"textfield",
+               "input":true,
+               "widget.type":"input"
+            },
+            {
+               "label":"Bed Mobility and Transferring",
+               "applyMaskOn":"change",
+               "tableView":true,
+               "validateWhenHidden":false,
+               "key":"bedMobilityAndTransferring1",
+               "type":"textfield",
+               "input":true,
+               "widget.type":"input"
+            },
+            {
+               "label":"Eating",
+               "applyMaskOn":"change",
+               "tableView":true,
+               "validateWhenHidden":false,
+               "key":"eating1",
+               "type":"textfield",
+               "input":true,
+               "widget.type":"input"
+            },
+            {
+               "label":"Meal Preparation",
+               "applyMaskOn":"change",
+               "tableView":true,
+               "validateWhenHidden":false,
+               "key":"mealPreparation1",
+               "type":"textfield",
+               "input":true,
+               "widget.type":"input"
+            },
+            {
+               "label":"Cleaning",
+               "applyMaskOn":"change",
+               "tableView":true,
+               "validateWhenHidden":false,
+               "key":"cleaning1",
+               "type":"textfield",
+               "input":true,
+               "widget.type":"input"
+            },
+            {
+               "label":"Laundry",
+               "applyMaskOn":"change",
+               "tableView":true,
+               "validateWhenHidden":false,
+               "key":"laundry1",
+               "type":"textfield",
+               "input":true,
+               "widget.type":"input"
+            },
+            {
+               "label":"Medication Management",
+               "applyMaskOn":"change",
+               "tableView":true,
+               "validateWhenHidden":false,
+               "key":"medicationManagement1",
+               "type":"textfield",
+               "input":true,
+               "widget.type":"input"
+            },
+            {
+               "label":"Shopping",
+               "applyMaskOn":"change",
+               "tableView":true,
+               "validateWhenHidden":false,
+               "key":"shopping1",
+               "type":"textfield",
+               "input":true,
+               "widget.type":"input"
+            },
+            {
+               "label":"Medical Appointments",
+               "applyMaskOn":"change",
+               "tableView":true,
+               "validateWhenHidden":false,
+               "key":"medicalAppointments1",
+               "type":"textfield",
+               "input":true,
+               "widget.type":"input"
+            },
+            {
+               "type":"textfield",
+               "key":"totalMinutesPerWeek",
+               "label":"Total Minutes per Week",
+               "input":true,
+               "disabled":true,
+               "tableView":true
+            }
+         ],
+         "tableView":false,
+         "label":"Panel"
+      },
+      {
+         "type":"panel",
+         "key":"bathing",
+         "title":"Bathing",
+         "input":false,
+         "components":[
+            {
+               "type":"textarea",
+               "key":"bathingComments",
+               "label":"Comments",
+               "input":true,
+               "validate":{
+                  "required":true
+               }
+            },
+            {
+               "type":"select",
+               "key":"bathingFunctionalLevel",
+               "label":"Functional level",
+               "input":true,
+               "dataSrc":"values",
+               "data":{
+                  "values":[
+                     {
+                        "label":"1: Independent - No assistance at all",
+                        "value":"0"
+                     },
+                     {
+                        "label":"2: Supervision - Set-up, oversight, cuing",
+                        "value":"10"
+                     },
+                     {
+                        "label":"3: Minimal assistance - Performs most of the task",
+                        "value":"10"
+                     },
+                     {
+                        "label":"4: Moderate assistance - Performs 50% or more of the task",
+                        "value":"15"
+                     },
+                     {
+                        "label":"5: Maximal assistance - Performs less than 50% of the task",
+                        "value":"30"
+                     },
+                     {
+                        "label":"6: Total dependence - Performs 0% of the task",
+                        "value":"35"
+                     },
+                     {
+                        "label":"7: Activity does not occur",
+                        "value":"0"
+                     }
+                  ]
+               },
+               "validate":{
+                  "required":true
+               }
+            },
+            {
+               "type":"select",
+               "key":"bathingDaysPerWeek",
+               "label":"Days per week",
+               "input":true,
+               "dataSrc":"values",
+               "data":{
+                  "values":[
+                     {
+                        "label":"0",
+                        "value":"0"
+                     },
+                     {
+                        "label":"1",
+                        "value":"1"
+                     },
+                     {
+                        "label":"2",
+                        "value":"2"
+                     },
+                     {
+                        "label":"3",
+                        "value":"3"
+                     },
+                     {
+                        "label":"4",
+                        "value":"4"
+                     },
+                     {
+                        "label":"5",
+                        "value":"5"
+                     },
+                     {
+                        "label":"6",
+                        "value":"6"
+                     },
+                     {
+                        "label":"7",
+                        "value":"7"
+                     }
+                  ]
+               },
+               "validate":{
+                  "required":true
+               }
+            },
+            {
+               "type":"radio",
+               "key":"bathingIsThereAnExceptionToTheTimeGuidelines",
+               "label":"Is there an exception to the time guidelines?",
+               "input":true,
+               "values":[
+                  {
+                     "label":"Yes",
+                     "value":"Yes"
+                  },
+                  {
+                     "label":"No",
+                     "value":"No"
+                  }
+               ],
+               "inline":true,
+               "validate":{
+                  "required":true
+               },
+               "customConditional":"show = (data.bathingFunctionalLevel !== undefined && data.bathingFunctionalLevel !== '0' && data.bathingFunctionalLevel !== '');"
+            },
+            {
+               "type":"number",
+               "key":"bathingMinutesPerDay2",
+               "label":"Minutes per day",
+               "input":true,
+               "validate":{
+                  "required":true
+               },
+               "customConditional":"show = (data.bathingIsThereAnExceptionToTheTimeGuidelines === 'Yes' && data.bathingFunctionalLevel !== undefined && data.bathingFunctionalLevel !== '0' && data.bathingFunctionalLevel !== '');"
+            },
+            {
+               "type":"textarea",
+               "key":"bathingExplain",
+               "label":"Explain",
+               "input":true,
+               "validate":{
+                  "required":true
+               },
+               "customConditional":"show = (data.bathingIsThereAnExceptionToTheTimeGuidelines === 'Yes' && data.bathingFunctionalLevel !== undefined && data.bathingFunctionalLevel !== '0' && data.bathingFunctionalLevel !== '');"
+            },
+            {
+               "type":"number",
+               "key":"bathingMinutesPerDay",
+               "label":"Minutes per day (calculated)",
+               "input":true,
+               "disabled":true,
+               "allowCalculateOverride":false,
+               "calculateValue":"var flVal = parseFloat(data.bathingFunctionalLevel) || 0; var exception = data.bathingIsThereAnExceptionToTheTimeGuidelines === 'Yes'; if (exception && flVal !== 0) { value = data.bathingMinutesPerDay2 || 0; } else if (!data.bathingDaysPerWeek || parseInt(data.bathingDaysPerWeek) === 0) { value = 0; } else { value = flVal; }"
+            },
+            {
+               "type":"number",
+               "key":"bathingMinutesPerWeek",
+               "label":"Minutes per week (calculated)",
+               "input":true,
+               "disabled":true,
+               "allowCalculateOverride":false,
+               "calculateValue":"var flVal = parseFloat(data.bathingFunctionalLevel) || 0; var dpwVal = parseInt(data.bathingDaysPerWeek) || 0; var exception = data.bathingIsThereAnExceptionToTheTimeGuidelines === 'Yes'; if (exception && flVal !== 0) { value = (data.bathingMinutesPerDay2 || 0) * dpwVal; } else { value = (data.bathingMinutesPerDay || 0) * dpwVal; }"
+            },
+            {
+               "type":"textarea",
+               "key":"bathingPeriscopeConsiderations",
+               "label":"Periscope Considerations",
+               "input":true,
+               "validate":{
+                  "required":false
+               }
+            }
+         ]
+      },
+      {
+    "type": "panel",
+    "key": "personalHygiene",
+    "title": "Personal Hygiene",
+    "input": false,
+    "components": [
+      {
+        "type": "textarea",
+        "key": "personalHygieneComments",
+        "label": "Comments",
+        "input": true,
+        "validate": {
+          "required": true
+        }
+      },
+      {
+        "type": "select",
+        "key": "personalHygieneFunctionalLevel",
+        "label": "Functional level",
+        "input": true,
+        "dataSrc": "values",
+        "data": {
+          "values": [
+            {
+              "label": "1: Independent - No assistance at all",
+              "value": "0"
+            },
+            {
+              "label": "2: Supervision - Set-up, oversight, cuing",
+              "value": "10"
+            },
+            {
+              "label": "3: Minimal assistance - Performs most of the task",
+              "value": "10"
+            },
+            {
+              "label": "4: Moderate assistance - Performs 50% or more of the task",
+              "value": "20"
+            },
+            {
+              "label": "5: Maximal assistance - Performs less than 50% of the task",
+              "value": "30"
+            },
+            {
+              "label": "6: Total dependence - Performs 0% of the task",
+              "value": "30"
+            },
+            {
+              "label": "7: Activity does not occur",
+              "value": "0"
+            }
+          ]
+        },
+        "validate": {
+          "required": true
+        }
+      },
+      {
+        "type": "select",
+        "key": "personalHygieneDaysPerWeek",
+        "label": "Days per week",
+        "input": true,
+        "dataSrc": "values",
+        "data": {
+          "values": [
+            {
+              "label": "0",
+              "value": "0"
+            },
+            {
+              "label": "1",
+              "value": "1"
+            },
+            {
+              "label": "2",
+              "value": "2"
+            },
+            {
+              "label": "3",
+              "value": "3"
+            },
+            {
+              "label": "4",
+              "value": "4"
+            },
+            {
+              "label": "5",
+              "value": "5"
+            },
+            {
+              "label": "6",
+              "value": "6"
+            },
+            {
+              "label": "7",
+              "value": "7"
+            }
+          ]
+        },
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.personalHygieneFunctionalLevel !== undefined && data.personalHygieneFunctionalLevel !== '';"
+      },
+      {
+        "type": "radio",
+        "key": "personalHygieneIsThereAnExceptionToTheTimeGuidelines",
+        "label": "Is there an exception to the time guidelines?",
+        "input": true,
+        "values": [
+          {
+            "label": "Yes",
+            "value": "Yes"
+          },
+          {
+            "label": "No",
+            "value": "No"
+          }
+        ],
+        "inline": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.personalHygieneFunctionalLevel !== undefined && data.personalHygieneFunctionalLevel !== '' && data.personalHygieneFunctionalLevel !== '0';"
+      },
+      {
+        "type": "number",
+        "key": "personalHygieneMinutesPerDay2",
+        "label": "Minutes per day",
+        "input": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.personalHygieneIsThereAnExceptionToTheTimeGuidelines === 'Yes' && data.personalHygieneFunctionalLevel !== undefined && data.personalHygieneFunctionalLevel !== '' && data.personalHygieneFunctionalLevel !== '0';"
+      },
+      {
+        "type": "textarea",
+        "key": "personalHygieneExplain",
+        "label": "Explain",
+        "input": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.personalHygieneIsThereAnExceptionToTheTimeGuidelines === 'Yes' && data.personalHygieneFunctionalLevel !== undefined && data.personalHygieneFunctionalLevel !== '' && data.personalHygieneFunctionalLevel !== '0';"
+      },
+      {
+        "type": "number",
+        "key": "personalHygieneMinutesPerDay",
+        "label": "Minutes per day (calculated)",
+        "input": true,
+        "disabled": true,
+        "allowCalculateOverride": false,
+        "calculateValue": "var flVal=parseFloat(data.personalHygieneFunctionalLevel)||0;var exc=data.personalHygieneIsThereAnExceptionToTheTimeGuidelines==='Yes';if(exc&&flVal!==0){value=data.personalHygieneMinutesPerDay2||0;}else if(!data.personalHygieneDaysPerWeek||parseInt(data.personalHygieneDaysPerWeek)===0){value=0;}else{value=flVal;}"
+      },
+      {
+        "type": "number",
+        "key": "personalHygieneMinutesPerWeek",
+        "label": "Minutes per week (calculated)",
+        "input": true,
+        "disabled": true,
+        "allowCalculateOverride": false,
+        "calculateValue": "var flVal=parseFloat(data.personalHygieneFunctionalLevel)||0;var dpw=parseInt(data.personalHygieneDaysPerWeek)||0;var exc=data.personalHygieneIsThereAnExceptionToTheTimeGuidelines==='Yes';if(exc&&flVal!==0){value=(data.personalHygieneMinutesPerDay2||0)*dpw;}else{value=(data.personalHygieneMinutesPerDay||0)*dpw;}"
+      },
+      {
+        "type": "textarea",
+        "key": "personalHygienePeriscopeConsiderations",
+        "label": "Periscope Considerations",
+        "input": true,
+        "validate": {
+          "required": false
+        }
+      }
+    ]
+  },
+      {
+    "type": "panel",
+    "key": "dressingUpperAndLower",
+    "title": "Dressing (Upper and Lower)",
+    "input": false,
+    "components": [
+      {
+        "type": "textarea",
+        "key": "dressingUpperAndLowerComments",
+        "label": "Comments",
+        "input": true,
+        "validate": {
+          "required": true
+        }
+      },
+      {
+        "type": "select",
+        "key": "dressingUpperAndLowerFunctionalLevel",
+        "label": "Functional level",
+        "input": true,
+        "dataSrc": "values",
+        "data": {
+          "values": [
+            {
+              "label": "1: Independent - No assistance at all",
+              "value": "0"
+            },
+            {
+              "label": "2: Supervision - Set-up, oversight, cuing",
+              "value": "5"
+            },
+            {
+              "label": "3: Minimal assistance - Performs most of the task",
+              "value": "5"
+            },
+            {
+              "label": "4: Moderate assistance - Performs 50% or more of the task",
+              "value": "10"
+            },
+            {
+              "label": "5: Maximal assistance - Performs less than 50% of the task",
+              "value": "15"
+            },
+            {
+              "label": "6: Total dependence - Performs 0% of the task",
+              "value": "20"
+            },
+            {
+              "label": "7: Activity does not occur",
+              "value": "0"
+            }
+          ]
+        },
+        "validate": {
+          "required": true
+        }
+      },
+      {
+        "type": "select",
+        "key": "dressingUpperAndLowerTimesPerDay",
+        "label": "Times per day",
+        "input": true,
+        "dataSrc": "values",
+        "data": {
+          "values": [
+            {
+              "label": "0",
+              "value": "0"
+            },
+            {
+              "label": "1",
+              "value": "1"
+            },
+            {
+              "label": "2",
+              "value": "2"
+            }
+          ]
+        },
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.dressingUpperAndLowerFunctionalLevel !== undefined && data.dressingUpperAndLowerFunctionalLevel !== '';"
+      },
+      {
+        "type": "select",
+        "key": "dressingUpperAndLowerDaysPerWeek",
+        "label": "Days per week",
+        "input": true,
+        "dataSrc": "values",
+        "data": {
+          "values": [
+            {
+              "label": "0",
+              "value": "0"
+            },
+            {
+              "label": "1",
+              "value": "1"
+            },
+            {
+              "label": "2",
+              "value": "2"
+            },
+            {
+              "label": "3",
+              "value": "3"
+            },
+            {
+              "label": "4",
+              "value": "4"
+            },
+            {
+              "label": "5",
+              "value": "5"
+            },
+            {
+              "label": "6",
+              "value": "6"
+            },
+            {
+              "label": "7",
+              "value": "7"
+            }
+          ]
+        },
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.dressingUpperAndLowerFunctionalLevel !== undefined && data.dressingUpperAndLowerFunctionalLevel !== '';"
+      },
+      {
+        "type": "radio",
+        "key": "dressingUpperAndLowerIsThereAnExceptionToTheTimeGuidelines",
+        "label": "Is there an exception to the time guidelines?",
+        "input": true,
+        "values": [
+          {
+            "label": "Yes",
+            "value": "Yes"
+          },
+          {
+            "label": "No",
+            "value": "No"
+          }
+        ],
+        "inline": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.dressingUpperAndLowerFunctionalLevel !== undefined && data.dressingUpperAndLowerFunctionalLevel !== '' && data.dressingUpperAndLowerFunctionalLevel !== '0';"
+      },
+      {
+        "type": "number",
+        "key": "dressingUpperAndLowerMinutesPerDay2",
+        "label": "Minutes per day",
+        "input": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.dressingUpperAndLowerIsThereAnExceptionToTheTimeGuidelines === 'Yes' && data.dressingUpperAndLowerFunctionalLevel !== undefined && data.dressingUpperAndLowerFunctionalLevel !== '' && data.dressingUpperAndLowerFunctionalLevel !== '0';"
+      },
+      {
+        "type": "textarea",
+        "key": "dressingUpperAndLowerExplain",
+        "label": "Explain",
+        "input": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.dressingUpperAndLowerIsThereAnExceptionToTheTimeGuidelines === 'Yes' && data.dressingUpperAndLowerFunctionalLevel !== undefined && data.dressingUpperAndLowerFunctionalLevel !== '' && data.dressingUpperAndLowerFunctionalLevel !== '0';"
+      },
+      {
+        "type": "number",
+        "key": "dressingUpperAndLowerMinutesPerDay",
+        "label": "Minutes per day (calculated)",
+        "input": true,
+        "disabled": true,
+        "allowCalculateOverride": false,
+        "calculateValue": "var flVal=parseFloat(data.dressingUpperAndLowerFunctionalLevel)||0;var mult=parseInt(data.dressingUpperAndLowerTimesPerDay)||0;var exc=data.dressingUpperAndLowerIsThereAnExceptionToTheTimeGuidelines==='Yes';if(exc&&flVal!==0){value=data.dressingUpperAndLowerMinutesPerDay2||0;}else if(!data.dressingUpperAndLowerDaysPerWeek||parseInt(data.dressingUpperAndLowerDaysPerWeek)===0){value=0;}else{value=flVal*mult;}"
+      },
+      {
+        "type": "number",
+        "key": "dressingUpperAndLowerMinutesPerWeek",
+        "label": "Minutes per week (calculated)",
+        "input": true,
+        "disabled": true,
+        "allowCalculateOverride": false,
+        "calculateValue": "var flVal=parseFloat(data.dressingUpperAndLowerFunctionalLevel)||0;var dpw=parseInt(data.dressingUpperAndLowerDaysPerWeek)||0;var exc=data.dressingUpperAndLowerIsThereAnExceptionToTheTimeGuidelines==='Yes';if(exc&&flVal!==0){value=(data.dressingUpperAndLowerMinutesPerDay2||0)*dpw;}else{value=(data.dressingUpperAndLowerMinutesPerDay||0)*dpw;}"
+      },
+      {
+        "type": "textarea",
+        "key": "dressingUpperAndLowerPeriscopeConsiderations",
+        "label": "Periscope Considerations",
+        "input": true,
+        "validate": {
+          "required": false
+        }
+      }
+    ]
+  },
+      {
+    "type": "panel",
+    "key": "walkingPersonalMobilityAndStairs",
+    "title": "Walking, Personal Mobility and Stairs",
+    "input": false,
+    "components": [
+      {
+        "type": "textarea",
+        "key": "walkingPersonalMobilityAndStairsComments",
+        "label": "Comments",
+        "input": true,
+        "validate": {
+          "required": true
+        }
+      },
+      {
+        "type": "select",
+        "key": "walkingPersonalMobilityAndStairsFunctionalLevel",
+        "label": "Functional level",
+        "input": true,
+        "dataSrc": "values",
+        "data": {
+          "values": [
+            {
+              "label": "1: Independent - No assistance at all",
+              "value": "0"
+            },
+            {
+              "label": "2: Supervision - Set-up, oversight, cuing",
+              "value": "10"
+            },
+            {
+              "label": "3: Minimal assistance - Performs most of the task",
+              "value": "10"
+            },
+            {
+              "label": "4: Moderate assistance - Performs 50% or more of the task",
+              "value": "20"
+            },
+            {
+              "label": "5: Maximal assistance - Performs less than 50% of the task",
+              "value": "40"
+            },
+            {
+              "label": "6: Total dependence - Performs 0% of the task",
+              "value": "60"
+            },
+            {
+              "label": "7: Activity does not occur",
+              "value": "0"
+            }
+          ]
+        },
+        "validate": {
+          "required": true
+        }
+      },
+      {
+        "type": "select",
+        "key": "walkingPersonalMobilityAndStairsDaysPerWeek",
+        "label": "Days per week",
+        "input": true,
+        "dataSrc": "values",
+        "data": {
+          "values": [
+            {
+              "label": "0",
+              "value": "0"
+            },
+            {
+              "label": "1",
+              "value": "1"
+            },
+            {
+              "label": "2",
+              "value": "2"
+            },
+            {
+              "label": "3",
+              "value": "3"
+            },
+            {
+              "label": "4",
+              "value": "4"
+            },
+            {
+              "label": "5",
+              "value": "5"
+            },
+            {
+              "label": "6",
+              "value": "6"
+            },
+            {
+              "label": "7",
+              "value": "7"
+            }
+          ]
+        },
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.walkingPersonalMobilityAndStairsFunctionalLevel !== undefined && data.walkingPersonalMobilityAndStairsFunctionalLevel !== '';"
+      },
+      {
+        "type": "radio",
+        "key": "walkingPersonalMobilityAndStairsIsThereAnExceptionToTheTimeGuidelines",
+        "label": "Is there an exception to the time guidelines?",
+        "input": true,
+        "values": [
+          {
+            "label": "Yes",
+            "value": "Yes"
+          },
+          {
+            "label": "No",
+            "value": "No"
+          }
+        ],
+        "inline": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.walkingPersonalMobilityAndStairsFunctionalLevel !== undefined && data.walkingPersonalMobilityAndStairsFunctionalLevel !== '' && data.walkingPersonalMobilityAndStairsFunctionalLevel !== '0';"
+      },
+      {
+        "type": "number",
+        "key": "walkingPersonalMobilityAndStairsMinutesPerDay2",
+        "label": "Minutes per day",
+        "input": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.walkingPersonalMobilityAndStairsIsThereAnExceptionToTheTimeGuidelines === 'Yes' && data.walkingPersonalMobilityAndStairsFunctionalLevel !== undefined && data.walkingPersonalMobilityAndStairsFunctionalLevel !== '' && data.walkingPersonalMobilityAndStairsFunctionalLevel !== '0';"
+      },
+      {
+        "type": "textarea",
+        "key": "walkingPersonalMobilityAndStairsExplain",
+        "label": "Explain",
+        "input": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.walkingPersonalMobilityAndStairsIsThereAnExceptionToTheTimeGuidelines === 'Yes' && data.walkingPersonalMobilityAndStairsFunctionalLevel !== undefined && data.walkingPersonalMobilityAndStairsFunctionalLevel !== '' && data.walkingPersonalMobilityAndStairsFunctionalLevel !== '0';"
+      },
+      {
+        "type": "number",
+        "key": "walkingPersonalMobilityAndStairsMinutesPerDay",
+        "label": "Minutes per day (calculated)",
+        "input": true,
+        "disabled": true,
+        "allowCalculateOverride": false,
+        "calculateValue": "var flVal=parseFloat(data.walkingPersonalMobilityAndStairsFunctionalLevel)||0;var exc=data.walkingPersonalMobilityAndStairsIsThereAnExceptionToTheTimeGuidelines==='Yes';if(exc&&flVal!==0){value=data.walkingPersonalMobilityAndStairsMinutesPerDay2||0;}else if(!data.walkingPersonalMobilityAndStairsDaysPerWeek||parseInt(data.walkingPersonalMobilityAndStairsDaysPerWeek)===0){value=0;}else{value=flVal;}"
+      },
+      {
+        "type": "number",
+        "key": "walkingPersonalMobilityAndStairsMinutesPerWeek",
+        "label": "Minutes per week (calculated)",
+        "input": true,
+        "disabled": true,
+        "allowCalculateOverride": false,
+        "calculateValue": "var flVal=parseFloat(data.walkingPersonalMobilityAndStairsFunctionalLevel)||0;var dpw=parseInt(data.walkingPersonalMobilityAndStairsDaysPerWeek)||0;var exc=data.walkingPersonalMobilityAndStairsIsThereAnExceptionToTheTimeGuidelines==='Yes';if(exc&&flVal!==0){value=(data.walkingPersonalMobilityAndStairsMinutesPerDay2||0)*dpw;}else{value=(data.walkingPersonalMobilityAndStairsMinutesPerDay||0)*dpw;}"
+      },
+      {
+        "type": "textarea",
+        "key": "walkingPersonalMobilityAndStairsPeriscopeConsiderations",
+        "label": "Periscope Considerations",
+        "input": true,
+        "validate": {
+          "required": false
+        }
+      }
+    ]
+  },
+      {
+    "type": "panel",
+    "key": "exercise",
+    "title": "Exercise",
+    "input": false,
+    "components": [
+      {
+        "type": "textarea",
+        "key": "exerciseComments",
+        "label": "Comments",
+        "input": true,
+        "validate": {
+          "required": true
+        }
+      },
+      {
+        "type": "select",
+        "key": "exerciseFunctionalLevel",
+        "label": "Functional level",
+        "input": true,
+        "dataSrc": "values",
+        "data": {
+          "values": [
+            {
+              "label": "1: Independent - No assistance at all",
+              "value": "0"
+            },
+            {
+              "label": "2: Supervision - Set-up, oversight, cuing",
+              "value": "30"
+            },
+            {
+              "label": "3: Minimal assistance - Performs most of the task",
+              "value": "30"
+            },
+            {
+              "label": "4: Moderate assistance - Performs 50% or more of the task",
+              "value": "30"
+            },
+            {
+              "label": "5: Maximal assistance - Performs less than 50% of the task",
+              "value": "30"
+            },
+            {
+              "label": "6: Total dependence - Performs 0% of the task",
+              "value": "30"
+            },
+            {
+              "label": "7: Activity does not occur",
+              "value": "0"
+            }
+          ]
+        },
+        "validate": {
+          "required": true
+        }
+      },
+      {
+        "type": "select",
+        "key": "exerciseDaysPerWeek",
+        "label": "Days per week",
+        "input": true,
+        "dataSrc": "values",
+        "data": {
+          "values": [
+            {
+              "label": "0",
+              "value": "0"
+            },
+            {
+              "label": "1",
+              "value": "1"
+            },
+            {
+              "label": "2",
+              "value": "2"
+            },
+            {
+              "label": "3",
+              "value": "3"
+            },
+            {
+              "label": "4",
+              "value": "4"
+            },
+            {
+              "label": "5",
+              "value": "5"
+            },
+            {
+              "label": "6",
+              "value": "6"
+            },
+            {
+              "label": "7",
+              "value": "7"
+            }
+          ]
+        },
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.exerciseFunctionalLevel !== undefined && data.exerciseFunctionalLevel !== '';"
+      },
+      {
+        "type": "radio",
+        "key": "exerciseIsThereAnExceptionToTheTimeGuidelines",
+        "label": "Is there an exception to the time guidelines?",
+        "input": true,
+        "values": [
+          {
+            "label": "Yes",
+            "value": "Yes"
+          },
+          {
+            "label": "No",
+            "value": "No"
+          }
+        ],
+        "inline": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.exerciseFunctionalLevel !== undefined && data.exerciseFunctionalLevel !== '' && data.exerciseFunctionalLevel !== '0';"
+      },
+      {
+        "type": "number",
+        "key": "exerciseMinutesPerDay2",
+        "label": "Minutes per day",
+        "input": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.exerciseIsThereAnExceptionToTheTimeGuidelines === 'Yes' && data.exerciseFunctionalLevel !== undefined && data.exerciseFunctionalLevel !== '' && data.exerciseFunctionalLevel !== '0';"
+      },
+      {
+        "type": "textarea",
+        "key": "exerciseExplain",
+        "label": "Explain",
+        "input": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.exerciseIsThereAnExceptionToTheTimeGuidelines === 'Yes' && data.exerciseFunctionalLevel !== undefined && data.exerciseFunctionalLevel !== '' && data.exerciseFunctionalLevel !== '0';"
+      },
+      {
+        "type": "number",
+        "key": "exerciseMinutesPerDay",
+        "label": "Minutes per day (calculated)",
+        "input": true,
+        "disabled": true,
+        "allowCalculateOverride": false,
+        "calculateValue": "var flVal=parseFloat(data.exerciseFunctionalLevel)||0;var exc=data.exerciseIsThereAnExceptionToTheTimeGuidelines==='Yes';if(exc&&flVal!==0){value=data.exerciseMinutesPerDay2||0;}else if(!data.exerciseDaysPerWeek||parseInt(data.exerciseDaysPerWeek)===0){value=0;}else{value=flVal;}"
+      },
+      {
+        "type": "number",
+        "key": "exerciseMinutesPerWeek",
+        "label": "Minutes per week (calculated)",
+        "input": true,
+        "disabled": true,
+        "allowCalculateOverride": false,
+        "calculateValue": "var flVal=parseFloat(data.exerciseFunctionalLevel)||0;var dpw=parseInt(data.exerciseDaysPerWeek)||0;var exc=data.exerciseIsThereAnExceptionToTheTimeGuidelines==='Yes';if(exc&&flVal!==0){value=(data.exerciseMinutesPerDay2||0)*dpw;}else{value=(data.exerciseMinutesPerDay||0)*dpw;}"
+      },
+      {
+        "type": "textarea",
+        "key": "exercisePeriscopeConsiderations",
+        "label": "Periscope Considerations",
+        "input": true,
+        "validate": {
+          "required": false
+        }
+      }
+    ]
+  },
+      {
+    "type": "panel",
+    "key": "toiletUseAndToiletTransfers",
+    "title": "Toilet Use and Toilet Transfers",
+    "input": false,
+    "components": [
+      {
+        "type": "textarea",
+        "key": "toiletUseAndToiletTransfersComments",
+        "label": "Comments",
+        "input": true,
+        "validate": {
+          "required": true
+        }
+      },
+      {
+        "type": "select",
+        "key": "toiletUseAndToiletTransfersFunctionalLevel",
+        "label": "Functional level",
+        "input": true,
+        "dataSrc": "values",
+        "data": {
+          "values": [
+            {
+              "label": "1: Independent - No assistance at all",
+              "value": "0"
+            },
+            {
+              "label": "2: Supervision - Set-up, oversight, cuing",
+              "value": "5"
+            },
+            {
+              "label": "3: Minimal assistance - Performs most of the task",
+              "value": "5"
+            },
+            {
+              "label": "4: Moderate assistance - Performs 50% or more of the task",
+              "value": "5"
+            },
+            {
+              "label": "5: Maximal assistance - Performs less than 50% of the task",
+              "value": "5"
+            },
+            {
+              "label": "6: Total dependence - Performs 0% of the task",
+              "value": "5"
+            },
+            {
+              "label": "7: Activity does not occur",
+              "value": "0"
+            }
+          ]
+        },
+        "validate": {
+          "required": true
+        }
+      },
+      {
+        "type": "select",
+        "key": "toiletUseAndToiletTransfersTimesPerDay",
+        "label": "Times per day",
+        "input": true,
+        "dataSrc": "values",
+        "data": {
+          "values": [
+            {
+              "label": "0",
+              "value": "0"
+            },
+            {
+              "label": "1",
+              "value": "1"
+            },
+            {
+              "label": "2",
+              "value": "2"
+            },
+            {
+              "label": "3",
+              "value": "3"
+            },
+            {
+              "label": "4",
+              "value": "4"
+            },
+            {
+              "label": "5",
+              "value": "5"
+            },
+            {
+              "label": "6",
+              "value": "6"
+            },
+            {
+              "label": "7",
+              "value": "7"
+            },
+            {
+              "label": "8",
+              "value": "8"
+            }
+          ]
+        },
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.toiletUseAndToiletTransfersFunctionalLevel !== undefined && data.toiletUseAndToiletTransfersFunctionalLevel !== '';"
+      },
+      {
+        "type": "select",
+        "key": "toiletUseAndToiletTransfersDaysPerWeek",
+        "label": "Days per week",
+        "input": true,
+        "dataSrc": "values",
+        "data": {
+          "values": [
+            {
+              "label": "0",
+              "value": "0"
+            },
+            {
+              "label": "1",
+              "value": "1"
+            },
+            {
+              "label": "2",
+              "value": "2"
+            },
+            {
+              "label": "3",
+              "value": "3"
+            },
+            {
+              "label": "4",
+              "value": "4"
+            },
+            {
+              "label": "5",
+              "value": "5"
+            },
+            {
+              "label": "6",
+              "value": "6"
+            },
+            {
+              "label": "7",
+              "value": "7"
+            }
+          ]
+        },
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.toiletUseAndToiletTransfersFunctionalLevel !== undefined && data.toiletUseAndToiletTransfersFunctionalLevel !== '';"
+      },
+      {
+        "type": "radio",
+        "key": "isAssistanceNeededForCatheterCare",
+        "label": "Is assistance needed for catheter care?",
+        "input": true,
+        "values": [
+          {
+            "label": "Yes",
+            "value": "Yes"
+          },
+          {
+            "label": "No",
+            "value": "No"
+          }
+        ],
+        "inline": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show=data.toiletUseAndToiletTransfersFunctionalLevel!==undefined&&data.toiletUseAndToiletTransfersFunctionalLevel!=='';"
+      },
+      {
+        "type": "textarea",
+        "key": "catheterComments",
+        "label": "Comments (Catheter)",
+        "input": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show=data.isAssistanceNeededForCatheterCare==='Yes'&&data.toiletUseAndToiletTransfersFunctionalLevel!==undefined&&data.toiletUseAndToiletTransfersFunctionalLevel!=='';"
+      },
+      {
+        "type": "select",
+        "key": "timesPerDayForCatheterCare",
+        "label": "Times per day for catheter care",
+        "input": true,
+        "dataSrc": "values",
+        "data": {
+          "values": [
+            {
+              "label": "0",
+              "value": "0"
+            },
+            {
+              "label": "1",
+              "value": "1"
+            },
+            {
+              "label": "2",
+              "value": "2"
+            },
+            {
+              "label": "3",
+              "value": "3"
+            },
+            {
+              "label": "4",
+              "value": "4"
+            },
+            {
+              "label": "5",
+              "value": "5"
+            },
+            {
+              "label": "6",
+              "value": "6"
+            },
+            {
+              "label": "7",
+              "value": "7"
+            },
+            {
+              "label": "8",
+              "value": "8"
+            }
+          ]
+        },
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show=data.isAssistanceNeededForCatheterCare==='Yes'&&data.toiletUseAndToiletTransfersFunctionalLevel!==undefined&&data.toiletUseAndToiletTransfersFunctionalLevel!=='';"
+      },
+      {
+        "type": "select",
+        "key": "daysPerWeekForCatheterCare",
+        "label": "Days per week for catheter care",
+        "input": true,
+        "dataSrc": "values",
+        "data": {
+          "values": [
+            {
+              "label": "0",
+              "value": "0"
+            },
+            {
+              "label": "1",
+              "value": "1"
+            },
+            {
+              "label": "2",
+              "value": "2"
+            },
+            {
+              "label": "3",
+              "value": "3"
+            },
+            {
+              "label": "4",
+              "value": "4"
+            },
+            {
+              "label": "5",
+              "value": "5"
+            },
+            {
+              "label": "6",
+              "value": "6"
+            },
+            {
+              "label": "7",
+              "value": "7"
+            }
+          ]
+        },
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show=data.isAssistanceNeededForCatheterCare==='Yes'&&data.toiletUseAndToiletTransfersFunctionalLevel!==undefined&&data.toiletUseAndToiletTransfersFunctionalLevel!=='';"
+      },
+      {
+        "type": "number",
+        "key": "minutesPerWeekForCatheterCare",
+        "label": "Minutes per week for catheter care (calculated)",
+        "input": true,
+        "disabled": true,
+        "allowCalculateOverride": false,
+        "calculateValue": "if(data.isAssistanceNeededForCatheterCare!=='Yes'){value=0;}else{value=(parseInt(data.timesPerDayForCatheterCare)||0)*(parseInt(data.daysPerWeekForCatheterCare)||0);}"
+      },
+      {
+        "type": "radio",
+        "key": "isAssistanceNeededForOstomyCare",
+        "label": "Is assistance needed for ostomy care?",
+        "input": true,
+        "values": [
+          {
+            "label": "Yes",
+            "value": "Yes"
+          },
+          {
+            "label": "No",
+            "value": "No"
+          }
+        ],
+        "inline": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show=data.toiletUseAndToiletTransfersFunctionalLevel!==undefined&&data.toiletUseAndToiletTransfersFunctionalLevel!=='';"
+      },
+      {
+        "type": "textarea",
+        "key": "ostomyComments",
+        "label": "Comments (Ostomy)",
+        "input": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show=data.isAssistanceNeededForOstomyCare==='Yes'&&data.toiletUseAndToiletTransfersFunctionalLevel!==undefined&&data.toiletUseAndToiletTransfersFunctionalLevel!=='';"
+      },
+      {
+        "type": "select",
+        "key": "timesPerDayForOstomyCare",
+        "label": "Times per day for ostomy care",
+        "input": true,
+        "dataSrc": "values",
+        "data": {
+          "values": [
+            {
+              "label": "0",
+              "value": "0"
+            },
+            {
+              "label": "1",
+              "value": "1"
+            },
+            {
+              "label": "2",
+              "value": "2"
+            },
+            {
+              "label": "3",
+              "value": "3"
+            },
+            {
+              "label": "4",
+              "value": "4"
+            },
+            {
+              "label": "5",
+              "value": "5"
+            },
+            {
+              "label": "6",
+              "value": "6"
+            },
+            {
+              "label": "7",
+              "value": "7"
+            },
+            {
+              "label": "8",
+              "value": "8"
+            }
+          ]
+        },
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show=data.isAssistanceNeededForOstomyCare==='Yes'&&data.toiletUseAndToiletTransfersFunctionalLevel!==undefined&&data.toiletUseAndToiletTransfersFunctionalLevel!=='';"
+      },
+      {
+        "type": "select",
+        "key": "daysPerWeekForOstomyCare",
+        "label": "Days per week for ostomy care",
+        "input": true,
+        "dataSrc": "values",
+        "data": {
+          "values": [
+            {
+              "label": "0",
+              "value": "0"
+            },
+            {
+              "label": "1",
+              "value": "1"
+            },
+            {
+              "label": "2",
+              "value": "2"
+            },
+            {
+              "label": "3",
+              "value": "3"
+            },
+            {
+              "label": "4",
+              "value": "4"
+            },
+            {
+              "label": "5",
+              "value": "5"
+            },
+            {
+              "label": "6",
+              "value": "6"
+            },
+            {
+              "label": "7",
+              "value": "7"
+            }
+          ]
+        },
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show=data.isAssistanceNeededForOstomyCare==='Yes'&&data.toiletUseAndToiletTransfersFunctionalLevel!==undefined&&data.toiletUseAndToiletTransfersFunctionalLevel!=='';"
+      },
+      {
+        "type": "number",
+        "key": "minutesPerWeekForOstomyCare",
+        "label": "Minutes per week for ostomy care (calculated)",
+        "input": true,
+        "disabled": true,
+        "allowCalculateOverride": false,
+        "calculateValue": "if(data.isAssistanceNeededForOstomyCare!=='Yes'){value=0;}else{value=(parseInt(data.timesPerDayForOstomyCare)||0)*(parseInt(data.daysPerWeekForOstomyCare)||0);}"
+      },
+      {
+        "type": "radio",
+        "key": "isAssistanceNeededToCompleteABowelProgram",
+        "label": "Is assistance needed to complete a bowel program?",
+        "input": true,
+        "values": [
+          {
+            "label": "Yes",
+            "value": "Yes"
+          },
+          {
+            "label": "No",
+            "value": "No"
+          }
+        ],
+        "inline": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show=data.toiletUseAndToiletTransfersFunctionalLevel!==undefined&&data.toiletUseAndToiletTransfersFunctionalLevel!=='';"
+      },
+      {
+        "type": "textarea",
+        "key": "bowelComments",
+        "label": "Comments (Bowel Program)",
+        "input": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show=data.isAssistanceNeededToCompleteABowelProgram==='Yes'&&data.toiletUseAndToiletTransfersFunctionalLevel!==undefined&&data.toiletUseAndToiletTransfersFunctionalLevel!=='';"
+      },
+      {
+        "type": "number",
+        "key": "minutesPerOccurrenceOfBowelProgram",
+        "label": "Minutes per occurrence of bowel program",
+        "input": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show=data.isAssistanceNeededToCompleteABowelProgram==='Yes'&&data.toiletUseAndToiletTransfersFunctionalLevel!==undefined&&data.toiletUseAndToiletTransfersFunctionalLevel!=='';"
+      },
+      {
+        "type": "select",
+        "key": "timesPerDayToCompleteABowelProgram",
+        "label": "Times per day to complete a bowel program",
+        "input": true,
+        "dataSrc": "values",
+        "data": {
+          "values": [
+            {
+              "label": "0",
+              "value": "0"
+            },
+            {
+              "label": "1",
+              "value": "1"
+            },
+            {
+              "label": "2",
+              "value": "2"
+            }
+          ]
+        },
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show=data.isAssistanceNeededToCompleteABowelProgram==='Yes'&&data.toiletUseAndToiletTransfersFunctionalLevel!==undefined&&data.toiletUseAndToiletTransfersFunctionalLevel!=='';"
+      },
+      {
+        "type": "select",
+        "key": "daysPerWeekForBowelProgram",
+        "label": "Days per week for bowel program",
+        "input": true,
+        "dataSrc": "values",
+        "data": {
+          "values": [
+            {
+              "label": "0",
+              "value": "0"
+            },
+            {
+              "label": "1",
+              "value": "1"
+            },
+            {
+              "label": "2",
+              "value": "2"
+            },
+            {
+              "label": "3",
+              "value": "3"
+            },
+            {
+              "label": "4",
+              "value": "4"
+            },
+            {
+              "label": "5",
+              "value": "5"
+            },
+            {
+              "label": "6",
+              "value": "6"
+            },
+            {
+              "label": "7",
+              "value": "7"
+            }
+          ]
+        },
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show=data.isAssistanceNeededToCompleteABowelProgram==='Yes'&&data.toiletUseAndToiletTransfersFunctionalLevel!==undefined&&data.toiletUseAndToiletTransfersFunctionalLevel!=='';"
+      },
+      {
+        "type": "number",
+        "key": "minutesPerWeekForBowelProgram",
+        "label": "Minutes per week for bowel program (calculated)",
+        "input": true,
+        "disabled": true,
+        "allowCalculateOverride": false,
+        "calculateValue": "if(data.isAssistanceNeededToCompleteABowelProgram!=='Yes'){value=0;}else{var mpo=data.minutesPerOccurrenceOfBowelProgram||0;var tpd=parseInt(data.timesPerDayToCompleteABowelProgram)||0;var dpw=parseInt(data.daysPerWeekForBowelProgram)||0;var daily=mpo*tpd;value=(daily>60?60:daily)*dpw;}"
+      },
+      {
+        "type": "radio",
+        "key": "toiletUseAndToiletTransfersIsThereAnExceptionToTheTimeGuidelines",
+        "label": "Is there an exception to the time guidelines?",
+        "input": true,
+        "values": [
+          {
+            "label": "Yes",
+            "value": "Yes"
+          },
+          {
+            "label": "No",
+            "value": "No"
+          }
+        ],
+        "inline": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.toiletUseAndToiletTransfersFunctionalLevel !== undefined && data.toiletUseAndToiletTransfersFunctionalLevel !== '' && data.toiletUseAndToiletTransfersFunctionalLevel !== '0';"
+      },
+      {
+        "type": "number",
+        "key": "toiletUseAndToiletTransfersMinutesPerDay2",
+        "label": "Minutes per day",
+        "input": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.toiletUseAndToiletTransfersIsThereAnExceptionToTheTimeGuidelines === 'Yes' && data.toiletUseAndToiletTransfersFunctionalLevel !== undefined && data.toiletUseAndToiletTransfersFunctionalLevel !== '' && data.toiletUseAndToiletTransfersFunctionalLevel !== '0';"
+      },
+      {
+        "type": "textarea",
+        "key": "toiletUseAndToiletTransfersExplain",
+        "label": "Explain",
+        "input": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.toiletUseAndToiletTransfersIsThereAnExceptionToTheTimeGuidelines === 'Yes' && data.toiletUseAndToiletTransfersFunctionalLevel !== undefined && data.toiletUseAndToiletTransfersFunctionalLevel !== '' && data.toiletUseAndToiletTransfersFunctionalLevel !== '0';"
+      },
+      {
+        "type": "number",
+        "key": "toiletUseAndToiletTransfersMinutesPerDay",
+        "label": "Minutes per day (calculated)",
+        "input": true,
+        "disabled": true,
+        "allowCalculateOverride": false,
+        "calculateValue": "var flVal=parseFloat(data.toiletUseAndToiletTransfersFunctionalLevel)||0;var tpd=parseInt(data.toiletUseAndToiletTransfersTimesPerDay)||0;var exc=data.toiletUseAndToiletTransfersIsThereAnExceptionToTheTimeGuidelines==='Yes';if(exc&&flVal!==0){value=data.toiletUseAndToiletTransfersMinutesPerDay2||0;}else if(!data.toiletUseAndToiletTransfersDaysPerWeek||parseInt(data.toiletUseAndToiletTransfersDaysPerWeek)===0){value=0;}else{value=flVal*tpd;}"
+      },
+      {
+        "type": "number",
+        "key": "toiletUseAndToiletTransfersMinutesPerWeek",
+        "label": "Minutes per week (calculated)",
+        "input": true,
+        "disabled": true,
+        "allowCalculateOverride": false,
+        "calculateValue": "var flVal=parseFloat(data.toiletUseAndToiletTransfersFunctionalLevel)||0;var dpw=parseInt(data.toiletUseAndToiletTransfersDaysPerWeek)||0;var exc=data.toiletUseAndToiletTransfersIsThereAnExceptionToTheTimeGuidelines==='Yes';var cath=parseFloat(data.minutesPerWeekForCatheterCare)||0;var ost=parseFloat(data.minutesPerWeekForOstomyCare)||0;var bow=parseFloat(data.minutesPerWeekForBowelProgram)||0;if(exc&&flVal!==0){value=(data.toiletUseAndToiletTransfersMinutesPerDay2||0)*dpw;}else{value=((data.toiletUseAndToiletTransfersMinutesPerDay||0)*dpw)+cath+ost+bow;}"
+      },
+      {
+        "type": "textarea",
+        "key": "toiletUseAndToiletTransfersPeriscopeConsiderations",
+        "label": "Periscope Considerations",
+        "input": true,
+        "validate": {
+          "required": false
+        }
+      }
+    ]
+  },
+      {
+    "type": "panel",
+    "key": "bedMobilityAndTransferring",
+    "title": "Bed Mobility and Transferring",
+    "input": false,
+    "components": [
+      {
+        "type": "textarea",
+        "key": "bedMobilityAndTransferringComments",
+        "label": "Comments",
+        "input": true,
+        "validate": {
+          "required": true
+        }
+      },
+      {
+        "type": "select",
+        "key": "bedMobilityAndTransferringFunctionalLevel",
+        "label": "Functional level",
+        "input": true,
+        "dataSrc": "values",
+        "data": {
+          "values": [
+            {
+              "label": "1: Independent - No assistance at all",
+              "value": "0"
+            },
+            {
+              "label": "2: Supervision - Set-up, oversight, cuing",
+              "value": "5"
+            },
+            {
+              "label": "3: Minimal assistance - Performs most of the task",
+              "value": "5"
+            },
+            {
+              "label": "4: Moderate assistance - Performs 50% or more of the task",
+              "value": "5"
+            },
+            {
+              "label": "5: Maximal assistance - Performs less than 50% of the task",
+              "value": "5"
+            },
+            {
+              "label": "6: Total dependence - Performs 0% of the task",
+              "value": "5"
+            },
+            {
+              "label": "7: Activity does not occur",
+              "value": "0"
+            }
+          ]
+        },
+        "validate": {
+          "required": true
+        }
+      },
+      {
+        "type": "select",
+        "key": "bedMobilityAndTransferringTimesPerDay",
+        "label": "Times per day",
+        "input": true,
+        "dataSrc": "values",
+        "data": {
+          "values": [
+            {
+              "label": "0",
+              "value": "0"
+            },
+            {
+              "label": "1",
+              "value": "1"
+            },
+            {
+              "label": "2",
+              "value": "2"
+            },
+            {
+              "label": "3",
+              "value": "3"
+            },
+            {
+              "label": "4",
+              "value": "4"
+            },
+            {
+              "label": "5",
+              "value": "5"
+            }
+          ]
+        },
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.bedMobilityAndTransferringFunctionalLevel !== undefined && data.bedMobilityAndTransferringFunctionalLevel !== '';"
+      },
+      {
+        "type": "select",
+        "key": "bedMobilityAndTransferringDaysPerWeek",
+        "label": "Days per week",
+        "input": true,
+        "dataSrc": "values",
+        "data": {
+          "values": [
+            {
+              "label": "0",
+              "value": "0"
+            },
+            {
+              "label": "1",
+              "value": "1"
+            },
+            {
+              "label": "2",
+              "value": "2"
+            },
+            {
+              "label": "3",
+              "value": "3"
+            },
+            {
+              "label": "4",
+              "value": "4"
+            },
+            {
+              "label": "5",
+              "value": "5"
+            },
+            {
+              "label": "6",
+              "value": "6"
+            },
+            {
+              "label": "7",
+              "value": "7"
+            }
+          ]
+        },
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.bedMobilityAndTransferringFunctionalLevel !== undefined && data.bedMobilityAndTransferringFunctionalLevel !== '';"
+      },
+      {
+        "type": "radio",
+        "key": "bedMobilityAndTransferringIsThereAnExceptionToTheTimeGuidelines",
+        "label": "Is there an exception to the time guidelines?",
+        "input": true,
+        "values": [
+          {
+            "label": "Yes",
+            "value": "Yes"
+          },
+          {
+            "label": "No",
+            "value": "No"
+          }
+        ],
+        "inline": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.bedMobilityAndTransferringFunctionalLevel !== undefined && data.bedMobilityAndTransferringFunctionalLevel !== '' && data.bedMobilityAndTransferringFunctionalLevel !== '0';"
+      },
+      {
+        "type": "number",
+        "key": "bedMobilityAndTransferringMinutesPerDay2",
+        "label": "Minutes per day",
+        "input": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.bedMobilityAndTransferringIsThereAnExceptionToTheTimeGuidelines === 'Yes' && data.bedMobilityAndTransferringFunctionalLevel !== undefined && data.bedMobilityAndTransferringFunctionalLevel !== '' && data.bedMobilityAndTransferringFunctionalLevel !== '0';"
+      },
+      {
+        "type": "textarea",
+        "key": "bedMobilityAndTransferringExplain",
+        "label": "Explain",
+        "input": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.bedMobilityAndTransferringIsThereAnExceptionToTheTimeGuidelines === 'Yes' && data.bedMobilityAndTransferringFunctionalLevel !== undefined && data.bedMobilityAndTransferringFunctionalLevel !== '' && data.bedMobilityAndTransferringFunctionalLevel !== '0';"
+      },
+      {
+        "type": "number",
+        "key": "bedMobilityAndTransferringMinutesPerDay",
+        "label": "Minutes per day (calculated)",
+        "input": true,
+        "disabled": true,
+        "allowCalculateOverride": false,
+        "calculateValue": "var flVal=parseFloat(data.bedMobilityAndTransferringFunctionalLevel)||0;var mult=parseInt(data.bedMobilityAndTransferringTimesPerDay)||0;var exc=data.bedMobilityAndTransferringIsThereAnExceptionToTheTimeGuidelines==='Yes';if(exc&&flVal!==0){value=data.bedMobilityAndTransferringMinutesPerDay2||0;}else if(!data.bedMobilityAndTransferringDaysPerWeek||parseInt(data.bedMobilityAndTransferringDaysPerWeek)===0){value=0;}else{value=flVal*mult;}"
+      },
+      {
+        "type": "number",
+        "key": "bedMobilityAndTransferringMinutesPerWeek",
+        "label": "Minutes per week (calculated)",
+        "input": true,
+        "disabled": true,
+        "allowCalculateOverride": false,
+        "calculateValue": "var flVal=parseFloat(data.bedMobilityAndTransferringFunctionalLevel)||0;var dpw=parseInt(data.bedMobilityAndTransferringDaysPerWeek)||0;var exc=data.bedMobilityAndTransferringIsThereAnExceptionToTheTimeGuidelines==='Yes';if(exc&&flVal!==0){value=(data.bedMobilityAndTransferringMinutesPerDay2||0)*dpw;}else{value=(data.bedMobilityAndTransferringMinutesPerDay||0)*dpw;}"
+      },
+      {
+        "type": "textarea",
+        "key": "bedMobilityAndTransferringPeriscopeConsiderations",
+        "label": "Periscope Considerations",
+        "input": true,
+        "validate": {
+          "required": false
+        }
+      }
+    ]
+  },
+      {
+    "type": "panel",
+    "key": "eating",
+    "title": "Eating",
+    "input": false,
+    "components": [
+      {
+        "type": "textarea",
+        "key": "eatingComments",
+        "label": "Comments",
+        "input": true,
+        "validate": {
+          "required": true
+        }
+      },
+      {
+        "type": "select",
+        "key": "eatingFunctionalLevel",
+        "label": "Functional level",
+        "input": true,
+        "dataSrc": "values",
+        "data": {
+          "values": [
+            {
+              "label": "1: Independent - No assistance at all",
+              "value": "0"
+            },
+            {
+              "label": "2: Supervision - Set-up, oversight, cuing",
+              "value": "10"
+            },
+            {
+              "label": "3: Minimal assistance - Performs most of the task",
+              "value": "10"
+            },
+            {
+              "label": "4: Moderate assistance - Performs 50% or more of the task",
+              "value": "10"
+            },
+            {
+              "label": "5: Maximal assistance - Performs less than 50% of the task",
+              "value": "15"
+            },
+            {
+              "label": "6: Total dependence - Performs 0% of the task",
+              "value": "20"
+            },
+            {
+              "label": "7: Activity does not occur",
+              "value": "0"
+            }
+          ]
+        },
+        "validate": {
+          "required": true
+        }
+      },
+      {
+        "type": "select",
+        "key": "eatingMealsPerDay",
+        "label": "Meals per day",
+        "input": true,
+        "dataSrc": "values",
+        "data": {
+          "values": [
+            {
+              "label": "0",
+              "value": "0"
+            },
+            {
+              "label": "1",
+              "value": "1"
+            },
+            {
+              "label": "2",
+              "value": "2"
+            },
+            {
+              "label": "3",
+              "value": "3"
+            },
+            {
+              "label": "4",
+              "value": "4"
+            }
+          ]
+        },
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.eatingFunctionalLevel !== undefined && data.eatingFunctionalLevel !== '';"
+      },
+      {
+        "type": "select",
+        "key": "eatingDaysPerWeek",
+        "label": "Days per week",
+        "input": true,
+        "dataSrc": "values",
+        "data": {
+          "values": [
+            {
+              "label": "0",
+              "value": "0"
+            },
+            {
+              "label": "1",
+              "value": "1"
+            },
+            {
+              "label": "2",
+              "value": "2"
+            },
+            {
+              "label": "3",
+              "value": "3"
+            },
+            {
+              "label": "4",
+              "value": "4"
+            },
+            {
+              "label": "5",
+              "value": "5"
+            },
+            {
+              "label": "6",
+              "value": "6"
+            },
+            {
+              "label": "7",
+              "value": "7"
+            }
+          ]
+        },
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.eatingFunctionalLevel !== undefined && data.eatingFunctionalLevel !== '';"
+      },
+      {
+        "type": "radio",
+        "key": "eatingIsThereAnExceptionToTheTimeGuidelines",
+        "label": "Is there an exception to the time guidelines?",
+        "input": true,
+        "values": [
+          {
+            "label": "Yes",
+            "value": "Yes"
+          },
+          {
+            "label": "No",
+            "value": "No"
+          }
+        ],
+        "inline": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.eatingFunctionalLevel !== undefined && data.eatingFunctionalLevel !== '' && data.eatingFunctionalLevel !== '0';"
+      },
+      {
+        "type": "number",
+        "key": "eatingMinutesPerDay2",
+        "label": "Minutes per day",
+        "input": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.eatingIsThereAnExceptionToTheTimeGuidelines === 'Yes' && data.eatingFunctionalLevel !== undefined && data.eatingFunctionalLevel !== '' && data.eatingFunctionalLevel !== '0';"
+      },
+      {
+        "type": "textarea",
+        "key": "eatingExplain",
+        "label": "Explain",
+        "input": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.eatingIsThereAnExceptionToTheTimeGuidelines === 'Yes' && data.eatingFunctionalLevel !== undefined && data.eatingFunctionalLevel !== '' && data.eatingFunctionalLevel !== '0';"
+      },
+      {
+        "type": "number",
+        "key": "eatingMinutesPerDay",
+        "label": "Minutes per day (calculated)",
+        "input": true,
+        "disabled": true,
+        "allowCalculateOverride": false,
+        "calculateValue": "var flVal=parseFloat(data.eatingFunctionalLevel)||0;var mult=parseInt(data.eatingMealsPerDay)||0;var exc=data.eatingIsThereAnExceptionToTheTimeGuidelines==='Yes';if(exc&&flVal!==0){value=data.eatingMinutesPerDay2||0;}else if(!data.eatingDaysPerWeek||parseInt(data.eatingDaysPerWeek)===0){value=0;}else{value=flVal*mult;}"
+      },
+      {
+        "type": "number",
+        "key": "eatingMinutesPerWeek",
+        "label": "Minutes per week (calculated)",
+        "input": true,
+        "disabled": true,
+        "allowCalculateOverride": false,
+        "calculateValue": "var flVal=parseFloat(data.eatingFunctionalLevel)||0;var dpw=parseInt(data.eatingDaysPerWeek)||0;var exc=data.eatingIsThereAnExceptionToTheTimeGuidelines==='Yes';if(exc&&flVal!==0){value=(data.eatingMinutesPerDay2||0)*dpw;}else{value=(data.eatingMinutesPerDay||0)*dpw;}"
+      },
+      {
+        "type": "textarea",
+        "key": "eatingPeriscopeConsiderations",
+        "label": "Periscope Considerations",
+        "input": true,
+        "validate": {
+          "required": false
+        }
+      }
+    ]
+  },
+      {
+    "type": "panel",
+    "key": "mealPreparation",
+    "title": "Meal Preparation",
+    "input": false,
+    "components": [
+      {
+        "type": "textarea",
+        "key": "mealPreparationComments",
+        "label": "Comments",
+        "input": true,
+        "validate": {
+          "required": true
+        }
+      },
+      {
+        "type": "select",
+        "key": "mealPreparationFunctionalLevel",
+        "label": "Functional level",
+        "input": true,
+        "dataSrc": "values",
+        "data": {
+          "values": [
+            {
+              "label": "1: Independent - No assistance at all",
+              "value": "0"
+            },
+            {
+              "label": "2: Supervision - Set-up, oversight, cuing",
+              "value": "20"
+            },
+            {
+              "label": "3: Minimal assistance - Performs most of the task",
+              "value": "20"
+            },
+            {
+              "label": "4: Moderate assistance - Performs 50% or more of the task",
+              "value": "20"
+            },
+            {
+              "label": "5: Maximal assistance - Performs less than 50% of the task",
+              "value": "20"
+            },
+            {
+              "label": "6: Total dependence - Performs 0% of the task",
+              "value": "20"
+            },
+            {
+              "label": "7: Activity does not occur",
+              "value": "0"
+            },
+            {
+              "label": "8: Assistance is age appropriate",
+              "value": "0"
+            }
+          ]
+        },
+        "validate": {
+          "required": true
+        },
+        "customDefaultValue": "value=(data.memberAge&&data.memberAge<14)?'0':null;"
+      },
+      {
+        "type": "select",
+        "key": "mealsPerWeek",
+        "label": "Meals per week",
+        "input": true,
+        "dataSrc": "values",
+        "data": {
+          "values": [
+            {
+              "label": "0",
+              "value": "0"
+            },
+            {
+              "label": "1",
+              "value": "1"
+            },
+            {
+              "label": "2",
+              "value": "2"
+            },
+            {
+              "label": "3",
+              "value": "3"
+            },
+            {
+              "label": "4",
+              "value": "4"
+            },
+            {
+              "label": "5",
+              "value": "5"
+            },
+            {
+              "label": "6",
+              "value": "6"
+            },
+            {
+              "label": "7",
+              "value": "7"
+            },
+            {
+              "label": "8",
+              "value": "8"
+            },
+            {
+              "label": "9",
+              "value": "9"
+            },
+            {
+              "label": "10",
+              "value": "10"
+            },
+            {
+              "label": "11",
+              "value": "11"
+            },
+            {
+              "label": "12",
+              "value": "12"
+            },
+            {
+              "label": "13",
+              "value": "13"
+            },
+            {
+              "label": "14",
+              "value": "14"
+            },
+            {
+              "label": "15",
+              "value": "15"
+            },
+            {
+              "label": "16",
+              "value": "16"
+            },
+            {
+              "label": "17",
+              "value": "17"
+            },
+            {
+              "label": "18",
+              "value": "18"
+            },
+            {
+              "label": "19",
+              "value": "19"
+            },
+            {
+              "label": "20",
+              "value": "20"
+            },
+            {
+              "label": "21",
+              "value": "21"
+            },
+            {
+              "label": "22",
+              "value": "22"
+            },
+            {
+              "label": "23",
+              "value": "23"
+            },
+            {
+              "label": "24",
+              "value": "24"
+            },
+            {
+              "label": "25",
+              "value": "25"
+            },
+            {
+              "label": "26",
+              "value": "26"
+            },
+            {
+              "label": "27",
+              "value": "27"
+            },
+            {
+              "label": "28",
+              "value": "28"
+            }
+          ]
+        },
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.mealPreparationFunctionalLevel !== undefined && data.mealPreparationFunctionalLevel !== '';"
+      },
+      {
+        "type": "select",
+        "key": "mealsPerWeekThatArePreparedTogetherWithFamilyThatLiveWithMember",
+        "label": "Meals per week prepared together with family",
+        "input": true,
+        "dataSrc": "values",
+        "data": {
+          "values": [
+            {
+              "label": "0",
+              "value": "0"
+            },
+            {
+              "label": "1",
+              "value": "1"
+            },
+            {
+              "label": "2",
+              "value": "2"
+            },
+            {
+              "label": "3",
+              "value": "3"
+            },
+            {
+              "label": "4",
+              "value": "4"
+            },
+            {
+              "label": "5",
+              "value": "5"
+            },
+            {
+              "label": "6",
+              "value": "6"
+            },
+            {
+              "label": "7",
+              "value": "7"
+            },
+            {
+              "label": "8",
+              "value": "8"
+            },
+            {
+              "label": "9",
+              "value": "9"
+            },
+            {
+              "label": "10",
+              "value": "10"
+            },
+            {
+              "label": "11",
+              "value": "11"
+            },
+            {
+              "label": "12",
+              "value": "12"
+            },
+            {
+              "label": "13",
+              "value": "13"
+            },
+            {
+              "label": "14",
+              "value": "14"
+            },
+            {
+              "label": "15",
+              "value": "15"
+            },
+            {
+              "label": "16",
+              "value": "16"
+            },
+            {
+              "label": "17",
+              "value": "17"
+            },
+            {
+              "label": "18",
+              "value": "18"
+            },
+            {
+              "label": "19",
+              "value": "19"
+            },
+            {
+              "label": "20",
+              "value": "20"
+            },
+            {
+              "label": "21",
+              "value": "21"
+            },
+            {
+              "label": "22",
+              "value": "22"
+            },
+            {
+              "label": "23",
+              "value": "23"
+            },
+            {
+              "label": "24",
+              "value": "24"
+            },
+            {
+              "label": "25",
+              "value": "25"
+            },
+            {
+              "label": "26",
+              "value": "26"
+            },
+            {
+              "label": "27",
+              "value": "27"
+            },
+            {
+              "label": "28",
+              "value": "28"
+            }
+          ]
+        },
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.mealPreparationFunctionalLevel !== undefined && data.mealPreparationFunctionalLevel !== '';"
+      },
+      {
+        "type": "radio",
+        "key": "mealPreparationIsThereAnExceptionToTheTimeGuidelines",
+        "label": "Is there an exception to the time guidelines?",
+        "input": true,
+        "values": [
+          {
+            "label": "Yes",
+            "value": "Yes"
+          },
+          {
+            "label": "No",
+            "value": "No"
+          }
+        ],
+        "inline": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.mealPreparationFunctionalLevel !== undefined && data.mealPreparationFunctionalLevel !== '' && data.mealPreparationFunctionalLevel !== '0';"
+      },
+      {
+        "type": "select",
+        "key": "mealPreparationDaysPerWeek",
+        "label": "Days per week",
+        "input": true,
+        "dataSrc": "values",
+        "data": {
+          "values": [
+            {
+              "label": "0",
+              "value": "0"
+            },
+            {
+              "label": "1",
+              "value": "1"
+            },
+            {
+              "label": "2",
+              "value": "2"
+            },
+            {
+              "label": "3",
+              "value": "3"
+            },
+            {
+              "label": "4",
+              "value": "4"
+            },
+            {
+              "label": "5",
+              "value": "5"
+            },
+            {
+              "label": "6",
+              "value": "6"
+            },
+            {
+              "label": "7",
+              "value": "7"
+            }
+          ]
+        },
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show=data.mealPreparationIsThereAnExceptionToTheTimeGuidelines==='Yes'&&data.mealPreparationFunctionalLevel!==undefined&&data.mealPreparationFunctionalLevel!==''&&data.mealPreparationFunctionalLevel!=='0';"
+      },
+      {
+        "type": "number",
+        "key": "mealPreparationMinutesPerDay2",
+        "label": "Minutes per day",
+        "input": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.mealPreparationIsThereAnExceptionToTheTimeGuidelines === 'Yes' && data.mealPreparationFunctionalLevel !== undefined && data.mealPreparationFunctionalLevel !== '' && data.mealPreparationFunctionalLevel !== '0';"
+      },
+      {
+        "type": "textarea",
+        "key": "mealPreparationExplain",
+        "label": "Explain",
+        "input": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.mealPreparationIsThereAnExceptionToTheTimeGuidelines === 'Yes' && data.mealPreparationFunctionalLevel !== undefined && data.mealPreparationFunctionalLevel !== '' && data.mealPreparationFunctionalLevel !== '0';"
+      },
+      {
+        "type": "number",
+        "key": "mealPreparationMinutesPerDay",
+        "label": "Minutes per day (calculated)",
+        "input": true,
+        "disabled": true,
+        "allowCalculateOverride": false,
+        "calculateValue": "var flVal=parseFloat(data.mealPreparationFunctionalLevel)||0;var exc=data.mealPreparationIsThereAnExceptionToTheTimeGuidelines==='Yes';if(exc&&flVal!==0){value=data.mealPreparationMinutesPerDay2||0;}else{value=0;}"
+      },
+      {
+        "type": "number",
+        "key": "mealPreparationMinutesPerWeek",
+        "label": "Minutes per week (calculated)",
+        "input": true,
+        "disabled": true,
+        "allowCalculateOverride": false,
+        "calculateValue": "var flVal=parseFloat(data.mealPreparationFunctionalLevel)||0;var exc=data.mealPreparationIsThereAnExceptionToTheTimeGuidelines==='Yes';if(exc&&flVal!==0){var dpw=parseInt(data.mealPreparationDaysPerWeek)||0;value=(data.mealPreparationMinutesPerDay2||0)*dpw;}else{var tot=parseInt(data.mealsPerWeek)||0;var shr=parseInt(data.mealsPerWeekThatArePreparedTogetherWithFamilyThatLiveWithMember)||0;value=shr>tot?0:flVal*(tot-shr);}"
+      },
+      {
+        "type": "textarea",
+        "key": "mealPreparationPeriscopeConsiderations",
+        "label": "Periscope Considerations",
+        "input": true,
+        "validate": {
+          "required": false
+        }
+      }
+    ]
+  },
+      {
+    "type": "panel",
+    "key": "cleaning",
+    "title": "Cleaning",
+    "input": false,
+    "components": [
+      {
+        "type": "textarea",
+        "key": "cleaningComments",
+        "label": "Comments",
+        "input": true,
+        "validate": {
+          "required": true
+        }
+      },
+      {
+        "type": "select",
+        "key": "cleaningFunctionalLevel",
+        "label": "Functional level",
+        "input": true,
+        "dataSrc": "values",
+        "data": {
+          "values": [
+            {
+              "label": "1: Independent - No assistance at all",
+              "value": "0"
+            },
+            {
+              "label": "2: Supervision - Set-up, oversight, cuing",
+              "value": "60"
+            },
+            {
+              "label": "3: Minimal assistance - Performs most of the task",
+              "value": "60"
+            },
+            {
+              "label": "4: Moderate assistance - Performs 50% or more of the task",
+              "value": "60"
+            },
+            {
+              "label": "5: Maximal assistance - Performs less than 50% of the task",
+              "value": "90"
+            },
+            {
+              "label": "6: Total dependence - Performs 0% of the task",
+              "value": "110"
+            },
+            {
+              "label": "7: Activity does not occur",
+              "value": "0"
+            },
+            {
+              "label": "8: Assistance is age appropriate",
+              "value": "0"
+            }
+          ]
+        },
+        "validate": {
+          "required": true
+        },
+        "customDefaultValue": "value=(data.memberAge&&data.memberAge<14)?'0':null;"
+      },
+      {
+        "type": "radio",
+        "key": "cleaningIsThereAnExceptionToTheTimeGuidelines",
+        "label": "Is there an exception to the time guidelines?",
+        "input": true,
+        "values": [
+          {
+            "label": "Yes",
+            "value": "Yes"
+          },
+          {
+            "label": "No",
+            "value": "No"
+          }
+        ],
+        "inline": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.cleaningFunctionalLevel !== undefined && data.cleaningFunctionalLevel !== '' && data.cleaningFunctionalLevel !== '0';"
+      },
+      {
+        "type": "number",
+        "key": "cleaningMinutesPerWeek2",
+        "label": "Minutes per week",
+        "input": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.cleaningIsThereAnExceptionToTheTimeGuidelines === 'Yes' && data.cleaningFunctionalLevel !== undefined && data.cleaningFunctionalLevel !== '' && data.cleaningFunctionalLevel !== '0';"
+      },
+      {
+        "type": "textarea",
+        "key": "cleaningExplain",
+        "label": "Explain",
+        "input": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.cleaningIsThereAnExceptionToTheTimeGuidelines === 'Yes' && data.cleaningFunctionalLevel !== undefined && data.cleaningFunctionalLevel !== '' && data.cleaningFunctionalLevel !== '0';"
+      },
+      {
+        "type": "number",
+        "key": "cleaningMinutesPerWeek",
+        "label": "Minutes per week (calculated)",
+        "input": true,
+        "disabled": true,
+        "allowCalculateOverride": false,
+        "calculateValue": "var flVal=parseFloat(data.cleaningFunctionalLevel)||0;var exc=data.cleaningIsThereAnExceptionToTheTimeGuidelines==='Yes';if(exc&&flVal!==0){value=data.cleaningMinutesPerWeek2||0;}else{value=flVal*1;}"
+      },
+      {
+        "type": "textarea",
+        "key": "cleaningPeriscopeConsiderations",
+        "label": "Periscope Considerations",
+        "input": true,
+        "validate": {
+          "required": false
+        }
+      }
+    ]
+  },
+      {
+    "type": "panel",
+    "key": "laundry",
+    "title": "Laundry",
+    "input": false,
+    "components": [
+      {
+        "type": "textarea",
+        "key": "laundryComments",
+        "label": "Comments",
+        "input": true,
+        "validate": {
+          "required": true
+        }
+      },
+      {
+        "type": "select",
+        "key": "laundryFunctionalLevel",
+        "label": "Functional level",
+        "input": true,
+        "dataSrc": "values",
+        "data": {
+          "values": [
+            {
+              "label": "1: Independent - No assistance at all",
+              "value": "0"
+            },
+            {
+              "label": "2: Supervision - Set-up, oversight, cuing",
+              "value": "10"
+            },
+            {
+              "label": "3: Minimal assistance - Performs most of the task",
+              "value": "10"
+            },
+            {
+              "label": "4: Moderate assistance - Performs 50% or more of the task",
+              "value": "20"
+            },
+            {
+              "label": "5: Maximal assistance - Performs less than 50% of the task",
+              "value": "20"
+            },
+            {
+              "label": "6: Total dependence - Performs 0% of the task",
+              "value": "20"
+            },
+            {
+              "label": "7: Activity does not occur",
+              "value": "0"
+            },
+            {
+              "label": "8: Assistance is age appropriate",
+              "value": "0"
+            }
+          ]
+        },
+        "validate": {
+          "required": true
+        },
+        "customDefaultValue": "value=(data.memberAge&&data.memberAge<14)?'0':null;"
+      },
+      {
+        "type": "select",
+        "key": "laundryLoadsPerWeek",
+        "label": "Loads per week",
+        "input": true,
+        "dataSrc": "values",
+        "data": {
+          "values": [
+            {
+              "label": "0",
+              "value": "0"
+            },
+            {
+              "label": "1",
+              "value": "1"
+            },
+            {
+              "label": "2",
+              "value": "2"
+            },
+            {
+              "label": "3",
+              "value": "3"
+            },
+            {
+              "label": "4",
+              "value": "4"
+            },
+            {
+              "label": "5",
+              "value": "5"
+            }
+          ]
+        },
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.laundryFunctionalLevel !== undefined && data.laundryFunctionalLevel !== '';"
+      },
+      {
+        "type": "radio",
+        "key": "isTheLaundryCompletedAtALaundromat",
+        "label": "Is the laundry completed at a laundromat?",
+        "input": true,
+        "values": [
+          {
+            "label": "Yes",
+            "value": "Yes"
+          },
+          {
+            "label": "No",
+            "value": "No"
+          }
+        ],
+        "inline": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.laundryFunctionalLevel !== undefined && data.laundryFunctionalLevel !== '';"
+      },
+      {
+        "type": "radio",
+        "key": "laundryIsThereAnExceptionToTheTimeGuidelines",
+        "label": "Is there an exception to the time guidelines?",
+        "input": true,
+        "values": [
+          {
+            "label": "Yes",
+            "value": "Yes"
+          },
+          {
+            "label": "No",
+            "value": "No"
+          }
+        ],
+        "inline": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.laundryFunctionalLevel !== undefined && data.laundryFunctionalLevel !== '' && data.laundryFunctionalLevel !== '0';"
+      },
+      {
+        "type": "number",
+        "key": "laundryMinutesPerWeek2",
+        "label": "Minutes per week",
+        "input": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.laundryIsThereAnExceptionToTheTimeGuidelines === 'Yes' && data.laundryFunctionalLevel !== undefined && data.laundryFunctionalLevel !== '' && data.laundryFunctionalLevel !== '0';"
+      },
+      {
+        "type": "textarea",
+        "key": "laundryExplain",
+        "label": "Explain",
+        "input": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.laundryIsThereAnExceptionToTheTimeGuidelines === 'Yes' && data.laundryFunctionalLevel !== undefined && data.laundryFunctionalLevel !== '' && data.laundryFunctionalLevel !== '0';"
+      },
+      {
+        "type": "number",
+        "key": "laundryMinutesPerWeek",
+        "label": "Minutes per week (calculated)",
+        "input": true,
+        "disabled": true,
+        "allowCalculateOverride": false,
+        "calculateValue": "var flVal=parseFloat(data.laundryFunctionalLevel)||0;var exc=data.laundryIsThereAnExceptionToTheTimeGuidelines==='Yes';if(exc&&flVal!==0){value=data.laundryMinutesPerWeek2||0;}else if(flVal!==0&&data.isTheLaundryCompletedAtALaundromat==='Yes'){value=90;}else{var loads=parseInt(data.laundryLoadsPerWeek)||0;value=flVal*loads;}"
+      },
+      {
+        "type": "textarea",
+        "key": "laundryPeriscopeConsiderations",
+        "label": "Periscope Considerations",
+        "input": true,
+        "validate": {
+          "required": false
+        }
+      }
+    ]
+  },
+      {
+    "type": "panel",
+    "key": "medicationManagement",
+    "title": "Medication Management",
+    "input": false,
+    "components": [
+      {
+        "type": "textarea",
+        "key": "medicationManagementComments",
+        "label": "Comments",
+        "input": true,
+        "validate": {
+          "required": true
+        }
+      },
+      {
+        "type": "select",
+        "key": "medicationManagementFunctionalLevel",
+        "label": "Functional level",
+        "input": true,
+        "dataSrc": "values",
+        "data": {
+          "values": [
+            {
+              "label": "1: Independent - No assistance at all",
+              "value": "0"
+            },
+            {
+              "label": "2: Supervision - Set-up, oversight, cuing",
+              "value": "5"
+            },
+            {
+              "label": "3: Minimal assistance - Performs most of the task",
+              "value": "5"
+            },
+            {
+              "label": "4: Moderate assistance - Performs 50% or more of the task",
+              "value": "5"
+            },
+            {
+              "label": "5: Maximal assistance - Performs less than 50% of the task",
+              "value": "5"
+            },
+            {
+              "label": "6: Total dependence - Performs 0% of the task",
+              "value": "5"
+            },
+            {
+              "label": "7: Activity does not occur",
+              "value": "0"
+            }
+          ]
+        },
+        "validate": {
+          "required": true
+        }
+      },
+      {
+        "type": "select",
+        "key": "medicationManagementTimesPerDay",
+        "label": "Times per day",
+        "input": true,
+        "dataSrc": "values",
+        "data": {
+          "values": [
+            {
+              "label": "0",
+              "value": "0"
+            },
+            {
+              "label": "1",
+              "value": "1"
+            },
+            {
+              "label": "2",
+              "value": "2"
+            },
+            {
+              "label": "3",
+              "value": "3"
+            },
+            {
+              "label": "4",
+              "value": "4"
+            },
+            {
+              "label": "5",
+              "value": "5"
+            }
+          ]
+        },
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.medicationManagementFunctionalLevel !== undefined && data.medicationManagementFunctionalLevel !== '';"
+      },
+      {
+        "type": "select",
+        "key": "medicationManagementDaysPerWeek",
+        "label": "Days per week",
+        "input": true,
+        "dataSrc": "values",
+        "data": {
+          "values": [
+            {
+              "label": "0",
+              "value": "0"
+            },
+            {
+              "label": "1",
+              "value": "1"
+            },
+            {
+              "label": "2",
+              "value": "2"
+            },
+            {
+              "label": "3",
+              "value": "3"
+            },
+            {
+              "label": "4",
+              "value": "4"
+            },
+            {
+              "label": "5",
+              "value": "5"
+            },
+            {
+              "label": "6",
+              "value": "6"
+            },
+            {
+              "label": "7",
+              "value": "7"
+            }
+          ]
+        },
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.medicationManagementFunctionalLevel !== undefined && data.medicationManagementFunctionalLevel !== '';"
+      },
+      {
+        "type": "radio",
+        "key": "medicationManagementIsThereAnExceptionToTheTimeGuidelines",
+        "label": "Is there an exception to the time guidelines?",
+        "input": true,
+        "values": [
+          {
+            "label": "Yes",
+            "value": "Yes"
+          },
+          {
+            "label": "No",
+            "value": "No"
+          }
+        ],
+        "inline": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.medicationManagementFunctionalLevel !== undefined && data.medicationManagementFunctionalLevel !== '' && data.medicationManagementFunctionalLevel !== '0';"
+      },
+      {
+        "type": "number",
+        "key": "medicationManagementMinutesPerDay2",
+        "label": "Minutes per day",
+        "input": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.medicationManagementIsThereAnExceptionToTheTimeGuidelines === 'Yes' && data.medicationManagementFunctionalLevel !== undefined && data.medicationManagementFunctionalLevel !== '' && data.medicationManagementFunctionalLevel !== '0';"
+      },
+      {
+        "type": "textarea",
+        "key": "medicationManagementExplain",
+        "label": "Explain",
+        "input": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.medicationManagementIsThereAnExceptionToTheTimeGuidelines === 'Yes' && data.medicationManagementFunctionalLevel !== undefined && data.medicationManagementFunctionalLevel !== '' && data.medicationManagementFunctionalLevel !== '0';"
+      },
+      {
+        "type": "number",
+        "key": "medicationManagementMinutesPerDay",
+        "label": "Minutes per day (calculated)",
+        "input": true,
+        "disabled": true,
+        "allowCalculateOverride": false,
+        "calculateValue": "var flVal=parseFloat(data.medicationManagementFunctionalLevel)||0;var mult=parseInt(data.medicationManagementTimesPerDay)||0;var exc=data.medicationManagementIsThereAnExceptionToTheTimeGuidelines==='Yes';if(exc&&flVal!==0){value=data.medicationManagementMinutesPerDay2||0;}else if(!data.medicationManagementDaysPerWeek||parseInt(data.medicationManagementDaysPerWeek)===0){value=0;}else{value=flVal*mult;}"
+      },
+      {
+        "type": "number",
+        "key": "medicationManagementMinutesPerWeek",
+        "label": "Minutes per week (calculated)",
+        "input": true,
+        "disabled": true,
+        "allowCalculateOverride": false,
+        "calculateValue": "var flVal=parseFloat(data.medicationManagementFunctionalLevel)||0;var dpw=parseInt(data.medicationManagementDaysPerWeek)||0;var exc=data.medicationManagementIsThereAnExceptionToTheTimeGuidelines==='Yes';if(exc&&flVal!==0){value=(data.medicationManagementMinutesPerDay2||0)*dpw;}else{value=(data.medicationManagementMinutesPerDay||0)*dpw;}"
+      },
+      {
+        "type": "textarea",
+        "key": "medicationManagementPeriscopeConsiderations",
+        "label": "Periscope Considerations",
+        "input": true,
+        "validate": {
+          "required": false
+        }
+      }
+    ]
+  },
+      {
+    "type": "panel",
+    "key": "shopping",
+    "title": "Shopping",
+    "input": false,
+    "components": [
+      {
+        "type": "textarea",
+        "key": "shoppingComments",
+        "label": "Comments",
+        "input": true,
+        "validate": {
+          "required": true
+        }
+      },
+      {
+        "type": "select",
+        "key": "shoppingFunctionalLevel",
+        "label": "Functional level",
+        "input": true,
+        "dataSrc": "values",
+        "data": {
+          "values": [
+            {
+              "label": "1: Independent - No assistance at all",
+              "value": "0"
+            },
+            {
+              "label": "2: Supervision - Set-up, oversight, cuing",
+              "value": "60"
+            },
+            {
+              "label": "3: Minimal assistance - Performs most of the task",
+              "value": "60"
+            },
+            {
+              "label": "4: Moderate assistance - Performs 50% or more of the task",
+              "value": "60"
+            },
+            {
+              "label": "5: Maximal assistance - Performs less than 50% of the task",
+              "value": "60"
+            },
+            {
+              "label": "6: Total dependence - Performs 0% of the task",
+              "value": "60"
+            },
+            {
+              "label": "7: Activity does not occur",
+              "value": "0"
+            },
+            {
+              "label": "8: Assistance is age appropriate",
+              "value": "0"
+            }
+          ]
+        },
+        "validate": {
+          "required": true
+        },
+        "customDefaultValue": "value=(data.memberAge&&data.memberAge<18)?'0':null;"
+      },
+      {
+        "type": "select",
+        "key": "shoppingTripsPerWeek",
+        "label": "Shopping trips per week",
+        "input": true,
+        "dataSrc": "values",
+        "data": {
+          "values": [
+            {
+              "label": "0",
+              "value": "0"
+            },
+            {
+              "label": "1",
+              "value": "1"
+            },
+            {
+              "label": "2",
+              "value": "2"
+            },
+            {
+              "label": "3",
+              "value": "3"
+            },
+            {
+              "label": "4",
+              "value": "4"
+            },
+            {
+              "label": "5",
+              "value": "5"
+            }
+          ]
+        },
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.shoppingFunctionalLevel !== undefined && data.shoppingFunctionalLevel !== '';"
+      },
+      {
+        "type": "select",
+        "key": "isThereAtLeast30MinutesOfTravelTimeToGoShopping",
+        "label": "Is there at least 30 minutes of travel time to go shopping?",
+        "input": true,
+        "dataSrc": "values",
+        "data": {
+          "values": [
+            {
+              "label": "Yes",
+              "value": "30"
+            },
+            {
+              "label": "No",
+              "value": "0"
+            }
+          ]
+        },
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.shoppingFunctionalLevel !== undefined && data.shoppingFunctionalLevel !== '';"
+      },
+      {
+        "type": "radio",
+        "key": "shoppingIsThereAnExceptionToTheTimeGuidelines",
+        "label": "Is there an exception to the time guidelines?",
+        "input": true,
+        "values": [
+          {
+            "label": "Yes",
+            "value": "Yes"
+          },
+          {
+            "label": "No",
+            "value": "No"
+          }
+        ],
+        "inline": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.shoppingFunctionalLevel !== undefined && data.shoppingFunctionalLevel !== '' && data.shoppingFunctionalLevel !== '0';"
+      },
+      {
+        "type": "number",
+        "key": "shoppingMinutesPerWeek2",
+        "label": "Minutes per week",
+        "input": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.shoppingIsThereAnExceptionToTheTimeGuidelines === 'Yes' && data.shoppingFunctionalLevel !== undefined && data.shoppingFunctionalLevel !== '' && data.shoppingFunctionalLevel !== '0';"
+      },
+      {
+        "type": "textarea",
+        "key": "shoppingExplain",
+        "label": "Explain",
+        "input": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show = data.shoppingIsThereAnExceptionToTheTimeGuidelines === 'Yes' && data.shoppingFunctionalLevel !== undefined && data.shoppingFunctionalLevel !== '' && data.shoppingFunctionalLevel !== '0';"
+      },
+      {
+        "type": "number",
+        "key": "shoppingMinutesPerWeek",
+        "label": "Minutes per week (calculated)",
+        "input": true,
+        "disabled": true,
+        "allowCalculateOverride": false,
+        "calculateValue": "var flVal=parseFloat(data.shoppingFunctionalLevel)||0;var exc=data.shoppingIsThereAnExceptionToTheTimeGuidelines==='Yes';if(exc&&flVal!==0){value=data.shoppingMinutesPerWeek2||0;}else{var travel=parseFloat(data.isThereAtLeast30MinutesOfTravelTimeToGoShopping)||0;value=(flVal+travel)*1;}"
+      },
+      {
+        "type": "textarea",
+        "key": "shoppingPeriscopeConsiderations",
+        "label": "Periscope Considerations",
+        "input": true,
+        "validate": {
+          "required": false
+        }
+      }
+    ]
+  },
+      {
+    "type": "panel",
+    "key": "medicalAppointments",
+    "title": "Medical Appointments",
+    "input": false,
+    "components": [
+      {
+        "type": "textarea",
+        "key": "medicalAppointmentsComments",
+        "label": "Comments",
+        "input": true,
+        "validate": {
+          "required": true
+        }
+      },
+      {
+        "type": "radio",
+        "key": "doesTheMemberNeedToBeAccompaniedByACaregiverForInpersonMedicalAppointments",
+        "label": "Does the member need to be accompanied by a caregiver for in-person medical appointments?",
+        "input": true,
+        "values": [
+          {
+            "label": "Yes",
+            "value": "Yes"
+          },
+          {
+            "label": "No",
+            "value": "No"
+          }
+        ],
+        "inline": true,
+        "validate": {
+          "required": true
+        }
+      },
+      {
+        "type": "select",
+        "key": "medicalAppointmentsFunctionalLevel",
+        "label": "Functional level",
+        "input": true,
+        "dataSrc": "values",
+        "data": {
+          "values": [
+            {
+              "label": "1: Independent - No assistance at all",
+              "value": "0"
+            },
+            {
+              "label": "2: Supervision - Set-up, oversight, cuing",
+              "value": "60"
+            },
+            {
+              "label": "3: Minimal assistance - Performs most of the task",
+              "value": "60"
+            },
+            {
+              "label": "4: Moderate assistance - Performs 50% or more of the task",
+              "value": "60"
+            },
+            {
+              "label": "5: Maximal assistance - Performs less than 50% of the task",
+              "value": "60"
+            },
+            {
+              "label": "6: Total dependence - Performs 0% of the task",
+              "value": "60"
+            },
+            {
+              "label": "7: Activity does not occur",
+              "value": "0"
+            },
+            {
+              "label": "8: Assistance is age appropriate",
+              "value": "0"
+            }
+          ]
+        },
+        "validate": {
+          "required": true
+        },
+        "customDefaultValue": "value=(data.memberAge&&data.memberAge<18)?'0':null;"
+      },
+      {
+        "type": "textfield",
+        "key": "frequencyOfMedicalAppointments",
+        "label": "Frequency of medical appointments",
+        "input": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show=(data.medicalAppointmentsFunctionalLevel!==undefined&&data.medicalAppointmentsFunctionalLevel!=='')&&data.doesTheMemberNeedToBeAccompaniedByACaregiverForInpersonMedicalAppointments==='Yes';"
+      },
+      {
+        "type": "number",
+        "key": "minutesPerWeekUpTo60",
+        "label": "Minutes per week (up to 60)",
+        "input": true,
+        "validate": {
+          "required": true,
+          "max": 60
+        },
+        "customConditional": "show=(data.medicalAppointmentsFunctionalLevel!==undefined&&data.medicalAppointmentsFunctionalLevel!=='')&&data.doesTheMemberNeedToBeAccompaniedByACaregiverForInpersonMedicalAppointments==='Yes';",
+        "customDefaultValue": "value=(data.memberAge&&data.memberAge<18)?0:null;"
+      },
+      {
+        "type": "radio",
+        "key": "medicalAppointmentsIsThereAnExceptionToTheTimeGuidelines",
+        "label": "Is there an exception to the time guidelines?",
+        "input": true,
+        "values": [
+          {
+            "label": "Yes",
+            "value": "Yes"
+          },
+          {
+            "label": "No",
+            "value": "No"
+          }
+        ],
+        "inline": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show=data.medicalAppointmentsFunctionalLevel!==undefined&&data.medicalAppointmentsFunctionalLevel!==''&&data.medicalAppointmentsFunctionalLevel!=='0'&&data.doesTheMemberNeedToBeAccompaniedByACaregiverForInpersonMedicalAppointments==='Yes';"
+      },
+      {
+        "type": "number",
+        "key": "medicalAppointmentsMinutesPerWeek2",
+        "label": "Minutes per week",
+        "input": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show=data.medicalAppointmentsIsThereAnExceptionToTheTimeGuidelines==='Yes'&&data.medicalAppointmentsFunctionalLevel!==undefined&&data.medicalAppointmentsFunctionalLevel!==''&&data.medicalAppointmentsFunctionalLevel!=='0'&&data.doesTheMemberNeedToBeAccompaniedByACaregiverForInpersonMedicalAppointments==='Yes';"
+      },
+      {
+        "type": "textarea",
+        "key": "medicalAppointmentsExplain",
+        "label": "Explain",
+        "input": true,
+        "validate": {
+          "required": true
+        },
+        "customConditional": "show=data.medicalAppointmentsIsThereAnExceptionToTheTimeGuidelines==='Yes'&&data.medicalAppointmentsFunctionalLevel!==undefined&&data.medicalAppointmentsFunctionalLevel!==''&&data.medicalAppointmentsFunctionalLevel!=='0'&&data.doesTheMemberNeedToBeAccompaniedByACaregiverForInpersonMedicalAppointments==='Yes';"
+      },
+      {
+        "type": "number",
+        "key": "medicalAppointmentsMinutesPerWeek",
+        "label": "Minutes per week (calculated)",
+        "input": true,
+        "disabled": true,
+        "allowCalculateOverride": false,
+        "calculateValue": "var flVal=parseFloat(data.medicalAppointmentsFunctionalLevel)||0;var exc=data.medicalAppointmentsIsThereAnExceptionToTheTimeGuidelines==='Yes';if(exc&&flVal!==0){value=data.medicalAppointmentsMinutesPerWeek2||0;}else{var upTo60=data.minutesPerWeekUpTo60;value=(upTo60!==undefined&&upTo60!==null)?upTo60:0;}"
+      },
+      {
+        "type": "textarea",
+        "key": "medicalAppointmentsPeriscopeConsiderations",
+        "label": "Periscope Considerations",
+        "input": true,
+        "validate": {
+          "required": false
+        }
+      }
+    ]
+  },
+      {
+         "type":"panel",
+         "key":"reviewerReporting",
+         "title":"Reviewer Reporting",
+         "input":false,
+         "components":[
+            {
+               "type":"number",
+               "key":"requestedMedicaidHours",
+               "label":"Requested Medicaid hours",
+               "input":true,
+               "tableView":false
+            },
+            {
+               "type":"number",
+               "key":"requestedWaiverHours",
+               "label":"Requested waiver hours",
+               "input":true,
+               "tableView":false
+            },
+            {
+               "type":"number",
+               "key":"requestedTotalHours",
+               "label":"Requested total hours",
+               "input":true,
+               "tableView":false
+            },
+            {
+               "type":"number",
+               "key":"periscopeRecommendedMinutesPerWeek",
+               "label":"Periscope recommended minutes per week",
+               "input":true,
+               "disabled":true,
+               "tableView":false
+            },
+            {
+               "type":"number",
+               "key":"periscopeRecommendedHoursPerWeek",
+               "label":"Periscope recommended hours per week",
+               "input":true,
+               "disabled":true,
+               "tableView":false
+            },
+            {
+               "type":"hidden",
+               "key":"requestedWaiverHoursIncrementBy",
+               "label":"[CALCULATED] Requested waiver hours IncrementBy",
+               "input":true,
+               "_migrationNote":"Cognito computed field — implement calculated value in Form.io",
+               "tableView":false
+            },
+            {
+               "type":"hidden",
+               "key":"requestedTotalHoursIncrementBy",
+               "label":"[CALCULATED] Requested total hours IncrementBy",
+               "input":true,
+               "_migrationNote":"Cognito computed field — implement calculated value in Form.io",
+               "tableView":false
+            },
+            {
+               "type":"hidden",
+               "key":"requestedMedicaidHoursIncrementBy",
+               "label":"[CALCULATED] Requested Medicaid hours IncrementBy",
+               "input":true,
+               "_migrationNote":"Cognito computed field — implement calculated value in Form.io",
+               "tableView":false
+            }
+         ],
+         "tableView":false,
+         "label":"Panel"
+      }
+   ],
+   "pdfComponents":[
+      
+   ],
+   "project":"69b85aa6addbe0314d66c5da",
+   "revisions":"",
+   "submissionRevisions":"",
+   "_vid":0,
+   "access":[
+      {
+         "type":"create_own",
+         "roles":[
+            
+         ]
+      },
+      {
+         "type":"create_all",
+         "roles":[
+            
+         ]
+      },
+      {
+         "type":"read_own",
+         "roles":[
+            
+         ]
+      },
+      {
+         "type":"read_all",
+         "roles":[
+            "69b85aa7addbe0314d66c5e1",
+            "69b85aa7addbe0314d66c5e5",
+            "69b85aa7addbe0314d66c5e9"
+         ]
+      },
+      {
+         "type":"update_own",
+         "roles":[
+            
+         ]
+      },
+      {
+         "type":"update_all",
+         "roles":[
+            
+         ]
+      },
+      {
+         "type":"delete_own",
+         "roles":[
+            
+         ]
+      },
+      {
+         "type":"delete_all",
+         "roles":[
+            
+         ]
+      },
+      {
+         "type":"team_read",
+         "roles":[
+            
+         ]
+      },
+      {
+         "type":"team_write",
+         "roles":[
+            
+         ]
+      },
+      {
+         "type":"team_admin",
+         "roles":[
+            
+         ]
+      }
+   ],
+   "submissionAccess":[
+      {
+         "type":"create_own",
+         "roles":[
+            
+         ]
+      },
+      {
+         "type":"create_all",
+         "roles":[
+            
+         ]
+      },
+      {
+         "type":"read_own",
+         "roles":[
+            
+         ]
+      },
+      {
+         "type":"read_all",
+         "roles":[
+            
+         ]
+      },
+      {
+         "type":"update_own",
+         "roles":[
+            
+         ]
+      },
+      {
+         "type":"update_all",
+         "roles":[
+            
+         ]
+      },
+      {
+         "type":"delete_own",
+         "roles":[
+            
+         ]
+      },
+      {
+         "type":"delete_all",
+         "roles":[
+            
+         ]
+      },
+      {
+         "type":"team_read",
+         "roles":[
+            
+         ]
+      },
+      {
+         "type":"team_write",
+         "roles":[
+            
+         ]
+      },
+      {
+         "type":"team_admin",
+         "roles":[
+            
+         ]
+      }
+   ],
+   "created":"2026-03-16T19:59:31.068Z",
+   "esign":{
+      
+   },
+   "modified":"2026-03-19T00:40:49.491Z",
+   "machineName":"oblgivuitewuifa:MolinaHHAOH",
+   "settings":{
+      
+   }
+}

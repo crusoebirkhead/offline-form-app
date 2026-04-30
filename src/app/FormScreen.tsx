@@ -1,0 +1,69 @@
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Alert, StyleSheet, View } from 'react-native';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { getEntryById } from '../db';
+import FormEntryScreen from '../components/form-webview/FormEntryScreen';
+import ScreenHeader from '../components/ui/ScreenHeader';
+import type { RootStackParamList } from './navigation';
+
+type FormScreenProps = NativeStackScreenProps<RootStackParamList, 'FormEntry'>;
+
+function FormScreen({ navigation, route }: FormScreenProps) {
+  const { entryId } = route.params;
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [headerTitle, setHeaderTitle] = useState('Assessment');
+  const hasUnsavedChangesRef = useRef(hasUnsavedChanges);
+  hasUnsavedChangesRef.current = hasUnsavedChanges;
+
+  // Load entry title for the header
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadTitle() {
+      const entry = await getEntryById(entryId);
+      if (!cancelled && entry) {
+        setHeaderTitle(entry.form_title);
+      }
+    }
+
+    loadTitle();
+    return () => {
+      cancelled = true;
+    };
+  }, [entryId]);
+
+  const handleBack = useCallback(() => {
+    if (hasUnsavedChangesRef.current) {
+      Alert.alert('Save before leaving?', 'You have unsaved changes that will be lost.', [
+        {
+          text: 'Discard',
+          style: 'destructive',
+          onPress: () => navigation.goBack(),
+        },
+        { text: 'Stay', style: 'cancel' },
+      ]);
+    } else {
+      navigation.goBack();
+    }
+  }, [navigation]);
+
+  const handleUnsavedChangesUpdate = useCallback((hasChanges: boolean) => {
+    setHasUnsavedChanges(hasChanges);
+  }, []);
+
+  return (
+    <View style={styles.container}>
+      <ScreenHeader title={headerTitle} onBack={handleBack} />
+      <FormEntryScreen entryId={entryId} onUnsavedChangesUpdate={handleUnsavedChangesUpdate} />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f8f9fa',
+  },
+});
+
+export default FormScreen;

@@ -1,0 +1,100 @@
+{
+  "title": "PCA Service Log",
+  "path": "service/pca",
+  "display": "form",
+  "components": [
+    {
+      "type": "textfield",
+      "key": "clientName",
+      "label": "Client Name",
+      "input": true,
+      "validate": { "required": true, "maxLength": 200 }
+    },
+    {
+      "type": "datetime",
+      "key": "serviceDate",
+      "label": "Service Date",
+      "input": true,
+      "validate": { "required": true }
+    },
+    {
+      "type": "number",
+      "key": "hoursWorked",
+      "label": "Hours Worked",
+      "input": true,
+      "validate": { "required": true, "min": 0.25, "max": 24 }
+    },
+    {
+      "type": "panel",
+      "key": "activitiesPanel",
+      "title": "Activities of Daily Living",
+      "components": [
+        {
+          "type": "selectboxes",
+          "key": "adlActivities",
+          "label": "ADL Activities Performed",
+          "input": true,
+          "values": [
+            { "label": "Eating / Feeding", "value": "eating" },
+            { "label": "Toileting", "value": "toileting" },
+            { "label": "Bathing / Showering", "value": "bathing" },
+            { "label": "Dressing", "value": "dressing" },
+            { "label": "Mobility / Transfers", "value": "mobility" },
+            { "label": "Positioning", "value": "positioning" }
+          ]
+        },
+        {
+          "type": "selectboxes",
+          "key": "iadlActivities",
+          "label": "IADL Activities Performed",
+          "input": true,
+          "values": [
+            { "label": "Meal Preparation", "value": "mealPrep" },
+            { "label": "Laundry", "value": "laundry" },
+            { "label": "Light Housekeeping", "value": "housekeeping" },
+            { "label": "Grocery Shopping", "value": "shopping" },
+            { "label": "Medication Reminders", "value": "medication" },
+            { "label": "Accompaniment to Appointments", "value": "appointments" }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "key": "clientMood",
+      "label": "Client Mood / Behavior",
+      "input": true,
+      "data": {
+        "values": [
+          { "label": "Cooperative", "value": "cooperative" },
+          { "label": "Agitated", "value": "agitated" },
+          { "label": "Withdrawn", "value": "withdrawn" },
+          { "label": "Confused", "value": "confused" },
+          { "label": "Content", "value": "content" }
+        ]
+      }
+    },
+    {
+      "type": "textarea",
+      "key": "incidentNotes",
+      "label": "Incidents / Observations",
+      "input": true,
+      "rows": 4,
+      "validate": { "maxLength": 3000 }
+    },
+    {
+      "type": "textfield",
+      "key": "pcaSignature",
+      "label": "PCA Signature",
+      "input": true,
+      "validate": { "required": true }
+    },
+    {
+      "type": "textfield",
+      "key": "clientSignature",
+      "label": "Client / Guardian Signature",
+      "input": true,
+      "validate": { "required": true }
+    }
+  ]
+}

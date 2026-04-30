@@ -1,2 +1,1 @@
-// Form picker components
-export {};
+export { default as FormTypePicker } from './FormTypePicker';

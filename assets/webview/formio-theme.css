@@ -1,0 +1,1585 @@
+/* =============================================================================
+   Form.io Standard Template — Gryphon Custom Theme
+   Source: Figma PER04 - Gryphon UI (Case Management), node 13697:340721
+   Tokens: gryphon-central-tenant/theme.ts (MUI createTheme)
+   Adapted for mobile WebView (iOS Safari / Android WebView).
+   ============================================================================= */
+
+/* ---------------------------------------------------------------------------
+   CSS Custom Properties
+   --------------------------------------------------------------------------- */
+:root {
+  /* Brand / palette */
+  --fio-primary: #1894e1;
+  --fio-primary-light: #f5f9fc;
+  --fio-text-primary: #32383f;
+  --fio-text-secondary: #6f757c;
+  --fio-text-disabled: #dadcde;
+  --fio-border: #dadcde;
+  --fio-border-hover: #b0b8c1;
+  --fio-border-focus: #1894e1;
+  --fio-border-error: #d32f2f;
+  --fio-bg: #ffffff;
+  --fio-bg-surface: #f5f9fc;
+  --fio-success: #689f38;
+  --fio-success-light: #e8f5e9;
+  --fio-warning: #fb8c00;
+  --fio-warning-light: #fff3e0;
+  --fio-error: #d32f2f;
+  --fio-error-light: #feebee;
+  --fio-info-light: #e1f4fe;
+
+  /* Typography — Inter with system font fallback for offline WebView */
+  --fio-font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --fio-font-xs: 12px;
+  --fio-font-sm: 14px;
+  --fio-font-base: 16px;
+
+  /* Layout */
+  --fio-input-height: 56px;
+  --fio-radius: 12px;
+  --fio-radius-lg: 20px;
+  --fio-px: 16px;
+  --fio-gap: 16px;
+}
+
+/* ---------------------------------------------------------------------------
+   Base / Reset
+   --------------------------------------------------------------------------- */
+.formio-form *,
+.formio-form *::before,
+.formio-form *::after {
+  box-sizing: border-box;
+}
+
+.formio-form {
+  font-family: var(--fio-font-family);
+  font-size: var(--fio-font-base);
+  font-weight: 500;
+  color: var(--fio-text-primary);
+  background: transparent;
+}
+
+/* ---------------------------------------------------------------------------
+   Form Container (Question Card)
+   --------------------------------------------------------------------------- */
+.formio-form > .formio-component-form,
+.formio-form .formio-form-group:not(.formio-component) {
+  background: var(--fio-bg);
+  border-radius: var(--fio-radius-lg);
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--fio-gap);
+}
+
+/* ---------------------------------------------------------------------------
+   Accessibility helpers
+   --------------------------------------------------------------------------- */
+
+/* Bootstrap visually-hidden / sr-only — keeps content accessible to screen
+   readers while removing it from visual layout. Not included by default when
+   loading without full Bootstrap CSS. */
+.visually-hidden,
+.visually-hidden-focusable:not(:focus):not(:focus-within) {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* ---------------------------------------------------------------------------
+   Component Spacing
+   --------------------------------------------------------------------------- */
+.formio-component {
+  margin-bottom: 0;
+  position: relative;
+}
+
+/* Collapse conditionally hidden fields entirely — Bootstrap mb-* margins still
+   apply without this, leaving blank whitespace on mobile. */
+.formio-hidden {
+  display: none !important;
+}
+
+/* Sections separated by dividers */
+.formio-component + .formio-component:not(.formio-hidden) {
+  margin-top: 4px;
+  padding-bottom: 20px;
+}
+
+.formio-component:last-child:not(.formio-hidden) {
+  padding-bottom: 0;
+}
+
+/* ---------------------------------------------------------------------------
+   Labels (Section / Question Labels)
+   --------------------------------------------------------------------------- */
+.col-form-label,
+.formio-component > label {
+  font-family: var(--fio-font-family);
+  font-size: var(--fio-font-sm);
+  font-weight: 500;
+  color: var(--fio-text-secondary);
+  line-height: 1.3;
+  margin-bottom: var(--fio-gap);
+  display: block;
+}
+
+.col-form-label .field-required,
+.formio-component > label .field-required,
+.col-form-label .required-star,
+.formio-component > label .required-star {
+  color: var(--fio-error);
+  margin-left: 2px;
+}
+
+/* ---------------------------------------------------------------------------
+   Input Base (text, number, email, phone, url, datetime, currency)
+   --------------------------------------------------------------------------- */
+.form-control {
+  font-family: var(--fio-font-family);
+  font-size: var(--fio-font-base);
+  font-weight: 500;
+  color: var(--fio-text-primary);
+  background: var(--fio-bg);
+  height: var(--fio-input-height);
+  border: 1px solid var(--fio-border);
+  border-radius: var(--fio-radius);
+  padding: 4px var(--fio-px);
+  width: 100%;
+  line-height: 1.5;
+  appearance: none;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.form-control::placeholder {
+  color: var(--fio-text-secondary);
+  opacity: 0.38;
+}
+
+.form-control:hover:not(:disabled):not([readonly]) {
+  border-color: var(--fio-border-hover);
+}
+
+.form-control:focus,
+.form-control:focus-visible {
+  outline: none;
+  border-color: var(--fio-border-focus);
+  box-shadow: 0 0 0 1px var(--fio-border-focus);
+}
+
+.form-control:disabled,
+.form-control[readonly] {
+  background: var(--fio-bg);
+  border-color: var(--fio-border);
+  color: rgba(50, 56, 63, 0.6);
+  cursor: not-allowed;
+}
+
+/* ---------------------------------------------------------------------------
+   Floating Label (Outlined / MUI-style)
+   Uses :has() to style label based on input state.
+   --------------------------------------------------------------------------- */
+
+/* Component wrapper must be relative for absolute label */
+.formio-component-textfield,
+.formio-component-textarea,
+.formio-component-number,
+.formio-component-email,
+.formio-component-phoneNumber,
+.formio-component-currency,
+.formio-component-url,
+.formio-component-datetime {
+  position: relative;
+}
+
+/* Default label: sits visually at top edge of input */
+.formio-component-textfield > label,
+.formio-component-textarea > label,
+.formio-component-number > label,
+.formio-component-email > label,
+.formio-component-phoneNumber > label,
+.formio-component-currency > label,
+.formio-component-url > label,
+.formio-component-datetime > label {
+  position: absolute;
+  top: 0;
+  left: var(--fio-px);
+  /* Vertically centered inside the input */
+  transform: translateY(calc((var(--fio-input-height) / 2) - 50%));
+  font-size: var(--fio-font-base);
+  font-weight: 500;
+  color: var(--fio-text-secondary);
+  opacity: 0.38;
+  background: var(--fio-bg);
+  padding: 0 4px;
+  pointer-events: none;
+  transition:
+    transform 0.15s ease,
+    font-size 0.15s ease,
+    opacity 0.15s ease,
+    color 0.15s ease;
+  margin-bottom: 0;
+  z-index: 1;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: calc(100% - 32px);
+}
+
+/* Floated label: shared position/size — applies on focus OR when field has a value */
+.formio-component-textfield:has(.form-control:focus) > label,
+.formio-component-textfield:has(.form-control:not(:placeholder-shown)) > label,
+.formio-component-textarea:has(.form-control:focus) > label,
+.formio-component-textarea:has(.form-control:not(:placeholder-shown)) > label,
+.formio-component-number:has(.form-control:focus) > label,
+.formio-component-number:has(.form-control:not(:placeholder-shown)) > label,
+.formio-component-email:has(.form-control:focus) > label,
+.formio-component-email:has(.form-control:not(:placeholder-shown)) > label,
+.formio-component-phoneNumber:has(.form-control:focus) > label,
+.formio-component-phoneNumber:has(.form-control:not(:placeholder-shown))
+  > label,
+.formio-component-currency:has(.form-control:focus) > label,
+.formio-component-currency:has(.form-control:not(:placeholder-shown)) > label,
+.formio-component-url:has(.form-control:focus) > label,
+.formio-component-url:has(.form-control:not(:placeholder-shown)) > label,
+.formio-component-datetime:has(.form-control:focus) > label,
+.formio-component-datetime:has(.form-control:not(:placeholder-shown)) > label {
+  transform: translateY(-50%);
+  font-size: var(--fio-font-xs);
+  font-weight: 500;
+  opacity: 1;
+}
+
+/* Filled + unfocused: label stays #6f757c */
+.formio-component-textfield:has(
+    .form-control:not(:focus):not(:placeholder-shown)
+  )
+  > label,
+.formio-component-textarea:has(
+    .form-control:not(:focus):not(:placeholder-shown)
+  )
+  > label,
+.formio-component-number:has(.form-control:not(:focus):not(:placeholder-shown))
+  > label,
+.formio-component-email:has(.form-control:not(:focus):not(:placeholder-shown))
+  > label,
+.formio-component-phoneNumber:has(
+    .form-control:not(:focus):not(:placeholder-shown)
+  )
+  > label,
+.formio-component-currency:has(
+    .form-control:not(:focus):not(:placeholder-shown)
+  )
+  > label,
+.formio-component-url:has(.form-control:not(:focus):not(:placeholder-shown))
+  > label,
+.formio-component-datetime:has(
+    .form-control:not(:focus):not(:placeholder-shown)
+  )
+  > label {
+  color: #6f757c;
+}
+
+/* Focused label: primary blue */
+.formio-component-textfield:has(.form-control:focus) > label,
+.formio-component-textarea:has(.form-control:focus) > label,
+.formio-component-number:has(.form-control:focus) > label,
+.formio-component-email:has(.form-control:focus) > label,
+.formio-component-phoneNumber:has(.form-control:focus) > label,
+.formio-component-currency:has(.form-control:focus) > label,
+.formio-component-url:has(.form-control:focus) > label,
+.formio-component-datetime:has(.form-control:focus) > label {
+  color: var(--fio-primary);
+}
+
+/* Disabled: label → text-secondary, full opacity */
+.formio-component-textfield:has(.form-control:disabled) > label,
+.formio-component-textarea:has(.form-control:disabled) > label,
+.formio-component-number:has(.form-control:disabled) > label,
+.formio-component-email:has(.form-control:disabled) > label,
+.formio-component-phoneNumber:has(.form-control:disabled) > label,
+.formio-component-currency:has(.form-control:disabled) > label,
+.formio-component-url:has(.form-control:disabled) > label,
+.formio-component-datetime:has(.form-control:disabled) > label {
+  color: var(--fio-text-secondary);
+  opacity: 1;
+}
+
+/* Ensure input has a blank placeholder to trigger :not(:placeholder-shown) */
+.formio-component-textfield .form-control,
+.formio-component-textarea .form-control,
+.formio-component-number .form-control,
+.formio-component-email .form-control,
+.formio-component-phoneNumber .form-control,
+.formio-component-currency .form-control,
+.formio-component-url .form-control,
+.formio-component-datetime .form-control {
+  /* Shift text down to clear the floated label at the top border,
+     and add matching bottom padding so the value appears vertically
+     centered in the 56px field (16px font × 1.5 lh = 24px text;
+     (54px inner − 24px text) / 2 = 15px each side). */
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+/* ---------------------------------------------------------------------------
+   Input Group (wrapper around .form-control, e.g., date icon)
+   --------------------------------------------------------------------------- */
+.input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.input-group .form-control {
+  flex: 1;
+  border-radius: var(--fio-radius);
+}
+
+.input-group-append,
+.input-group-prepend {
+  display: flex;
+  align-items: center;
+}
+
+.input-group-append .input-group-text,
+.input-group-prepend .input-group-text {
+  height: var(--fio-input-height);
+  padding: 0 12px;
+  border: 1px solid var(--fio-border);
+  background: var(--fio-bg);
+  color: var(--fio-text-secondary);
+  font-size: var(--fio-font-base);
+  display: flex;
+  align-items: center;
+}
+
+.input-group-append .input-group-text {
+  border-left: none;
+  border-radius: 0 var(--fio-radius) var(--fio-radius) 0;
+}
+
+.input-group-prepend .input-group-text {
+  border-right: none;
+  border-radius: var(--fio-radius) 0 0 var(--fio-radius);
+}
+
+.input-group:has(.input-group-prepend) .form-control {
+  border-radius: 0 var(--fio-radius) var(--fio-radius) 0;
+}
+
+.input-group:has(.input-group-append) .form-control {
+  border-radius: var(--fio-radius) 0 0 var(--fio-radius);
+}
+
+/* ---------------------------------------------------------------------------
+   Textarea
+   --------------------------------------------------------------------------- */
+
+/* Textarea label: anchor near the top of the multi-line field instead of
+   vertically centering like a single-line input. translateY(16px) puts the
+   label center at ~26px from the top border, aligned with the first text line
+   (textarea padding-top: 18px + half line-height of 1.5×16px = 12px → 30px
+   minus half label height ~8px ≈ 22px; 16px is slightly higher, feels natural). */
+.formio-component-textarea > label {
+  transform: translateY(16px);
+}
+
+.formio-component-textarea .form-control {
+  height: auto;
+  min-height: 120px;
+  resize: vertical;
+  /* Textarea text starts near the top (below the floated label notch),
+     not centered — so top padding just needs label clearance. */
+  padding-top: 18px;
+  padding-bottom: 8px;
+  line-height: 1.5;
+}
+
+/* ---------------------------------------------------------------------------
+   Number Input (spinner arrows)
+   Figma uses stacked Material Design arrow_drop_up / arrow_drop_down icons,
+   14 px wide × full height, color #6f757c (--fio-text-secondary).
+   --------------------------------------------------------------------------- */
+.formio-component-number .form-control {
+  padding-right: 32px;
+}
+
+/* Firefox: hide native spinner (styling not possible via pseudo-element) */
+/* WebKit: restore appearance so the spin-button pseudo-elements exist
+   (the global .form-control rule sets appearance:none which kills them) */
+.formio-component-number .form-control[type="number"] {
+  -moz-appearance: textfield;
+  appearance: auto;
+  -webkit-appearance: auto;
+}
+
+/* WebKit: replace default spinner with custom Material-style arrows */
+.formio-component-number .form-control::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.formio-component-number .form-control::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  /* Two stacked triangles: ▲ (up) and ▼ (down), each ~14px wide
+     viewBox 0 0 14 40 — up arrow centred in top 20px, down in bottom 20px */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 40' width='14' height='40'%3E%3Cpath d='M3 14L7 10l4 4z' fill='%231894e1'/%3E%3Cpath d='M3 26l4 4 4-4z' fill='%231894e1'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 14px 40px;
+  width: 24px;
+  height: var(--fio-input-height);
+  opacity: 1;
+  cursor: pointer;
+}
+
+/* ---------------------------------------------------------------------------
+   Select (Choices.js)
+   --------------------------------------------------------------------------- */
+.formio-component-select {
+  position: relative;
+}
+
+/* Default: label sits inside the field, vertically centered — same as text inputs */
+.formio-component-select > label {
+  position: absolute;
+  top: 0;
+  left: var(--fio-px);
+  transform: translateY(calc((var(--fio-input-height) / 2) - 50%));
+  font-size: var(--fio-font-base);
+  font-weight: 500;
+  color: var(--fio-text-secondary);
+  opacity: 0.38;
+  background: var(--fio-bg);
+  padding: 0 4px;
+  pointer-events: none;
+  z-index: 2;
+  margin-bottom: 0;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: calc(100% - 48px);
+  transition:
+    transform 0.15s ease,
+    font-size 0.15s ease,
+    opacity 0.15s ease,
+    color 0.15s ease;
+}
+
+/* Floated: value selected, open, or focused.
+   Scope the value-check to .choices__list--single only — the dropdown list
+   (.choices__list--dropdown) also contains .choices__item elements and is
+   always in the DOM, which would cause the label to be permanently floated. */
+.formio-component-select:has(.choices.is-focused) > label,
+.formio-component-select:has(.choices.is-open) > label,
+.formio-component-select:has(
+    .choices__list--single .choices__item:not(.choices__placeholder)
+  )
+  > label,
+.formio-component-select.formio-modified > label {
+  transform: translateY(-50%);
+  font-size: var(--fio-font-xs);
+  opacity: 1;
+}
+
+/* Hide the native <select> that choices.js wraps — the library sets
+   aria-hidden/hidden on it, but our .form-control styles can override
+   the browser's default display:none for the [hidden] attribute. */
+.choices > select {
+  display: none !important;
+}
+
+/* Hide Form.io's autocomplete input — it is functional but not visible UI */
+.formio-select-autocomplete-input {
+  display: none !important;
+}
+
+.choices {
+  position: relative;
+  width: 100%;
+  margin-bottom: 0;
+}
+
+.choices__inner,
+.choices > .form-control {
+  display: flex;
+  align-items: center;
+  min-height: var(--fio-input-height);
+  height: auto;
+  border: 1px solid var(--fio-border);
+  border-radius: var(--fio-radius);
+  background: var(--fio-bg);
+  padding: 4px var(--fio-px);
+  font-family: var(--fio-font-family);
+  font-size: var(--fio-font-base);
+  font-weight: 500;
+  color: var(--fio-text-primary);
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .choices__inner:hover,
+  .choices > .form-control:hover {
+    border-color: var(--fio-border-hover);
+  }
+}
+
+.formio-component-select:has(.choices.is-focused) > label,
+.formio-component-select:has(.choices.is-open) > label {
+  color: var(--fio-primary);
+}
+
+.is-focused .choices__inner,
+.is-open .choices__inner,
+.choices.is-focused > .form-control,
+.choices.is-open > .form-control {
+  border-color: var(--fio-border-focus);
+  box-shadow: 0 0 0 1px var(--fio-border-focus);
+  outline: none;
+}
+
+.choices__list--single {
+  padding: 0;
+  flex: 1;
+}
+
+.choices__item {
+  font-family: var(--fio-font-family);
+  font-size: var(--fio-font-base);
+  font-weight: 500;
+  color: var(--fio-text-primary);
+  line-height: 1.5;
+}
+
+.choices__placeholder {
+  color: var(--fio-text-secondary);
+  opacity: 0.38;
+}
+
+.choices[data-type*="select-one"]::after {
+  content: "";
+  position: absolute;
+  border-style: solid;
+  pointer-events: none;
+  border-color: var(--fio-text-secondary) transparent transparent;
+  right: var(--fio-px);
+  top: 50%;
+  transform: translateY(-50%);
+  border-width: 6px 5px 0;
+}
+
+.choices[data-type*="select-one"].is-open::after {
+  border-color: transparent transparent var(--fio-text-secondary);
+  transform: translateY(-50%);
+}
+
+.choices__list--dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  border: 1px solid transparent;
+  border-radius: var(--fio-radius);
+  background: var(--fio-bg);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  margin-top: 4px;
+  z-index: 100;
+  overflow: hidden;
+}
+
+.is-open .choices__list--dropdown {
+  display: block;
+}
+
+.choices__list--dropdown .choices__item {
+  padding: 10px var(--fio-px);
+  font-size: var(--fio-font-base);
+  font-weight: 500;
+  color: var(--fio-text-primary);
+  transition: background 0.1s ease;
+}
+
+.choices__list--dropdown .choices__item--selectable.is-highlighted,
+.choices__list--dropdown .choices__item--selectable:hover {
+  background: var(--fio-primary-light);
+  color: var(--fio-text-primary);
+}
+
+.choices__list--dropdown .choices__item.is-selected {
+  color: var(--fio-primary);
+  font-weight: 600;
+}
+
+.choices__input {
+  font-family: var(--fio-font-family);
+  font-size: var(--fio-font-base);
+  color: var(--fio-text-primary);
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  outline: none;
+}
+
+/* Multi-select tags */
+.choices__list--multiple .choices__item {
+  background: var(--fio-primary-light);
+  border: 1px solid var(--fio-primary);
+  border-radius: 4px;
+  color: var(--fio-primary);
+  font-size: var(--fio-font-xs);
+  font-weight: 600;
+  padding: 2px 8px;
+  margin: 2px 4px 2px 0;
+}
+
+.choices__list--multiple .choices__item .choices__button,
+.choices__button {
+  display: none;
+}
+
+/* Supporting text (shown below select) */
+.formio-component-select .help-block {
+  padding-left: var(--fio-px);
+}
+
+/* ---------------------------------------------------------------------------
+   Radio Buttons
+   --------------------------------------------------------------------------- */
+.formio-component-radio .form-radio {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.formio-component-radio .form-check,
+.formio-component-radio .form-check-inline {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  margin: 0;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.formio-component-radio .form-check-input {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--fio-border);
+  border-radius: 50%;
+  background: var(--fio-bg);
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  transition: border-color 0.15s ease;
+  margin: 0;
+}
+
+@media (hover: hover) {
+  .formio-component-radio .form-check-input:hover {
+    border-color: var(--fio-text-secondary);
+  }
+}
+
+.formio-component-radio .form-check-input:checked {
+  border-color: var(--fio-primary);
+  background: var(--fio-bg);
+}
+
+.formio-component-radio .form-check-input:checked::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--fio-primary);
+}
+
+.formio-component-radio .form-check-input:disabled {
+  border-color: var(--fio-border);
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+.formio-component-radio .form-check-label {
+  font-family: var(--fio-font-family);
+  font-size: var(--fio-font-base);
+  font-weight: 600;
+  color: var(--fio-text-primary);
+  line-height: 1.5;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* Vertical layout variant */
+.formio-component-radio .form-radio.radio-inline-container {
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ---------------------------------------------------------------------------
+   Checkboxes
+   --------------------------------------------------------------------------- */
+.formio-component-checkbox .form-check,
+.formio-component-selectboxes .form-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  margin-bottom: 12px;
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.formio-component-checkbox .form-check-input,
+.formio-component-selectboxes .form-check-input {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--fio-border);
+  border-radius: 4px;
+  background: var(--fio-bg);
+  cursor: pointer;
+  flex-shrink: 0;
+  position: relative;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+  margin: 0;
+}
+
+@media (hover: hover) {
+  .formio-component-checkbox .form-check-input:hover,
+  .formio-component-selectboxes .form-check-input:hover {
+    border-color: var(--fio-text-secondary);
+  }
+}
+
+.formio-component-checkbox .form-check-input:checked,
+.formio-component-selectboxes .form-check-input:checked {
+  border-color: var(--fio-primary);
+  background: var(--fio-primary);
+}
+
+.formio-component-checkbox .form-check-input:checked::after,
+.formio-component-selectboxes .form-check-input:checked::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 5px;
+  width: 6px;
+  height: 10px;
+  border: 2px solid #fff;
+  border-top: none;
+  border-left: none;
+  transform: rotate(45deg);
+}
+
+.formio-component-checkbox .form-check-label,
+.formio-component-selectboxes .form-check-label {
+  font-family: var(--fio-font-family);
+  font-size: var(--fio-font-base);
+  font-weight: 500;
+  color: var(--fio-text-primary);
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+/* ---------------------------------------------------------------------------
+   Supporting Text / Helper Block
+   --------------------------------------------------------------------------- */
+.help-block {
+  font-family: var(--fio-font-family);
+  font-size: var(--fio-font-xs);
+  font-weight: 500;
+  color: var(--fio-text-secondary);
+  line-height: 1.4;
+  margin-top: 4px;
+  padding: 0 var(--fio-px);
+}
+
+/* ---------------------------------------------------------------------------
+   Error States
+   --------------------------------------------------------------------------- */
+.has-error .form-control,
+.formio-error-wrapper .form-control {
+  border-color: var(--fio-border-error);
+}
+
+.has-error .form-control:focus,
+.formio-error-wrapper .form-control:focus {
+  border-color: var(--fio-border-error);
+  box-shadow: 0 0 0 1px var(--fio-border-error);
+}
+
+.has-error .choices__inner,
+.formio-error-wrapper .choices__inner {
+  border-color: var(--fio-border-error);
+}
+
+.has-error .col-form-label,
+.formio-error-wrapper .col-form-label,
+.has-error label,
+.formio-error-wrapper label {
+  color: var(--fio-error) !important;
+  opacity: 1 !important;
+}
+
+.error,
+.formio-error-wrapper .help-block,
+.has-error .help-block {
+  font-family: var(--fio-font-family);
+  font-size: var(--fio-font-xs);
+  font-weight: 600;
+  color: var(--fio-error);
+  opacity: 1;
+  margin-top: 4px;
+  padding: 0 var(--fio-px);
+  line-height: 1.4;
+}
+
+/* ---------------------------------------------------------------------------
+   Buttons
+   --------------------------------------------------------------------------- */
+.btn {
+  font-family: var(--fio-font-family);
+  font-size: var(--fio-font-base);
+  font-weight: 600;
+  line-height: 1.5;
+  border-radius: var(--fio-radius);
+  padding: 10px 24px;
+  border: none;
+  cursor: pointer;
+  text-transform: none;
+  transition:
+    background 0.15s ease,
+    box-shadow 0.15s ease,
+    opacity 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn:disabled,
+.btn[disabled] {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--fio-primary);
+  color: #ffffff;
+}
+
+@media (hover: hover) {
+  .btn-primary:hover:not(:disabled) {
+    background: #1480c8;
+    box-shadow: 0 2px 8px rgba(24, 148, 225, 0.4);
+  }
+}
+
+.btn-primary:active:not(:disabled) {
+  background: #1270b0;
+}
+
+.btn-secondary,
+.btn-default {
+  background: var(--fio-bg);
+  color: var(--fio-primary);
+  border: 1px solid var(--fio-border);
+}
+
+@media (hover: hover) {
+  .btn-secondary:hover:not(:disabled),
+  .btn-default:hover:not(:disabled) {
+    background: var(--fio-primary-light);
+    border-color: var(--fio-primary);
+  }
+}
+
+.btn-danger {
+  background: var(--fio-error);
+  color: #ffffff;
+}
+
+@media (hover: hover) {
+  .btn-danger:hover:not(:disabled) {
+    background: #b71c1c;
+  }
+}
+
+.btn-success {
+  background: var(--fio-success);
+  color: #ffffff;
+}
+
+.btn-warning {
+  background: var(--fio-warning);
+  color: #ffffff;
+}
+
+/* Outlined pill button — e.g. "Upload Media" with icon */
+.btn-outlined {
+  background: transparent;
+  color: var(--fio-primary);
+  border: 1px solid rgba(24, 148, 225, 0.5);
+  border-radius: 96px;
+  height: 44px;
+  padding: 0 12px;
+  gap: 8px;
+}
+
+@media (hover: hover) {
+  .btn-outlined:hover:not(:disabled) {
+    background: var(--fio-primary-light);
+    border-color: var(--fio-primary);
+  }
+}
+
+.btn-sm {
+  font-size: var(--fio-font-xs);
+  padding: 6px 16px;
+}
+
+.btn-lg {
+  font-size: 18px;
+  padding: 14px 32px;
+}
+
+/* ---------------------------------------------------------------------------
+   DateTime Picker
+   --------------------------------------------------------------------------- */
+.formio-component-datetime .input-group-prepend .input-group-text {
+  color: var(--fio-text-secondary);
+  opacity: 0.6;
+}
+
+/* Date input always shows its format/value — keep label permanently floated */
+.formio-component-datetime > label {
+  transform: translateY(-50%);
+  font-size: var(--fio-font-xs);
+  font-weight: 500;
+  opacity: 1;
+  color: var(--fio-text-secondary);
+  left: 44px;
+}
+
+/* Flatpickr calendar overrides */
+.flatpickr-calendar {
+  font-family: var(--fio-font-family);
+  border-radius: var(--fio-radius-lg);
+  border: 1px solid var(--fio-border);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.flatpickr-day.selected,
+.flatpickr-day.selected:hover {
+  background: var(--fio-primary);
+  border-color: var(--fio-primary);
+}
+
+.flatpickr-day:hover {
+  background: var(--fio-primary-light);
+}
+
+.flatpickr-months .flatpickr-prev-month:hover svg,
+.flatpickr-months .flatpickr-next-month:hover svg {
+  fill: var(--fio-primary);
+}
+
+/* ---------------------------------------------------------------------------
+   File Upload
+   --------------------------------------------------------------------------- */
+.fileSelector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px dashed var(--fio-border);
+  border-radius: var(--fio-radius);
+  padding: 24px var(--fio-px);
+  background: var(--fio-bg-surface);
+  color: var(--fio-text-secondary);
+  font-family: var(--fio-font-family);
+  font-size: var(--fio-font-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+  text-align: center;
+}
+
+@media (hover: hover) {
+  .fileSelector:hover {
+    border-color: var(--fio-primary);
+    background: var(--fio-primary-light);
+  }
+}
+
+.fileSelector a {
+  color: var(--fio-primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* File attachment row (image thumbnail + filename) */
+.formio-component-file .list-group {
+  margin-top: 8px;
+  border-radius: var(--fio-radius);
+  overflow: hidden;
+  border: none;
+}
+
+.formio-component-file .list-group-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  background: var(--fio-bg-surface);
+  border: none;
+  border-radius: var(--fio-radius);
+  font-family: var(--fio-font-family);
+  font-size: var(--fio-font-sm);
+  font-weight: 500;
+  color: var(--fio-primary);
+}
+
+.formio-component-file .list-group-item img {
+  width: 50px;
+  height: 41px;
+  object-fit: cover;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.formio-component-file .list-group-item .fa-times,
+.formio-component-file .list-group-item [class*="remove"] {
+  margin-left: auto;
+  color: var(--fio-text-secondary);
+  opacity: 0.6;
+  cursor: pointer;
+  font-size: var(--fio-font-sm);
+}
+
+@media (hover: hover) {
+  .formio-component-file .list-group-item .fa-times:hover,
+  .formio-component-file .list-group-item [class*="remove"]:hover {
+    opacity: 1;
+    color: var(--fio-error);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Panel (Card Section)
+   --------------------------------------------------------------------------- */
+.formio-component-panel > .card {
+  background: var(--fio-bg);
+  border: 1px solid var(--fio-border);
+  border-radius: var(--fio-radius-lg);
+  overflow: hidden;
+  box-shadow: none;
+}
+
+.formio-component-panel > .card > .card-header {
+  background: var(--fio-bg-surface);
+  border-bottom: 1px solid var(--fio-border);
+  padding: 16px 20px;
+}
+
+.formio-component-panel > .card > .card-header .card-title {
+  font-family: var(--fio-font-family);
+  font-size: var(--fio-font-base);
+  font-weight: 500;
+  color: var(--fio-text-primary);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.formio-component-panel > .card > .card-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--fio-gap);
+}
+
+/* ---------------------------------------------------------------------------
+   Fieldset / Well
+   --------------------------------------------------------------------------- */
+.formio-component-fieldset fieldset {
+  border: 1px solid var(--fio-border);
+  border-radius: var(--fio-radius);
+  padding: 16px 20px;
+  margin: 0;
+}
+
+.formio-component-fieldset legend {
+  font-family: var(--fio-font-family);
+  font-size: var(--fio-font-sm);
+  font-weight: 600;
+  color: var(--fio-text-secondary);
+  padding: 0 8px;
+  width: auto;
+  margin-bottom: 0;
+}
+
+.formio-component-well > .well {
+  background: var(--fio-bg-surface);
+  border: 1px solid var(--fio-border);
+  border-radius: var(--fio-radius);
+  padding: 16px 20px;
+}
+
+/* ---------------------------------------------------------------------------
+   Columns Layout
+   --------------------------------------------------------------------------- */
+.formio-component-columns > .row {
+  margin-left: -8px;
+  margin-right: -8px;
+}
+
+.formio-component-columns > .row > [class*="col-"] {
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+/* ---------------------------------------------------------------------------
+   Wizard (Multi-step form)
+   --------------------------------------------------------------------------- */
+.formio-wizard-nav-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 20px 0 0;
+  border-top: 1px solid var(--fio-bg-surface);
+  margin-top: 8px;
+}
+
+.formio-wizard-nav-container .btn {
+  min-width: 100px;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.pagination .page-item .page-link {
+  font-family: var(--fio-font-family);
+  font-size: var(--fio-font-sm);
+  font-weight: 500;
+  color: var(--fio-text-secondary);
+  min-height: 44px;
+  min-width: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--fio-border);
+  border-radius: 8px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.pagination .page-item.active .page-link {
+  background: var(--fio-primary);
+  border-color: var(--fio-primary);
+  color: #ffffff;
+}
+
+@media (hover: hover) {
+  .pagination .page-item .page-link:hover {
+    background: var(--fio-primary-light);
+    color: var(--fio-primary);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Alerts / Inline Messages
+   --------------------------------------------------------------------------- */
+.alert {
+  font-family: var(--fio-font-family);
+  font-size: var(--fio-font-sm);
+  font-weight: 500;
+  border-radius: 8px;
+  padding: 16px;
+  border: none;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.alert-success {
+  background: var(--fio-success-light);
+  color: var(--fio-success);
+}
+
+.alert-danger,
+.alert-error {
+  background: var(--fio-error-light);
+  color: var(--fio-error);
+}
+
+.alert-warning {
+  background: var(--fio-warning-light);
+  color: var(--fio-warning);
+}
+
+.alert-info {
+  background: var(--fio-info-light);
+  color: var(--fio-text-primary);
+}
+
+/* ---------------------------------------------------------------------------
+   Signature Pad
+   --------------------------------------------------------------------------- */
+.formio-component-signature .signature-pad-body {
+  border: 1px solid var(--fio-border);
+  border-radius: var(--fio-radius);
+  background: var(--fio-bg);
+  overflow: hidden;
+}
+
+.formio-component-signature .signature-pad-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+/* ---------------------------------------------------------------------------
+   Survey / Grid
+   --------------------------------------------------------------------------- */
+.formio-component-survey table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--fio-border);
+  border-radius: var(--fio-radius);
+  overflow: hidden;
+}
+
+.formio-component-survey th {
+  background: var(--fio-bg-surface);
+  font-family: var(--fio-font-family);
+  font-size: var(--fio-font-xs);
+  font-weight: 600;
+  color: var(--fio-text-secondary);
+  padding: 12px var(--fio-px);
+  text-align: center;
+  border-bottom: 1px solid var(--fio-border);
+}
+
+.formio-component-survey td {
+  padding: 12px var(--fio-px);
+  border-bottom: 1px solid var(--fio-bg-surface);
+  font-family: var(--fio-font-family);
+  font-size: var(--fio-font-sm);
+  font-weight: 500;
+  color: var(--fio-text-primary);
+  text-align: center;
+}
+
+.formio-component-survey tr:last-child td {
+  border-bottom: none;
+}
+
+.formio-component-survey tr:nth-child(even) {
+  background: var(--fio-bg-surface);
+}
+
+/* ---------------------------------------------------------------------------
+   Loading / Spinner
+   --------------------------------------------------------------------------- */
+.formio-loader-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.formio-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--fio-bg-surface);
+  border-top-color: var(--fio-primary);
+  border-radius: 50%;
+  animation: formio-spin 0.7s linear infinite;
+}
+
+@keyframes formio-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Datagrid
+   --------------------------------------------------------------------------- */
+
+/* Horizontal scroll so wide tables don't crush columns */
+.formio-component-datagrid {
+  overflow-x: auto;
+}
+
+/* Label above the table */
+.formio-component-datagrid > label {
+  font-size: var(--fio-font-sm);
+  font-weight: 600;
+  color: var(--fio-text-secondary);
+  margin-bottom: 8px;
+  display: block;
+}
+
+/* Table chrome */
+.datagrid-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--fio-border);
+  border-radius: var(--fio-radius);
+  overflow: hidden;
+  table-layout: auto;
+}
+
+.datagrid-table thead th {
+  background: var(--fio-bg-surface);
+  font-family: var(--fio-font-family);
+  font-size: var(--fio-font-xs);
+  font-weight: 600;
+  color: var(--fio-text-secondary);
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--fio-border);
+  white-space: nowrap;
+  text-align: left;
+  vertical-align: middle;
+}
+
+/* Required column header asterisk */
+.datagrid-table thead th.field-required::after {
+  content: " *";
+  color: var(--fio-error);
+}
+
+.datagrid-table tbody tr {
+  background: var(--fio-bg);
+}
+
+.datagrid-table tbody tr:nth-child(even) {
+  background: var(--fio-bg-surface);
+}
+
+.datagrid-table tbody tr:not(:last-child) td {
+  border-bottom: 1px solid var(--fio-border);
+}
+
+.datagrid-table tbody td {
+  padding: 6px 8px;
+  vertical-align: middle;
+}
+
+/* Action column — tight, centred */
+.datagrid-table tbody td:last-child {
+  width: 40px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Footer — "Add Another" row */
+.datagrid-table tfoot td {
+  padding: 8px 12px;
+  border-top: 1px solid var(--fio-border);
+  background: var(--fio-bg);
+}
+
+.formio-button-add-row {
+  font-size: var(--fio-font-sm);
+  padding: 6px 14px;
+  height: 34px;
+}
+
+/* Remove-row button: icon-only pill (44px min touch target) */
+.formio-button-remove-row {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  color: var(--fio-text-secondary);
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+@media (hover: hover) {
+  .formio-button-remove-row:hover {
+    background: var(--fio-error-light);
+    color: var(--fio-error);
+  }
+}
+
+/* -------------------------------------------------------------------------
+   Fields inside datagrid cells
+   Labels are visually hidden; strip out floating-label spacing so inputs
+   are compact (36px) instead of the full 56px standalone height.
+   ------------------------------------------------------------------------- */
+
+/* Kill Bootstrap mb-2 between cell wall and the field */
+.datagrid-table td .formio-form-group {
+  margin-bottom: 0 !important;
+}
+
+/* Compact inputs — no floating-label top-padding needed */
+.datagrid-table td .form-control {
+  height: 36px;
+  min-height: unset;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  padding-left: 10px;
+  padding-right: 10px;
+  font-size: var(--fio-font-sm);
+}
+
+/* Textarea inside datagrid: auto height, no giant min-height */
+.datagrid-table td .formio-component-textarea .form-control {
+  height: auto;
+  min-height: 60px;
+  padding-top: 8px;
+}
+
+/* Select trigger inside datagrid */
+.datagrid-table td .choices__inner,
+.datagrid-table td .choices > .form-control {
+  min-height: 36px;
+  height: 36px;
+  padding: 0 10px;
+  font-size: var(--fio-font-sm);
+}
+
+/* Adjust arrow position to match tighter cell padding */
+.datagrid-table td .choices[data-type*="select-one"]::after {
+  right: 10px;
+}
+
+/* datetime input-group calendar icon button: flush height with input */
+.datagrid-table td .input-group-text {
+  height: 36px;
+  padding: 0 8px;
+  display: flex;
+  align-items: center;
+}
+
+/* Error messages: smaller margin inside cells */
+.datagrid-table td .formio-errors {
+  margin-top: 2px;
+}
+
+/* ---------------------------------------------------------------------------
+   Responsive — Mobile (≤600px)
+   Source: Figma node 13761:38548 (mobile design)
+   --------------------------------------------------------------------------- */
+@media (max-width: 600px) {
+  /* Card container: tighter padding on mobile (12px sides, 16px top, 20px bottom) */
+  .formio-form > .formio-component-form,
+  .formio-form .formio-form-group {
+    padding: 16px 12px 20px;
+  }
+
+  /* Section internal gap reduced to 8px (vs 16px desktop) */
+  .formio-component + .formio-component {
+    padding-bottom: 20px;
+  }
+
+  /* Question label→input gap: 8px on mobile */
+  .formio-component-textfield,
+  .formio-component-number,
+  .formio-component-textarea,
+  .formio-component-select,
+  .formio-component-datetime,
+  .formio-component-email,
+  .formio-component-phoneNumber,
+  .formio-component-currency,
+  .formio-component-url {
+    gap: 8px;
+  }
+
+  /* Paired/split inputs (e.g. ft/in, Rest %/Active %) stack vertically on mobile */
+  .formio-component-columns > .row,
+  .input-group.input-group--split {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .formio-component-columns > .row > [class*="col-"] {
+    width: 100%;
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  /* Nested/indented sub-fields: tighter padding on mobile */
+  .formio-component [style*="border-left"],
+  .formio-component-panel > .card > .card-body {
+    padding-left: 12px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  /* Inline label variant (empty field, label inside — e.g. "Additional Info")
+     When Form.io renders an unfilled field with labelPosition=inside, the label
+     sits inside the field at secondary color without floating. */
+  .formio-component-textfield.formio-component-label-above > label,
+  .formio-component-textarea.formio-component-label-above > label {
+    font-size: var(--fio-font-base);
+    color: var(--fio-text-secondary);
+    opacity: 0.6;
+  }
+
+  /* Wizard nav */
+  .formio-wizard-nav-container {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .formio-wizard-nav-container .btn {
+    width: 100%;
+  }
+}

@@ -1,2 +1,1 @@
-// Sync status components
-export {};
+export { default as SyncBanner } from './SyncBanner';
