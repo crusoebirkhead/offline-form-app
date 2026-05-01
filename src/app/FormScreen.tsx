@@ -12,6 +12,7 @@ function FormScreen({ navigation, route }: FormScreenProps) {
   const { entryId } = route.params;
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [headerTitle, setHeaderTitle] = useState('Assessment');
+  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
   const hasUnsavedChangesRef = useRef(hasUnsavedChanges);
   hasUnsavedChangesRef.current = hasUnsavedChanges;
 
@@ -51,10 +52,18 @@ function FormScreen({ navigation, route }: FormScreenProps) {
     setHasUnsavedChanges(hasChanges);
   }, []);
 
+  const handleLastSavedUpdate = useCallback((date: Date) => {
+    setLastSavedAt(date);
+  }, []);
+
   return (
     <View style={styles.container}>
-      <ScreenHeader title={headerTitle} onBack={handleBack} />
-      <FormEntryScreen entryId={entryId} onUnsavedChangesUpdate={handleUnsavedChangesUpdate} />
+      <ScreenHeader title={headerTitle} onBack={handleBack} lastSavedAt={lastSavedAt} />
+      <FormEntryScreen
+        entryId={entryId}
+        onUnsavedChangesUpdate={handleUnsavedChangesUpdate}
+        onLastSavedUpdate={handleLastSavedUpdate}
+      />
     </View>
   );
 }

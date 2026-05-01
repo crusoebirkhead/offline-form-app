@@ -1,14 +1,37 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface ScreenHeaderProps {
   title: string;
   onBack: () => void;
+  lastSavedAt?: Date | null;
 }
 
-function ScreenHeader({ title, onBack }: ScreenHeaderProps) {
+const TICK_INTERVAL_MS = 30_000;
+
+function formatSavedTime(date: Date): string {
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMin = Math.floor(diffMs / 60_000);
+
+  if (diffMin < 1) return 'Last saved just now';
+  if (diffMin < 60) return `Last saved ${diffMin}m ago`;
+
+  return `Last saved at ${date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`;
+}
+
+function ScreenHeader({ title, onBack, lastSavedAt }: ScreenHeaderProps) {
   const insets = useSafeAreaInsets();
+  const [, setTick] = useState(0);
+
+  // Re-render every 30s so the relative time label stays current
+  useEffect(() => {
+    if (!lastSavedAt) return;
+
+    const id = setInterval(() => setTick((t) => t + 1), TICK_INTERVAL_MS);
+    return () => clearInterval(id);
+  }, [lastSavedAt]);
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -28,8 +51,9 @@ function ScreenHeader({ title, onBack }: ScreenHeaderProps) {
           {title}
         </Text>
 
-        {/* Spacer to balance the back button */}
-        <View style={styles.backButton} />
+        <View style={styles.trailing}>
+          {lastSavedAt && <Text style={styles.lastSaved}>{formatSavedTime(lastSavedAt)}</Text>}
+        </View>
       </View>
     </View>
   );
@@ -69,6 +93,15 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#1a1a2e',
     textAlign: 'center',
+  },
+  trailing: {
+    minWidth: 70,
+    alignItems: 'flex-end',
+    padding: 8,
+  },
+  lastSaved: {
+    fontSize: 12,
+    color: '#80868b',
   },
 });
 

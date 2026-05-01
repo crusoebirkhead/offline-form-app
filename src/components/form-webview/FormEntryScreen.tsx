@@ -15,6 +15,7 @@ interface FormEntryScreenProps {
   onError?: (message: string) => void;
   onUnsavedChangesUpdate?: (hasChanges: boolean) => void;
   onSendSuccess?: (entry: Entry) => void;
+  onLastSavedUpdate?: (date: Date) => void;
 }
 
 type SaveStatus = 'idle' | 'saving' | 'success' | 'error';
@@ -29,12 +30,15 @@ function FormEntryScreen({
   onError,
   onUnsavedChangesUpdate,
   onSendSuccess,
+  onLastSavedUpdate,
 }: FormEntryScreenProps) {
   const formRef = useRef<FormWebViewRef>(null);
   const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const successTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const onUnsavedChangesUpdateRef = useRef(onUnsavedChangesUpdate);
   onUnsavedChangesUpdateRef.current = onUnsavedChangesUpdate;
+  const onLastSavedUpdateRef = useRef(onLastSavedUpdate);
+  onLastSavedUpdateRef.current = onLastSavedUpdate;
 
   const { isInternetReachable } = useNetworkStatus();
 
@@ -79,6 +83,7 @@ function FormEntryScreen({
         setSchema(JSON.parse(loadedSchema.json_schema));
         setBaseUrl(url);
         setLoading(false);
+        onLastSavedUpdateRef.current?.(new Date(loadedEntry.updated_at));
       } catch (err: unknown) {
         if (cancelled) return;
         const msg = err instanceof Error ? err.message : 'Failed to initialize form';
@@ -137,6 +142,7 @@ function FormEntryScreen({
         setSaveStatus('success');
         setHasUnsavedChanges(false);
         onUnsavedChangesUpdateRef.current?.(false);
+        onLastSavedUpdateRef.current?.(new Date());
 
         if (successTimerRef.current) clearTimeout(successTimerRef.current);
         successTimerRef.current = setTimeout(() => {
@@ -201,6 +207,7 @@ function FormEntryScreen({
       setSaveStatus('success');
       setHasUnsavedChanges(false);
       onUnsavedChangesUpdateRef.current?.(false);
+      onLastSavedUpdateRef.current?.(new Date());
 
       if (successTimerRef.current) clearTimeout(successTimerRef.current);
       successTimerRef.current = setTimeout(() => {
