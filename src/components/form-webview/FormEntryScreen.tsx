@@ -54,6 +54,12 @@ function FormEntryScreen({
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [shellReady, setShellReady] = useState(false);
 
+  const entryRef = useRef(entry);
+  entryRef.current = entry;
+  const hasUnsavedChangesRef = useRef(hasUnsavedChanges);
+  hasUnsavedChangesRef.current = hasUnsavedChanges;
+  const formLoadedRef = useRef(false);
+
   // Load entry, schema, and webview assets on mount
   useEffect(() => {
     let cancelled = false;
@@ -103,10 +109,12 @@ function FormEntryScreen({
     setShellReady(true);
   }, []);
 
-  // Load form into WebView once both the shell and schema are ready
+  // Load form into WebView once when shell, schema, and entry are first ready
   useEffect(() => {
+    if (formLoadedRef.current) return;
     if (!shellReady || !schema || !entry) return;
 
+    formLoadedRef.current = true;
     const submission = entry.data_json ? JSON.parse(entry.data_json) : undefined;
     const hasData = submission && Object.keys(submission).length > 0;
     formRef.current?.loadForm(schema, hasData ? submission : undefined);
@@ -122,7 +130,10 @@ function FormEntryScreen({
 
   const persistSubmission = useCallback(
     async (source: 'manual' | 'auto') => {
-      if (!entry) return;
+      const currentEntry = entryRef.current;
+      if (__DEV__)
+        console.log(`[FormEntryScreen] persistSubmission(${source}), entry=${!!currentEntry}`);
+      if (!currentEntry) return;
 
       setSaveStatus('saving');
       setErrorMessage(null);
@@ -134,7 +145,7 @@ function FormEntryScreen({
           throw new Error('Could not retrieve form data from WebView');
         }
 
-        const updated = await updateEntry(entry.id, {
+        const updated = await updateEntry(currentEntry.id, {
           data_json: JSON.stringify(data),
         });
 
@@ -159,31 +170,34 @@ function FormEntryScreen({
         onError?.(msg);
       }
     },
-    [entry, onSaveSuccess, onError],
+    [onSaveSuccess, onError],
   );
+
+  const persistSubmissionRef = useRef(persistSubmission);
+  persistSubmissionRef.current = persistSubmission;
 
   const handleSave = useCallback(() => {
-    persistSubmission('manual');
-  }, [persistSubmission]);
+    persistSubmissionRef.current('manual');
+  }, []);
 
   // Debounced auto-save on form change
-  const handleFormChange = useCallback(
-    (_payload: FormChangePayload) => {
-      if (!hasUnsavedChanges) {
-        setHasUnsavedChanges(true);
-        onUnsavedChangesUpdateRef.current?.(true);
-      }
+  const handleFormChange = useCallback((_payload: FormChangePayload) => {
+    if (__DEV__) console.log('[FormEntryScreen] handleFormChange called');
 
-      if (autoSaveTimerRef.current) {
-        clearTimeout(autoSaveTimerRef.current);
-      }
+    if (!hasUnsavedChangesRef.current) {
+      setHasUnsavedChanges(true);
+      onUnsavedChangesUpdateRef.current?.(true);
+    }
 
-      autoSaveTimerRef.current = setTimeout(() => {
-        persistSubmission('auto');
-      }, AUTO_SAVE_DELAY_MS);
-    },
-    [persistSubmission, hasUnsavedChanges],
-  );
+    if (autoSaveTimerRef.current) {
+      clearTimeout(autoSaveTimerRef.current);
+    }
+
+    autoSaveTimerRef.current = setTimeout(() => {
+      if (__DEV__) console.log('[FormEntryScreen] auto-save timer fired');
+      persistSubmissionRef.current('auto');
+    }, AUTO_SAVE_DELAY_MS);
+  }, []);
 
   const persistAsCompleted = useCallback(async () => {
     if (!entry) return;

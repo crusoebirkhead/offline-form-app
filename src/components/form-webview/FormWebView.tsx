@@ -99,6 +99,7 @@ const FormWebView = forwardRef<FormWebViewRef, FormWebViewProps>(function FormWe
           break;
 
         case 'FORM_CHANGE':
+          if (__DEV__) console.log('[FormWebView] FORM_CHANGE received');
           onChange?.(msg.payload as FormChangePayload);
           break;
 

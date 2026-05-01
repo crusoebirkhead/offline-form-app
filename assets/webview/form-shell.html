@@ -91,11 +91,17 @@
             }
 
             form.on("change", function (changed) {
-              postMessage("FORM_CHANGE", {
-                data: form.submission.data,
-                changed: changed ? changed.changed : null,
-                isValid: form.checkValidity(form.submission.data, true)
-              });
+              try {
+                var isValid = false;
+                try { isValid = form.checkValidity(form.submission.data, true); } catch (_) {}
+                postMessage("FORM_CHANGE", {
+                  data: form.submission.data,
+                  changed: changed ? changed.changed : null,
+                  isValid: isValid
+                });
+              } catch (err) {
+                postMessage("FORM_ERROR", { message: "change handler error", detail: String(err) });
+              }
             });
 
             form.on("submit", function (sub) {
