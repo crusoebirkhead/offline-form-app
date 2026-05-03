@@ -330,8 +330,9 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   headerBar: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingBottom: 22,
     backgroundColor: '#f8f9fa',
@@ -350,11 +351,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#1a1a2e',
   },
-  signOutButton: {
-    position: 'absolute',
-    right: 30,
-    bottom: 28,
-  },
+  signOutButton: {},
   signOutText: {
     color: '#1894e1',
     fontSize: 15,
