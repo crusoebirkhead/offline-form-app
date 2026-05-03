@@ -1,7 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
-import { useNetworkStatus } from '../../hooks/useNetworkStatus';
-import { useSync } from '../../hooks/useSync';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { SyncResult } from '../../services/sync';
 
 function formatRelativeTime(iso: string): string {
@@ -29,22 +27,45 @@ function summaryText(result: SyncResult): string {
 const SUMMARY_DISPLAY_MS = 4000;
 
 interface SyncBannerProps {
-  autoSync?: boolean;
+  syncing: boolean;
+  lastSyncTime: string | null;
+  result: SyncResult | null;
+  error: string | null;
+  onSyncPress: () => void;
+  isConnected: boolean;
 }
 
-function SyncBanner({ autoSync = false }: SyncBannerProps) {
-  const { isConnected } = useNetworkStatus();
-  const { syncing, lastSyncTime, result, error, triggerSync } = useSync();
+function SyncBanner({
+  syncing,
+  lastSyncTime,
+  result,
+  error,
+  onSyncPress,
+  isConnected,
+}: SyncBannerProps) {
   const [showSummary, setShowSummary] = useState(false);
+  const spinAnim = useRef(new Animated.Value(0)).current;
 
-  // Auto-sync on mount when requested
   useEffect(() => {
-    if (autoSync) {
-      triggerSync();
+    if (syncing) {
+      spinAnim.setValue(0);
+      Animated.loop(
+        Animated.timing(spinAnim, {
+          toValue: 1,
+          duration: 800,
+          easing: Easing.linear,
+          useNativeDriver: true,
+        }),
+      ).start();
+    } else {
+      spinAnim.stopAnimation();
     }
-    // Only run once on mount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [syncing, spinAnim]);
+
+  const spin = spinAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '360deg'],
+  });
 
   // Show summary briefly after sync completes
   useEffect(() => {
@@ -72,10 +93,12 @@ function SyncBanner({ autoSync = false }: SyncBannerProps) {
 
         {/* Sync Now button / spinner */}
         {syncing ? (
-          <ActivityIndicator size="small" color="#1894e1" />
+          <Animated.Text style={[styles.refreshIcon, { transform: [{ rotate: spin }] }]}>
+            ↻
+          </Animated.Text>
         ) : (
           <Pressable
-            onPress={triggerSync}
+            onPress={onSyncPress}
             disabled={!isConnected}
             accessibilityRole="button"
             accessibilityLabel="Sync Now"
@@ -148,6 +171,10 @@ const styles = StyleSheet.create({
   timestampText: {
     fontSize: 13,
     color: '#5f6368',
+  },
+  refreshIcon: {
+    fontSize: 20,
+    color: '#1894e1',
   },
   syncButton: {
     paddingVertical: 4,

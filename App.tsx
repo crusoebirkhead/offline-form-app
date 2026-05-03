@@ -1,6 +1,13 @@
 import React from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, TextInput, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
+
+// Disable iOS Dynamic Type font scaling globally
+if (Text.defaultProps == null) Text.defaultProps = {};
+Text.defaultProps.allowFontScaling = false;
+if (TextInput.defaultProps == null) TextInput.defaultProps = {};
+TextInput.defaultProps.allowFontScaling = false;
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Auth0Provider } from 'react-native-auth0';
@@ -52,7 +59,7 @@ function RootNavigator() {
             <Stack.Screen
               name="FormEntry"
               component={FormScreen}
-              options={{ headerShown: false }}
+              options={{ headerShown: false, fullScreenGestureEnabled: true }}
             />
           </>
         ) : (
@@ -65,12 +72,14 @@ function RootNavigator() {
 
 export default function App() {
   return (
-    <Auth0Provider domain={auth0Config.domain} clientId={auth0Config.clientId}>
-      <AuthGuardProvider>
-        <StatusBar style="auto" />
-        <RootNavigator />
-      </AuthGuardProvider>
-    </Auth0Provider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Auth0Provider domain={auth0Config.domain} clientId={auth0Config.clientId}>
+        <AuthGuardProvider>
+          <StatusBar style="auto" />
+          <RootNavigator />
+        </AuthGuardProvider>
+      </Auth0Provider>
+    </GestureHandlerRootView>
   );
 }
 

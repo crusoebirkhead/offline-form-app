@@ -33,19 +33,25 @@ function FormScreen({ navigation, route }: FormScreenProps) {
     };
   }, [entryId]);
 
-  const handleBack = useCallback(() => {
-    if (hasUnsavedChangesRef.current) {
+  // Intercept all forms of back navigation (swipe, header button, Android hardware back)
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('beforeRemove', (e) => {
+      if (!hasUnsavedChangesRef.current) return;
+      e.preventDefault();
       Alert.alert('Save before leaving?', 'You have unsaved changes that will be lost.', [
         {
           text: 'Discard',
           style: 'destructive',
-          onPress: () => navigation.goBack(),
+          onPress: () => navigation.dispatch(e.data.action),
         },
         { text: 'Stay', style: 'cancel' },
       ]);
-    } else {
-      navigation.goBack();
-    }
+    });
+    return unsubscribe;
+  }, [navigation]);
+
+  const handleBack = useCallback(() => {
+    navigation.goBack();
   }, [navigation]);
 
   const handleUnsavedChangesUpdate = useCallback((hasChanges: boolean) => {

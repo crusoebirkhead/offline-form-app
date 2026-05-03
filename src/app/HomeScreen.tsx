@@ -1,12 +1,28 @@
-import React, { useCallback, useState } from 'react';
-import { ActivityIndicator, Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import React, { useCallback, useEffect } from 'react';
+import {
+  ActionSheetIOS,
+  ActivityIndicator,
+  Alert,
+  Image,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import * as Haptics from 'expo-haptics';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
 import { useEntries } from '../hooks/useEntries';
+import { createEntry, deleteEntry, updateEntry } from '../db';
+import { useNetworkStatus } from '../hooks/useNetworkStatus';
+import { useSync } from '../hooks/useSync';
+import { submitAssessment } from '../services/periscope';
 import { useAuthGuard } from '../auth/AuthGuardProvider';
 import EntryList from '../components/entry-list/EntryList';
 import SyncBanner from '../components/sync-status/SyncBanner';
+import type { Entry } from '../types';
 import type { RootStackParamList } from './navigation';
 
 type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>;
@@ -14,7 +30,8 @@ type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>;
 function HomeScreen({ navigation }: HomeScreenProps) {
   const { entries, loading, error, refresh } = useEntries();
   const { signOut } = useAuthGuard();
-  const [refreshing, setRefreshing] = useState(false);
+  const { isInternetReachable, isConnected } = useNetworkStatus();
+  const { syncing, lastSyncTime, result, error: syncError, triggerSync } = useSync();
   const insets = useSafeAreaInsets();
 
   // Re-fetch entries when the screen gains focus (e.g. coming back from FormScreen)
@@ -24,11 +41,22 @@ function HomeScreen({ navigation }: HomeScreenProps) {
     }, [refresh]),
   );
 
+  // Auto-sync on mount
+  useEffect(() => {
+    triggerSync();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Refresh entry list after sync completes
+  useEffect(() => {
+    if (!syncing && (result || syncError)) {
+      refresh();
+    }
+  }, [syncing, result, syncError, refresh]);
+
   const handleRefresh = useCallback(async () => {
-    setRefreshing(true);
-    await refresh();
-    setRefreshing(false);
-  }, [refresh]);
+    await triggerSync();
+  }, [triggerSync]);
 
   const handleEntryPress = useCallback(
     (id: string) => {
@@ -37,9 +65,130 @@ function HomeScreen({ navigation }: HomeScreenProps) {
     [navigation],
   );
 
+  const handleDeleteEntry = useCallback(
+    async (id: string) => {
+      await deleteEntry(id);
+      refresh();
+    },
+    [refresh],
+  );
+
   const handleNewAssessment = useCallback(() => {
     navigation.navigate('FormTypePicker');
   }, [navigation]);
+
+  const handleDuplicate = useCallback(
+    async (entry: Entry) => {
+      const newEntry = await createEntry(entry.form_type, entry.form_title);
+      await updateEntry(newEntry.id, { data_json: entry.data_json });
+      navigation.navigate('FormEntry', { entryId: newEntry.id });
+    },
+    [navigation],
+  );
+
+  const handleMarkComplete = useCallback(
+    async (entry: Entry) => {
+      await updateEntry(entry.id, { status: 'completed' });
+      refresh();
+    },
+    [refresh],
+  );
+
+  const handleSendToPortal = useCallback(
+    async (entry: Entry) => {
+      if (!isInternetReachable) {
+        Alert.alert('Offline', 'You must be online to send to Periscope Portal.');
+        return;
+      }
+
+      const dataJson = entry.data_json ? JSON.parse(entry.data_json) : {};
+      const result = await submitAssessment({
+        dataJson: dataJson as object,
+        formType: entry.form_type,
+      });
+
+      if (!result.success) {
+        Alert.alert('Send Failed', result.error ?? 'Submission failed.');
+        return;
+      }
+
+      const now = new Date().toISOString();
+      await updateEntry(entry.id, { status: 'sent', sent_at: now });
+      Alert.alert('Sent', 'Assessment submitted to Periscope Portal.');
+      refresh();
+    },
+    [isInternetReachable, refresh],
+  );
+
+  const showContextMenuIOS = useCallback(
+    (entry: Entry) => {
+      const options: string[] = ['Duplicate'];
+      const actions: Array<(e: Entry) => void> = [handleDuplicate];
+
+      if (entry.status === 'draft') {
+        options.push('Mark as Complete');
+        actions.push(handleMarkComplete);
+      }
+
+      if (entry.status !== 'sent') {
+        const label = isInternetReachable ? 'Send to Portal' : 'Send to Portal (Offline)';
+        options.push(label);
+        actions.push(handleSendToPortal);
+      }
+
+      options.push('Cancel');
+
+      ActionSheetIOS.showActionSheetWithOptions(
+        {
+          options,
+          cancelButtonIndex: options.length - 1,
+          disabledButtonIndices: !isInternetReachable
+            ? [options.findIndex((o) => o.startsWith('Send to Portal'))]
+            : undefined,
+        },
+        (buttonIndex) => {
+          if (buttonIndex !== options.length - 1) {
+            actions[buttonIndex](entry);
+          }
+        },
+      );
+    },
+    [handleDuplicate, handleMarkComplete, handleSendToPortal, isInternetReachable],
+  );
+
+  const showContextMenuAndroid = useCallback(
+    (entry: Entry) => {
+      const buttons: Array<{ text: string; onPress: () => void }> = [
+        { text: 'Duplicate', onPress: () => handleDuplicate(entry) },
+      ];
+
+      if (entry.status === 'draft') {
+        buttons.push({ text: 'Mark as Complete', onPress: () => handleMarkComplete(entry) });
+      }
+
+      if (entry.status !== 'sent' && isInternetReachable) {
+        buttons.push({ text: 'Send to Portal', onPress: () => handleSendToPortal(entry) });
+      }
+
+      buttons.push({ text: 'Cancel', onPress: () => {} });
+
+      Alert.alert(entry.form_title, undefined, buttons, { cancelable: true });
+    },
+    [handleDuplicate, handleMarkComplete, handleSendToPortal, isInternetReachable],
+  );
+
+  const handleLongPressEntry = useCallback(
+    (entry: Entry) => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
+      if (Platform.OS === 'ios') {
+        showContextMenuIOS(entry);
+      } else {
+        showContextMenuAndroid(entry);
+      }
+    },
+    [showContextMenuIOS, showContextMenuAndroid],
+  );
 
   const headerBar = (
     <View style={[styles.headerBar, { paddingTop: insets.top }]}>
@@ -87,13 +236,22 @@ function HomeScreen({ navigation }: HomeScreenProps) {
   return (
     <View style={styles.container}>
       {headerBar}
-      <SyncBanner autoSync />
+      <SyncBanner
+        syncing={syncing}
+        lastSyncTime={lastSyncTime}
+        result={result}
+        error={syncError}
+        onSyncPress={triggerSync}
+        isConnected={isConnected}
+      />
 
       <EntryList
         entries={entries}
         onEntryPress={handleEntryPress}
+        onDeleteEntry={handleDeleteEntry}
+        onLongPressEntry={handleLongPressEntry}
         onRefresh={handleRefresh}
-        refreshing={refreshing}
+        refreshing={syncing}
       />
 
       <Pressable

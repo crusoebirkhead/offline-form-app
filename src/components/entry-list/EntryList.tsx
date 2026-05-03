@@ -1,19 +1,35 @@
 import React, { useCallback } from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import type { Entry } from '../../types';
-import EntryCard from './EntryCard';
+import SwipeableEntryCard from './SwipeableEntryCard';
 
 interface EntryListProps {
   entries: readonly Entry[];
   onEntryPress: (id: string) => void;
+  onDeleteEntry: (id: string) => void;
+  onLongPressEntry: (entry: Entry) => void;
   onRefresh?: () => void;
   refreshing?: boolean;
 }
 
-function EntryList({ entries, onEntryPress, onRefresh, refreshing = false }: EntryListProps) {
+function EntryList({
+  entries,
+  onEntryPress,
+  onDeleteEntry,
+  onLongPressEntry,
+  onRefresh,
+  refreshing = false,
+}: EntryListProps) {
   const renderItem = useCallback(
-    ({ item }: { item: Entry }) => <EntryCard entry={item} onPress={onEntryPress} />,
-    [onEntryPress],
+    ({ item }: { item: Entry }) => (
+      <SwipeableEntryCard
+        entry={item}
+        onPress={onEntryPress}
+        onDelete={onDeleteEntry}
+        onLongPress={onLongPressEntry}
+      />
+    ),
+    [onEntryPress, onDeleteEntry, onLongPressEntry],
   );
 
   const keyExtractor = useCallback((item: Entry) => item.id, []);
@@ -33,8 +49,17 @@ function EntryList({ entries, onEntryPress, onRefresh, refreshing = false }: Ent
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       contentContainerStyle={styles.list}
-      onRefresh={onRefresh}
-      refreshing={refreshing}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          tintColor="#1894e1"
+          colors={['#1894e1']}
+          progressBackgroundColor="#e8f4fd"
+          title="Syncing..."
+          titleColor="#1894e1"
+        />
+      }
     />
   );
 }

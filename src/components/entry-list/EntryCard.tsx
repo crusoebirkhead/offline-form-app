@@ -5,6 +5,7 @@ import type { Entry, EntryStatus } from '../../types';
 interface EntryCardProps {
   entry: Entry;
   onPress: (id: string) => void;
+  onLongPress?: () => void;
 }
 
 const STATUS_CONFIG: Record<EntryStatus, { label: string; bg: string; text: string }> = {
@@ -33,13 +34,15 @@ function formatRelativeTime(isoDate: string): string {
   return `${diffMonths}mo ago`;
 }
 
-function EntryCard({ entry, onPress }: EntryCardProps) {
+function EntryCard({ entry, onPress, onLongPress }: EntryCardProps) {
   const statusConfig = STATUS_CONFIG[entry.status];
 
   return (
     <Pressable
       style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
       onPress={() => onPress(entry.id)}
+      onLongPress={onLongPress}
+      delayLongPress={500}
       accessibilityRole="button"
       accessibilityLabel={`${entry.form_title}, ${statusConfig.label}`}
     >
