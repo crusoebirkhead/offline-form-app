@@ -36,25 +36,37 @@ function formatRelativeTime(isoDate: string): string {
 
 function EntryCard({ entry, onPress, onLongPress }: EntryCardProps) {
   const statusConfig = STATUS_CONFIG[entry.status];
+  const isSent = entry.status === 'sent';
 
   return (
     <Pressable
-      style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+      style={({ pressed }) => [
+        styles.card,
+        pressed && !isSent && styles.cardPressed,
+        isSent && styles.cardSent,
+      ]}
       onPress={() => onPress(entry.id)}
       onLongPress={onLongPress}
       delayLongPress={500}
       accessibilityRole="button"
       accessibilityLabel={`${entry.form_title}, ${statusConfig.label}`}
+      accessibilityHint={
+        isSent ? 'Assessment data has been submitted and removed from this device' : undefined
+      }
     >
       <View style={styles.topRow}>
-        <Text style={styles.title} numberOfLines={1}>
+        <Text style={[styles.title, isSent && styles.titleSent]} numberOfLines={1}>
           {entry.form_title}
         </Text>
         <View style={[styles.badge, { backgroundColor: statusConfig.bg }]}>
           <Text style={[styles.badgeText, { color: statusConfig.text }]}>{statusConfig.label}</Text>
         </View>
       </View>
-      <Text style={styles.timestamp}>{formatRelativeTime(entry.updated_at)}</Text>
+      <Text style={styles.timestamp}>
+        {isSent && entry.sent_at
+          ? `Sent ${formatRelativeTime(entry.sent_at)}`
+          : formatRelativeTime(entry.updated_at)}
+      </Text>
     </Pressable>
   );
 }
@@ -72,6 +84,12 @@ const styles = StyleSheet.create({
   },
   cardPressed: {
     backgroundColor: '#f5f5f5',
+  },
+  cardSent: {
+    opacity: 0.6,
+  },
+  titleSent: {
+    color: '#5f6368',
   },
   topRow: {
     flexDirection: 'row',

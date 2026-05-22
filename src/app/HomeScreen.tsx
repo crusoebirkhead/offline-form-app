@@ -60,9 +60,11 @@ function HomeScreen({ navigation }: HomeScreenProps) {
 
   const handleEntryPress = useCallback(
     (id: string) => {
+      const entry = entries.find((e) => e.id === id);
+      if (entry?.status === 'sent') return;
       navigation.navigate('FormEntry', { entryId: id });
     },
-    [navigation],
+    [navigation, entries],
   );
 
   const handleDeleteEntry = useCallback(
@@ -113,7 +115,7 @@ function HomeScreen({ navigation }: HomeScreenProps) {
       }
 
       const now = new Date().toISOString();
-      await updateEntry(entry.id, { status: 'sent', sent_at: now });
+      await updateEntry(entry.id, { status: 'sent', sent_at: now, data_json: '{}' });
       Alert.alert('Sent', 'Assessment submitted to Periscope Portal.');
       refresh();
     },
@@ -179,6 +181,8 @@ function HomeScreen({ navigation }: HomeScreenProps) {
 
   const handleLongPressEntry = useCallback(
     (entry: Entry) => {
+      if (entry.status === 'sent') return;
+
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
       if (Platform.OS === 'ios') {

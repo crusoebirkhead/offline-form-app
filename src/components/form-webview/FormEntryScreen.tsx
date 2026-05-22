@@ -273,6 +273,7 @@ function FormEntryScreen({
       const updated = await updateEntry(entry.id, {
         status: 'sent',
         sent_at: now,
+        data_json: '{}',
       });
 
       setEntry(updated);

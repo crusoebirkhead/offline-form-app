@@ -1,12 +1,13 @@
 import * as Crypto from 'expo-crypto';
+import { getStoredToken } from '../auth/auth0';
 
 // ---------------------------------------------------------------------------
 // Configuration
 // ---------------------------------------------------------------------------
 
-const FORMIO_BASE_URL = process.env.EXPO_PUBLIC_FORMIO_BASE_URL ?? 'http://localhost:3001';
-
-const FORMIO_API_KEY = process.env.EXPO_PUBLIC_FORMIO_API_KEY ?? '';
+const FORMIO_BASE_URL =
+  process.env.EXPO_PUBLIC_FORMIO_BASE_URL ??
+  'https://l2ioi2xnkg.execute-api.us-west-2.amazonaws.com';
 
 const REQUEST_TIMEOUT_MS = 15_000;
 
@@ -29,16 +30,6 @@ export interface FetchSchemaResult {
 }
 
 // ---------------------------------------------------------------------------
-// Known form paths (derived from bundled seed schemas)
-// ---------------------------------------------------------------------------
-
-const KNOWN_FORM_PATHS: readonly string[] = [
-  'assessment/standard',
-  'visit/hha-report',
-  'service/pca-log',
-];
-
-// ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
@@ -52,33 +43,36 @@ async function contentHash(content: string): Promise<string> {
   return Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, content);
 }
 
+async function authHeaders(): Promise<Record<string, string> | null> {
+  const token = await getStoredToken();
+  if (!token) return null;
+  return { Authorization: `Bearer ${token}`, Accept: 'application/json' };
+}
+
 // ---------------------------------------------------------------------------
 // Public API
 // ---------------------------------------------------------------------------
 
 /**
- * Fetch a single form schema from the Form.io server.
- * Returns null on any network or server error.
+ * Fetch a single form schema from the Lambda proxy.
+ * Returns null on any network, auth, or server error.
  */
 export async function fetchFormSchema(formPath: string): Promise<FetchSchemaResult | null> {
-  let response: Response;
+  const headers = await authHeaders();
+  if (!headers) return null;
 
+  let response: Response;
   try {
-    response = await fetch(`${FORMIO_BASE_URL}/${formPath}`, {
+    response = await fetch(`${FORMIO_BASE_URL}/schemas/${formPath}`, {
       method: 'GET',
-      headers: {
-        'x-token': FORMIO_API_KEY,
-        Accept: 'application/json',
-      },
+      headers,
       signal: withTimeout(REQUEST_TIMEOUT_MS),
     });
   } catch {
     return null;
   }
 
-  if (!response.ok) {
-    return null;
-  }
+  if (!response.ok) return null;
 
   try {
     const body = (await response.json()) as Record<string, unknown>;
@@ -92,7 +86,6 @@ export async function fetchFormSchema(formPath: string): Promise<FetchSchemaResu
       version: '',
     };
 
-    // Use ETag if the server provides one, otherwise hash the content
     const etag = response.headers.get('etag');
     const version = etag ?? (await contentHash(JSON.stringify(body)));
 
@@ -103,9 +96,30 @@ export async function fetchFormSchema(formPath: string): Promise<FetchSchemaResu
 }
 
 /**
- * Return the list of form paths that should be synced.
- * Uses the bundled list of known form paths.
+ * Fetch all available form paths from the Lambda batch endpoint.
+ * Falls back to an empty array on failure.
  */
 export async function fetchAllFormPaths(): Promise<string[]> {
-  return [...KNOWN_FORM_PATHS];
+  const headers = await authHeaders();
+  if (!headers) return [];
+
+  let response: Response;
+  try {
+    response = await fetch(`${FORMIO_BASE_URL}/schemas`, {
+      method: 'GET',
+      headers,
+      signal: withTimeout(REQUEST_TIMEOUT_MS),
+    });
+  } catch {
+    return [];
+  }
+
+  if (!response.ok) return [];
+
+  try {
+    const data = (await response.json()) as { schemas?: { formPath?: string }[] };
+    return (data.schemas ?? []).map((s) => s.formPath).filter(Boolean) as string[];
+  } catch {
+    return [];
+  }
 }

@@ -62,6 +62,10 @@ function FormScreen({ navigation, route }: FormScreenProps) {
     setLastSavedAt(date);
   }, []);
 
+  const handleSendSuccess = useCallback(() => {
+    navigation.goBack();
+  }, [navigation]);
+
   return (
     <View style={styles.container}>
       <ScreenHeader title={headerTitle} onBack={handleBack} lastSavedAt={lastSavedAt} />
@@ -69,6 +73,7 @@ function FormScreen({ navigation, route }: FormScreenProps) {
         entryId={entryId}
         onUnsavedChangesUpdate={handleUnsavedChangesUpdate}
         onLastSavedUpdate={handleLastSavedUpdate}
+        onSendSuccess={handleSendSuccess}
       />
     </View>
   );
