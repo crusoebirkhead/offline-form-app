@@ -12,10 +12,11 @@
     body {
       margin: 0;
       padding: 12px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       font-size: 16px;
+      font-weight: 500;
       line-height: 1.5;
-      color: #1a1a1a;
+      color: #32383f;
       background: #fff;
       -webkit-text-size-adjust: 100%;
     }
@@ -32,27 +33,53 @@
       color: #888;
     }
 
-    .formio-component { margin-bottom: 8px; }
-
-    .formio-error-wrapper {
-      padding: 16px;
-      margin: 12px 0;
-      background: #fef2f2;
-      border: 1px solid #fca5a5;
-      border-radius: 6px;
-      color: #991b1b;
-    }
   </style>
 </head>
 <body>
   <div id="formio-container"></div>
 
   <script src="assets/formio.form.min.js"></script>
+  <script src="assets/formio-standard-template.js"></script>
   <script>
     (function () {
       "use strict";
 
+      // Register standard-template with Bootstrap class names (no Bootstrap CSS needed)
+      var stBundle = window.FormioStandardTemplate;
+      if (stBundle && stBundle.standardTemplate && stBundle.BOOTSTRAP_EXAMPLE) {
+        Formio.use(stBundle.standardTemplate("gryphon", stBundle.BOOTSTRAP_EXAMPLE));
+      }
+
       var formInstance = null;
+      var placeholderObserver = null;
+
+      /**
+       * Inject placeholder=" " on every .form-control that lacks one.
+       * This is required for the CSS floating-label trick:
+       * :has(.form-control:not(:placeholder-shown)) only fires when the
+       * input has a placeholder attribute set (even a single space).
+       */
+      function injectPlaceholders() {
+        var container = document.getElementById("formio-container");
+        if (!container) return;
+        container.querySelectorAll(".form-control").forEach(function (el) {
+          if (!el.placeholder) el.placeholder = " ";
+        });
+      }
+
+      /**
+       * Opt datagrid children into rendering their own labels.
+       * In stacked (vertical) layout each cell is full-width, so the shared
+       * column-name header row is hidden and each field needs its own label.
+       */
+      function enableDataGridLabels(node) {
+        if (!node || !node.components) return;
+        var isDataGrid = node.type === "datagrid";
+        node.components.forEach(function (child) {
+          if (isDataGrid) child.dataGridLabel = true;
+          enableDataGridLabels(child);
+        });
+      }
 
       function postMessage(type, payload) {
         if (window.ReactNativeWebView && window.ReactNativeWebView.postMessage) {
@@ -72,16 +99,24 @@
         var container = document.getElementById("formio-container");
         container.innerHTML = "";
 
+        if (placeholderObserver) {
+          placeholderObserver.disconnect();
+          placeholderObserver = null;
+        }
         if (formInstance) {
           formInstance.destroy();
           formInstance = null;
         }
 
+        // Enable datagrid child labels for stacked layout
+        enableDataGridLabels(schema);
+
         Formio.createForm(container, schema, {
           noAlerts: true,
           readOnly: false,
           renderMode: "form",
-          sanitize: true
+          sanitize: true,
+          framework: "gryphon"
         })
           .then(function (form) {
             formInstance = form;
@@ -115,6 +150,11 @@
                   : [String(errors)]
               });
             });
+
+            // Inject placeholder=" " so CSS :not(:placeholder-shown) fires for floating labels
+            injectPlaceholders();
+            placeholderObserver = new MutationObserver(injectPlaceholders);
+            placeholderObserver.observe(container, { childList: true, subtree: true });
 
             postMessage("FORM_READY", { components: schema.components ? schema.components.length : 0 });
           })

@@ -1,6 +1,5 @@
 import {
   documentDirectory,
-  getInfoAsync,
   makeDirectoryAsync,
   copyAsync,
 } from 'expo-file-system/legacy';
@@ -18,6 +17,7 @@ const ASSETS: WebViewAsset[] = [
   { module: require('../../assets/webview/formio-theme.css'), dest: 'formio-theme.css' },
   { module: require('../../assets/webview/assets/formio.form.min.css'), dest: 'assets/formio.form.min.css' },
   { module: require('../../assets/webview/assets/formio.form.min.js.txt'), dest: 'assets/formio.form.min.js' },
+  { module: require('../../assets/webview/assets/formio-standard-template.js.txt'), dest: 'assets/formio-standard-template.js' },
   {
     module: require('../../assets/webview/assets/fonts/bootstrap-icons.woff2'),
     dest: 'assets/fonts/bootstrap-icons.woff2',
@@ -25,6 +25,22 @@ const ASSETS: WebViewAsset[] = [
   {
     module: require('../../assets/webview/assets/fonts/bootstrap-icons.woff'),
     dest: 'assets/fonts/bootstrap-icons.woff',
+  },
+  {
+    module: require('../../assets/webview/assets/fonts/Inter-Regular.woff2'),
+    dest: 'assets/fonts/Inter-Regular.woff2',
+  },
+  {
+    module: require('../../assets/webview/assets/fonts/Inter-Medium.woff2'),
+    dest: 'assets/fonts/Inter-Medium.woff2',
+  },
+  {
+    module: require('../../assets/webview/assets/fonts/Inter-SemiBold.woff2'),
+    dest: 'assets/fonts/Inter-SemiBold.woff2',
+  },
+  {
+    module: require('../../assets/webview/assets/fonts/Inter-Bold.woff2'),
+    dest: 'assets/fonts/Inter-Bold.woff2',
   },
 ];
 
@@ -34,11 +50,6 @@ const ASSETS: WebViewAsset[] = [
  * This is idempotent — once the directory exists the call returns immediately.
  */
 export async function setupWebViewAssets(): Promise<string> {
-  const dirInfo = await getInfoAsync(WEBVIEW_DIR);
-  if (dirInfo.exists) {
-    return WEBVIEW_DIR;
-  }
-
   await makeDirectoryAsync(WEBVIEW_DIR + 'assets/fonts', { intermediates: true });
 
   for (const assetDef of ASSETS) {
