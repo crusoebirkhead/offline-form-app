@@ -1674,6 +1674,26 @@
     padding: 16px 12px 20px;
   }
 
+  /* The card-padding rule above also matches individual field wrappers — they
+     carry Bootstrap's .formio-form-group class — giving them 16px of TOP
+     padding. That pushes the <input> down while the absolutely-positioned
+     floating label stays pinned to the wrapper's top edge (top: 0), so the
+     label floats ~16px above the input border instead of straddling it (the
+     "label on the outer border" bug). Zero the top padding on input-type
+     fields (keeping side/bottom padding for spacing) so the label anchors to
+     the input's top border — the Figma outlined-field notch. */
+  .formio-form .formio-form-group.formio-component-textfield,
+  .formio-form .formio-form-group.formio-component-textarea,
+  .formio-form .formio-form-group.formio-component-number,
+  .formio-form .formio-form-group.formio-component-email,
+  .formio-form .formio-form-group.formio-component-phoneNumber,
+  .formio-form .formio-form-group.formio-component-currency,
+  .formio-form .formio-form-group.formio-component-url,
+  .formio-form .formio-form-group.formio-component-datetime,
+  .formio-form .formio-form-group.formio-component-select {
+    padding-top: 0;
+  }
+
   /* Section internal gap reduced to 8px (vs 16px desktop) */
   .formio-component + .formio-component {
     padding-bottom: 20px;

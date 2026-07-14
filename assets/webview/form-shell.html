@@ -128,7 +128,7 @@
             form.on("change", function (changed) {
               try {
                 var isValid = false;
-                try { isValid = form.checkValidity(form.submission.data, true); } catch (_) {}
+                try { isValid = form.checkValidity(form.submission.data, false); } catch (_) {}
                 postMessage("FORM_CHANGE", {
                   data: form.submission.data,
                   changed: changed ? changed.changed : null,
