@@ -1,0 +1,36 @@
+{
+  "display": "form",
+  "components": [
+    {
+      "type": "textfield",
+      "key": "prefix",
+      "label": "Prefix",
+      "input": true
+    },
+    {
+      "type": "day",
+      "key": "dateOfBirth",
+      "label": "Date of Birth",
+      "input": true,
+      "fields": {
+        "day": { "type": "number", "placeholder": "", "required": false },
+        "month": { "type": "select", "placeholder": "", "required": false },
+        "year": { "type": "number", "placeholder": "", "required": false }
+      },
+      "dayFirst": false
+    },
+    {
+      "type": "datetime",
+      "key": "someDate",
+      "label": "Some Date",
+      "input": true,
+      "validate": { "required": true }
+    },
+    {
+      "type": "textfield",
+      "key": "firstName",
+      "label": "First Name",
+      "input": true
+    }
+  ]
+}

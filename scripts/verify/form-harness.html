@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Form Harness</title>
+  <link rel="stylesheet" href="/assets/webview/assets/formio.form.min.css" />
+  <link rel="stylesheet" href="/assets/webview/formio-theme.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 12px;
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+      color: #32383f;
+      background: #fff;
+      -webkit-text-size-adjust: 100%;
+    }
+    #formio-container { min-height: 100px; }
+    #formio-container:empty::after {
+      content: "Loading form\2026";
+      display: block;
+      padding: 24px;
+      text-align: center;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <div id="formio-container"></div>
+
+  <script src="/assets/webview/assets/formio.form.min.js.txt"></script>
+  <script src="/assets/webview/assets/formio-standard-template.js.txt"></script>
+  <script>
+    (function () {
+      "use strict";
+
+      var stBundle = window.FormioStandardTemplate;
+      if (stBundle && stBundle.standardTemplate && stBundle.BOOTSTRAP_EXAMPLE) {
+        Formio.use(stBundle.standardTemplate("gryphon", stBundle.BOOTSTRAP_EXAMPLE));
+      }
+
+      function injectPlaceholders() {
+        var container = document.getElementById("formio-container");
+        if (!container) return;
+        container.querySelectorAll(".form-control").forEach(function (el) {
+          if (!el.placeholder) el.placeholder = " ";
+        });
+      }
+
+      function enableDataGridLabels(node) {
+        if (!node || !node.components) return;
+        var isDataGrid = node.type === "datagrid";
+        node.components.forEach(function (child) {
+          if (isDataGrid) child.dataGridLabel = true;
+          enableDataGridLabels(child);
+        });
+      }
+
+      var currentForm = null;
+      var observer = null;
+
+      window.renderForm = function renderForm(schema) {
+        var container = document.getElementById("formio-container");
+        container.innerHTML = "";
+        if (currentForm) { currentForm.destroy(); currentForm = null; }
+        if (observer) { observer.disconnect(); observer = null; }
+
+        var cloned = JSON.parse(JSON.stringify(schema));
+        enableDataGridLabels(cloned);
+
+        return Formio.createForm(container, cloned, {
+          noAlerts: true,
+          readOnly: false,
+          renderMode: "form",
+          sanitize: true,
+          framework: "gryphon"
+        }).then(function (form) {
+          currentForm = form;
+          injectPlaceholders();
+          observer = new MutationObserver(injectPlaceholders);
+          observer.observe(container, { childList: true, subtree: true });
+          window.__formReady = true;
+          return form;
+        });
+      };
+
+      window.measureLeftEdges = function measureLeftEdges() {
+        var container = document.getElementById("formio-container");
+        var containerRect = container.getBoundingClientRect();
+        var results = [];
+
+        var selectors = [
+          { name: "text label", selector: ".formio-component-textfield > label" },
+          { name: "text input border", selector: ".formio-component-textfield .form-control" },
+          { name: "select label", selector: ".formio-component-select > label" },
+          { name: "select input border", selector: ".formio-component-select .choices__inner" },
+          { name: "textarea label", selector: ".formio-component-textarea > label" },
+          { name: "textarea input border", selector: ".formio-component-textarea .form-control" },
+          { name: "radio question label", selector: ".formio-component-radio > label" },
+          { name: "radio option label", selector: ".formio-component-radio .form-check-label" },
+          { name: "radio input", selector: ".formio-component-radio .form-check-input" },
+          { name: "checkbox question label", selector: ".formio-component-checkbox > label" },
+          { name: "checkbox option label", selector: ".formio-component-checkbox .form-check-label" },
+          { name: "checkbox input", selector: ".formio-component-checkbox .form-check-input" },
+          { name: "number label", selector: ".formio-component-number > label" },
+          { name: "number input border", selector: ".formio-component-number .form-control" },
+          { name: "email label", selector: ".formio-component-email > label" },
+          { name: "email input border", selector: ".formio-component-email .form-control" },
+          { name: "phone label", selector: ".formio-component-phoneNumber > label" },
+          { name: "phone input border", selector: ".formio-component-phoneNumber .form-control" },
+          { name: "currency label", selector: ".formio-component-currency > label" },
+          { name: "currency input border", selector: ".formio-component-currency .form-control" },
+          { name: "url label", selector: ".formio-component-url > label" },
+          { name: "url input border", selector: ".formio-component-url .form-control" },
+          { name: "datetime label", selector: ".formio-component-datetime > label" },
+          { name: "datetime input border", selector: ".formio-component-datetime .form-control" },
+          { name: "day label", selector: ".formio-component-day > label" },
+          { name: "day sub-label", selector: ".formio-component-day .row > .col > label" },
+          { name: "day sub-input border", selector: ".formio-component-day .row > .col input, .formio-component-day .row > .col select" },
+          { name: "datagrid label", selector: ".formio-component-datagrid > label" }
+        ];
+
+        selectors.forEach(function (item) {
+          var els = container.querySelectorAll(item.selector);
+          if (!els.length) return;
+          els.forEach(function (el, idx) {
+            var rect = el.getBoundingClientRect();
+            var cs = window.getComputedStyle(el);
+            var padLeft = parseFloat(cs.paddingLeft) || 0;
+            results.push({
+              type: item.name,
+              index: idx,
+              left: rect.left,
+              leftRelative: rect.left - containerRect.left,
+              textLeftRelative: rect.left + padLeft - containerRect.left,
+              width: rect.width,
+              text: el.textContent.trim().substring(0, 40)
+            });
+          });
+        });
+
+        window.__lastMeasurements = results;
+        return results;
+      };
+    })();
+  </script>
+</body>
+</html>
