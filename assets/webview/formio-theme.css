@@ -144,14 +144,17 @@
   position: relative;
 }
 
-/* Collapse conditionally hidden fields entirely — Bootstrap mb-* margins still
-   apply without this, leaving blank whitespace on mobile. */
-.formio-hidden {
+/* Collapse conditionally hidden fields and hidden-input components entirely —
+   Bootstrap mb-* margins still apply without this, leaving blank whitespace on
+   mobile. Hidden inputs keep their <input> in the DOM for form data; only the
+   wrapper is removed from visual layout. */
+.formio-hidden,
+.formio-component-hidden {
   display: none !important;
 }
 
 /* Sections separated by dividers */
-.formio-component + .formio-component:not(.formio-hidden) {
+.formio-component + .formio-component:not(.formio-hidden):not(.formio-component-hidden) {
   margin-top: 4px;
   padding-bottom: 20px;
 }
