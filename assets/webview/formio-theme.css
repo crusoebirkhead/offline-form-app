@@ -308,7 +308,10 @@
     color 0.15s ease;
   margin-bottom: 0;
   z-index: 1;
-  line-height: 1;
+  /* line-height must leave room below the baseline for descenders (g, y, q, p, j).
+     With Inter, line-height: 1 clips descenders because the glyph extends past
+     the 1em line box and overflow:hidden is required for text-overflow:ellipsis. */
+  line-height: 1.3;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -467,12 +470,11 @@
    --------------------------------------------------------------------------- */
 
 /* Textarea label: anchor near the top of the multi-line field instead of
-   vertically centering like a single-line input. translateY(16px) puts the
-   label center at ~26px from the top border, aligned with the first text line
-   (textarea padding-top: 18px + half line-height of 1.5×16px = 12px → 30px
-   minus half label height ~8px ≈ 22px; 16px is slightly higher, feels natural). */
+    vertically centering like a single-line input. With the label line-height
+    now 1.3, the 16px label box is ~21px tall; translateY(12px) keeps the label
+    text center near the first textarea text line while leaving room for descenders. */
 .formio-component-textarea > label {
-  transform: translateY(16px);
+  transform: translateY(12px);
 }
 
 .formio-component-textarea .form-control {
@@ -547,7 +549,8 @@
   pointer-events: none;
   z-index: 2;
   margin-bottom: 0;
-  line-height: 1;
+  /* Match the textfield floating label: room for descenders without clipping. */
+  line-height: 1.3;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
