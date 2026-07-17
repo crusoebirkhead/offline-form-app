@@ -318,9 +318,14 @@
   background: transparent;
   transition: top 0.12s ease, transform 0.12s ease, font-size 0.12s ease,
     color 0.12s ease, background-color 0.12s ease;
-  /* Resting state (empty + blurred): label at input baseline, 14px, gray.
-   * design-spec §2 "resting state". */
-  top: 50%;
+  /* Resting state (empty + blurred): label vertically centered on the INPUT
+   * box, 14px, gray. design-spec §2 "resting state".
+   * NB: anchor to half the field height (input always starts at the wrapper's
+   * top, inputTop=0), NOT `top: 50%` — the wrapper is taller than the input on
+   * fields that carry the 20px question-bottom-padding + divider (measured 77px
+   * vs a 56px input), so `50%` dropped the label ~10px below the input's true
+   * center and looked inconsistent field-to-field. */
+  top: calc(var(--fio-field-height) / 2);
   transform: translateY(-50%);
   font-size: var(--fio-input-text-size);
   font-weight: var(--fio-question-label-weight);
