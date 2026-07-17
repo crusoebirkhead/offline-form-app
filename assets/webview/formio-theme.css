@@ -409,11 +409,11 @@
   box-sizing: border-box;
   width: 100%;
   height: 56px;
-  padding: 4px 16px 4px 16px;
-  /* extra top padding so 14px input text clears the floated 10px notch label
-     which sits vertically centered on the top border (design-spec.md §2) */
-  padding-top: 22px;
-  padding-bottom: 6px;
+  /* Symmetric vertical padding centers the typed text + caret on the field
+     (content-box center == field center == 28px). Top padding of 14px still
+     clears the floated notch label, whose bottom edge sits at ~6.5px inside
+     the field — an 8.5px gap (measured). design-spec.md §2. */
+  padding: 14px 16px 14px 16px;
   border: 1px solid var(--fio-border);
   border-radius: 12px;
   background: var(--fio-bg);
@@ -472,9 +472,9 @@
   box-sizing: border-box;
   width: 100%;
   height: 56px;
-  padding: 4px 16px 4px 16px;
-  padding-top: 22px;
-  padding-bottom: 6px;
+  /* Symmetric top/bottom padding centers the value + caret vertically (matches
+     the text-input family); 14px top still clears the floated notch label. */
+  padding: 14px 16px 14px 16px;
   /* reserve room on the right for the custom stepper column so input text
      never sits under the arrows */
   padding-right: 34px;
