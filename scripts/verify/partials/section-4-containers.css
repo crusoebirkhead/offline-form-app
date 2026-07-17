@@ -1,0 +1,577 @@
+/* SECTION 4: panels/datagrid/file/errors/datetime/hidden — Agent D */
+
+/* =========================================================================
+   PANEL / FIELDSET / WELL
+   Panels render as seamless white containers (no heavy Bootstrap card
+   chrome) — just the section's 12px radius + a divider under the header
+   row. Header row layout only: Agent C owns the checkbox-pill + Upload
+   Media BUTTON widgets that sit inside this row.
+   ========================================================================= */
+
+.formio-component-panel {
+  background: var(--fio-bg);
+  border-radius: var(--fio-radius);
+  overflow: hidden;
+}
+
+/* Bootstrap "card" scaffolding classnames are present on the panel root
+   even though no Bootstrap CSS loads — reset any implicit card chrome to
+   transparent/seamless per the reference (no double border, no shadow). */
+.formio-component-panel > .card {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+}
+
+/* Section header row: bold 15px title left, 56px height, 16px/12px padding,
+   1px divider underneath (design-spec §"Section header"). Card-header is
+   `role="button"` when collapsible — flex row so title + checkbox pills +
+   Upload Media button share a baseline. */
+.formio-component-panel > .card > .card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 56px;
+  padding: 16px 12px;
+  border-bottom: 1px solid var(--fio-divider);
+  cursor: default;
+}
+
+/* Collapsible panels get role="button" — restore pointer only then */
+.formio-component-panel > .card > .card-header[role="button"] {
+  cursor: pointer;
+}
+
+.formio-component-panel > .card > .card-header .card-title {
+  margin: 0;
+  font-family: var(--fio-font-family, "Inter", sans-serif);
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.2;
+  color: var(--fio-text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Collapse chevron icon, if present, sits before the title text */
+.formio-component-panel > .card > .card-header .formio-collapse-icon {
+  color: var(--fio-label);
+  font-size: 14px;
+}
+
+.formio-component-panel > .card > .card-body {
+  padding: 16px 12px 20px;
+}
+
+/* Nested panels must not double-pad: a panel-in-panel only needs its own
+   header divider, not a second round of body padding stacked on the
+   parent's. Collapse the inner body's padding on the block-axis the
+   parent already provided (parent still supplies the 16px/12px gutter). */
+.formio-component-panel .formio-component-panel > .card > .card-body {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* fieldset ships with almost no built-in classes (bare <fieldset>/<legend>).
+   Give it the same seamless-container + header-divider treatment so a
+   fieldset used as a lightweight grouping reads consistently with panel. */
+.formio-component-fieldset {
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+.formio-component-fieldset > legend {
+  width: 100%;
+  margin: 0 0 16px;
+  padding: 0 0 20px;
+  border-bottom: 1px solid var(--fio-divider);
+  font-family: var(--fio-font-family, "Inter", sans-serif);
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.2;
+  color: var(--fio-text);
+}
+
+/* well: no schema in this app currently uses it (per selector-inventory.md,
+   "well" is absent from the audited schema types) — style defensively as a
+   plain seamless container matching panel/fieldset so it doesn't regress if
+   a future schema introduces it. ASSUMPTION: no exact anatomy confirmed;
+   matches panel body treatment per design-spec "seamless container" intent. */
+.formio-component-well {
+  background: var(--fio-bg);
+  border-radius: var(--fio-radius);
+  padding: 16px 12px 20px;
+}
+
+/* =========================================================================
+   COLUMNS
+   No Bootstrap grid CSS is loaded (selector-inventory.md "columns" section) —
+   col-*/offset-* classes carry zero built-in flex behavior. Provide a basic
+   mobile-first row scaffold: stack vertically on the narrow WebView
+   viewport. The ft/in split-field visual join (shared middle border, -1px
+   gap collapse) is Agent B's territory — this rule only supplies the row's
+   flex/gap scaffolding, it does not touch borders/radius on the split pair.
+   ========================================================================= */
+
+.formio-component-columns {
+  width: 100%;
+}
+
+.formio-component-columns > .row {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  margin: 0;
+  gap: 0;
+}
+
+.formio-component-columns > .row > [class*="col-"] {
+  box-sizing: border-box;
+  padding: 0;
+  min-width: 0;
+}
+
+/* Mobile-first default: stack columns full-width. Agent B's ft/in join
+   relies on the two columns sitting side-by-side (flex-row, no wrap) — that
+   pairing is scoped to the split-field's own column wrapper class, so this
+   generic stack rule intentionally applies to plain `.formio-component-columns
+   > .row` only and does not need an exclusion here. */
+@media (max-width: 480px) {
+  .formio-component-columns > .row > [class*="col-"] {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}
+
+/* =========================================================================
+   DATAGRID
+   This app forces stacked/mobile rendering (form-shell.html sets
+   dataGridLabel=true on every datagrid child so each cell renders its own
+   label — see selector-inventory.md "Runtime DOM mutations"). Style for
+   that stacked case: hide the redundant header row, lay each row out as a
+   vertically-stacked full-width card, wrap in horizontal scroll as a
+   defensive fallback in case any datagrid is NOT stacked (e.g. layoutFixed
+   wide table that still renders as a table on a wider viewport).
+   ========================================================================= */
+
+.formio-component-datagrid {
+  width: 100%;
+}
+
+/* Label above table, per component anatomy (question label style, reused
+   from the generic per-component label — Agent A's base already sizes
+   `.col-form-label`; this just ensures spacing before the table itself). */
+.formio-component-datagrid > label {
+  display: block;
+  margin-bottom: 8px;
+}
+
+/* Horizontal scroll wrapper so a wide (non-stacked) table doesn't crush the
+   narrow WebView viewport. Form.io does not emit a dedicated scroll wrapper
+   div around `.datagrid-table`, so we make the table's own container
+   scrollable directly. */
+.formio-component-datagrid > .table-responsive,
+.formio-component-datagrid {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.datagrid-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--fio-bg);
+}
+
+/* Required-column asterisk: Form.io emits `field-required` as a bare class
+   hook with no literal "*" text (selector-inventory.md "REQUIRED field
+   markup") — generated content supplies the visible glyph, same convention
+   used for field labels elsewhere in this theme. */
+.datagrid-table thead th.field-required::after {
+  content: " *";
+  color: var(--fio-error);
+}
+
+/* --- Stacked/mobile layout (dataGridLabel mode: each cell carries its own
+   label, so the shared header row would be redundant, per
+   selector-inventory.md "Stacked/vertical layout in this app"). --- */
+.datagrid-table thead {
+  display: none;
+}
+
+.datagrid-table,
+.datagrid-table tbody,
+.datagrid-table tbody tr,
+.datagrid-table tbody td {
+  display: block;
+  width: 100%;
+}
+
+.datagrid-table tbody tr {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 0;
+}
+
+.datagrid-table tbody tr:not(:last-child) {
+  border-bottom: 1px solid var(--fio-divider);
+}
+
+.datagrid-table tbody td {
+  padding: 0;
+  border: none;
+}
+
+/* Kill the generic per-component field-spacing wrapper's bottom margin
+   inside a cell — the row's own `gap` already provides spacing, doubling
+   up would create uneven vertical rhythm between stacked cell labels. */
+.datagrid-table td .formio-form-group {
+  margin-bottom: 0;
+}
+
+/* Reorder / remove-row action cells: own line, right-aligned */
+.datagrid-table tbody td.reorderCell,
+.datagrid-table tbody td.removeButtonCell {
+  width: 100%;
+  text-align: right;
+}
+
+.datagrid-table tbody tr:nth-child(even) {
+  background: var(--fio-bg);
+}
+
+.datagrid-table tfoot,
+.datagrid-table tfoot tr,
+.datagrid-table tfoot td {
+  display: block;
+  width: 100%;
+}
+
+.datagrid-table tfoot td {
+  padding: 16px 0 0;
+  text-align: left;
+  border-top: none;
+}
+
+/* Add-row / remove-row buttons: pill shape per design-spec button anatomy.
+   Agent C owns generic .btn visuals; these selectors only cover the
+   datagrid-specific add/remove affordances that live outside C's scope
+   (button classnames unique to datagrid template: formio-button-add-row /
+   formio-button-remove-row / formio-drag-button). */
+.formio-button-add-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 96px;
+  border: 1px solid var(--fio-primary-outline);
+  background: transparent;
+  color: var(--fio-primary);
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 1.3;
+  padding: 12px 20px;
+  cursor: pointer;
+}
+
+.formio-button-remove-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 96px;
+  border: 1px solid var(--fio-error);
+  background: transparent;
+  color: var(--fio-error);
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 1.3;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.formio-drag-button {
+  border: none;
+  background: transparent;
+  color: var(--fio-label);
+  cursor: grab;
+}
+
+/* =========================================================================
+   DATETIME / CALENDAR (flatpickr)
+   ---------------------------------------------------------------------
+   OFFLINE CAVEAT (flag for integrator): selector-inventory.md documents
+   that Form.io's CalendarWidget loads flatpickr's CSS+JS from a CDN at
+   runtime (Formio.cdn['flatpickr-formio'] / Formio.cdn['flatpickr']) — it
+   is NOT bundled anywhere in this repo's node_modules or
+   assets/webview/assets/. In a genuinely offline WebView the calendar
+   POPUP may silently fail to load, meaning these .flatpickr-* rules below
+   cannot be verified to ever paint in production offline use. The bound
+   TEXT INPUT (input.form-control.flatpickr-input... visible text field) is
+   NOT affected — it is plain Form.io/theme markup and always renders
+   regardless of the CDN fetch succeeding. Recommend the integrator either
+   vendor a local flatpickr build or set an offline Formio.cdn override;
+   until then, treat the calendar-popup styling below as best-effort/unused.
+   ========================================================================= */
+
+/* The visible text input reuses the standard outlined text-field look
+   (Agent A's floating-label base) — no extra chrome needed beyond making
+   sure the input-group wrapper doesn't fight that base's border/radius. */
+.formio-component-datetime .input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.formio-component-datetime .input-group .form-control.input {
+  flex: 1 1 auto;
+}
+
+/* The actual bound value input is `type="hidden"` (flatpickr-input) and
+   must not render/occupy space — it sits alongside the visible altInput. */
+.formio-component-datetime input.flatpickr-input[type="hidden"] {
+  display: none;
+}
+
+/* Calendar icon suffix slot */
+.formio-component-datetime .input-group-text {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  color: var(--fio-label);
+}
+
+/* Calendar popup (best-effort — see offline caveat above; only paints if
+   flatpickr's CDN assets actually loaded at runtime). */
+.flatpickr-calendar {
+  background: var(--fio-bg);
+  border: 1px solid var(--fio-border);
+  border-radius: var(--fio-radius);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  font-family: var(--fio-font-family, "Inter", sans-serif);
+}
+
+.flatpickr-day {
+  color: var(--fio-text);
+  border-radius: 8px;
+}
+
+.flatpickr-day.selected,
+.flatpickr-day.selected:hover {
+  background: var(--fio-primary);
+  border-color: var(--fio-primary);
+  color: #fff;
+}
+
+.flatpickr-day:hover {
+  background: var(--fio-divider);
+}
+
+.flatpickr-day.flatpickr-disabled,
+.flatpickr-day.flatpickr-disabled:hover {
+  color: var(--fio-border);
+}
+
+.flatpickr-months .flatpickr-prev-month:hover svg,
+.flatpickr-months .flatpickr-next-month:hover svg {
+  fill: var(--fio-primary);
+}
+
+/* =========================================================================
+   FILE
+   ========================================================================= */
+
+.formio-component-file .list-group {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  border: 1px solid var(--fio-border);
+  border-radius: var(--fio-radius);
+  overflow: hidden;
+}
+
+.formio-component-file .list-group-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: var(--fio-bg);
+  border: none;
+}
+
+.formio-component-file .list-group-item:not(:last-child) {
+  border-bottom: 1px solid var(--fio-divider);
+}
+
+/* Header row (fileName / size / type labels) — small caption style */
+.formio-component-file .list-group-item.list-group-header {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--fio-label);
+}
+
+.formio-component-file .list-group-item.list-group-header strong {
+  font-weight: 600;
+}
+
+.formio-component-file .list-group-item .row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.formio-component-file .list-group-item .row > [class*="col-"] {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* File row remove icon */
+.formio-component-file .list-group-item [ref="removeLink"] {
+  flex: 0 0 auto;
+  color: var(--fio-error);
+  cursor: pointer;
+}
+
+/* Upload / drop zone — clean bordered affordance matching the reference's
+   pill "Upload Media" look at the drop-zone level (Agent C styles the
+   actual .btn/pill widget elements; this covers the drop-zone container +
+   its browse link and icon that aren't a themed .btn). */
+.formio-component-file .fileSelector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px 16px;
+  border: 1px dashed var(--fio-border);
+  border-radius: var(--fio-radius);
+  background: var(--fio-bg);
+  text-align: center;
+  color: var(--fio-label);
+  font-size: 13px;
+}
+
+.formio-component-file .fileSelector a.browse {
+  color: var(--fio-primary);
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.formio-component-file .alert.alert-warning {
+  margin-top: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--fio-error);
+  background: rgba(220, 38, 38, 0.08);
+  border: 1px solid var(--fio-error);
+}
+
+/* =========================================================================
+   VALIDATION ERRORS
+   `.formio-errors.invalid-feedback` is always present in the DOM (per
+   selector-inventory.md), empty when there are no errors — no !important
+   needed here since Form.io does not set conflicting inline styles on this
+   element. `.is-invalid` lands on the control itself (not the wrapper);
+   `.has-error` is the wrapper class used conditionally per the app's
+   options (confirmed live via the old theme's existing use of the
+   selector, see selector-inventory.md "VALIDATION ERROR markup").
+   ========================================================================= */
+
+.formio-errors:empty {
+  display: none;
+}
+
+.formio-errors .error,
+.formio-errors li {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--fio-error);
+}
+
+.formio-errors > p {
+  margin: 4px 0 0;
+  font-size: 10px;
+  color: var(--fio-error);
+}
+
+/* Invalid control border. Reuses the same field shape as the unstyled
+   state (Agent A/B's base) — only swapping the border color, so the
+   floating-label notch keeps working unmodified. */
+.form-control.is-invalid,
+.has-error .form-control,
+.formio-error-wrapper .form-control {
+  border-color: var(--fio-error);
+}
+
+.form-control.is-invalid:focus,
+.has-error .form-control:focus {
+  border-color: var(--fio-error);
+}
+
+/* Keep the notch label visible/legible in the error state — do not let the
+   error color rule make the floated label unreadable against the white
+   notch background; explicit color (not opacity) preserves contrast. */
+.has-error .col-form-label,
+.formio-error-wrapper .col-form-label,
+.has-error > label,
+.formio-error-wrapper > label {
+  color: var(--fio-error);
+}
+
+/* choices.js (select) invalid state */
+.has-error .choices__inner,
+.formio-error-wrapper .choices__inner {
+  border-color: var(--fio-error);
+}
+
+/* =========================================================================
+   HIDDEN FIELDS
+   Two distinct mechanisms per selector-inventory.md — BOTH must collapse to
+   zero layout space:
+     1. `.formio-hidden`          — conditionally hidden via conditional
+        logic (`!this.visible`), any component type.
+     2. `.formio-component-hidden` — the dedicated schema `type: "hidden"`
+        component; still gets the standard has-feedback/formio-form-group
+        wrapper classes (hasInput === true) so it contributes margin/padding
+        UNLESS explicitly zeroed here. A prior bug (FORM-2, commit
+        35ed7c4) covered only one of these and left blank space — covering
+        both explicitly below prevents regressing that fix.
+   `!important` is used here because `formio-hidden`/`formio-component-hidden`
+   need to win over the generic `.formio-form-group` margin/padding rules
+   (and any inline `display` Form.io may toggle when conditional logic
+   re-shows the field) regardless of selector-specificity ordering across
+   the four section partials.
+   ========================================================================= */
+
+.formio-hidden,
+.formio-component-hidden {
+  display: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  height: 0 !important;
+}
+
+/* Day component nests its own `type="hidden"` composite-value input INSIDE
+   a normally-visible `.formio-component-day` wrapper (selector-inventory.md
+   "HIDDEN-type fields" — day emits input[type=hidden] unrelated to the
+   dedicated Hidden component). That inner input must stay non-rendering
+   without hiding/collapsing the day wrapper itself, so this is scoped to
+   the input element, not the wrapper. */
+.formio-component-day input[type="hidden"] {
+  display: none;
+}

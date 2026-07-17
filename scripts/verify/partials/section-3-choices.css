@@ -1,0 +1,580 @@
+/* SECTION 3: select/radio/checkbox/buttons — Agent C */
+
+/* =============================================================================
+   SELECT (choices.js)
+   -----------------------------------------------------------------------------
+   Form.io mounts choices.js over a hidden native <select>. Live DOM (per
+   selector-inventory.md "select (choices.js)"):
+
+     div.choices.form-group.formio-choices[data-type]      <- containerOuter
+       div.form-control ...                                 <- containerInner (the field box)
+         div.choices__list.choices__list--single
+           div.choices__item.choices__item--selectable[.choices__placeholder]
+         input.choices__input[type=search|text]              <- only if searchEnabled
+       div.choices__list.choices__list--dropdown             <- detached popup panel
+         div.choices__item.choices__item--selectable[.is-highlighted][.is-selected]
+       select[ref="selectContainer"]                         <- original native <select>, choices.js hides it
+       input.formio-select-autocomplete-input                <- Form.io's own shim, not choices.js
+
+   choices.js applies inline styles to some of these nodes at runtime (e.g. it
+   toggles `display` on the dropdown/select via its own JS), so several rules
+   below need `!important` to win over that inline styling — each is commented
+   at the point of use.
+   ========================================================================== */
+
+/* Reuse Agent A's floating-label wrapper: the select's field-level wrapper
+   (.formio-component-select) must establish position:relative + the label
+   notch mechanics exactly like textfield/number. We only ADD the
+   chevron + choices.js-specific plumbing here; the notch geometry itself
+   (label position/transform/background-masking) is Agent A's base rule
+   applied via the shared `.formio-component .col-form-label` selector and
+   the `:not(:placeholder-shown)` / `:focus-within` triggers. Because
+   choices.js has no native input with a placeholder, we drive the floated
+   state off `.choices.is-open`/`.is-focused`/`has-value` container state
+   instead (see ".floated state" rules below), while still inheriting the
+   base label typography/position rules from Agent A's `:root`-scoped notch.
+*/
+
+/* Hide the native <select> choices.js wraps. choices.js itself sets
+   `hidden` on this element via JS but does not guarantee `display:none`
+   wins over our own `.form-control` base rules, so we force it — this is
+   purely a redundant-safety rule, not a style choice. */
+.formio-component-select select[ref="selectContainer"] {
+  display: none !important;
+}
+
+/* Hide Form.io's own autocomplete shim input. It exists only for a11y/
+   autofill wiring and is never meant to be visible; choices.js does not
+   touch it at all (Form.io adds it independently), so nothing else hides
+   it for us. */
+.formio-component-select .formio-select-autocomplete-input,
+.formio-select-autocomplete-input {
+  display: none !important;
+}
+
+.formio-component-select .choices {
+  position: relative;
+  width: 100%;
+  margin-bottom: 0;
+}
+
+/* containerInner = the visible field box. choices.js assigns this element
+   the transformed class list "form-control ui fluid selection dropdown",
+   so `.choices .form-control` targets it; matches the outlined field
+   treatment used by text/number inputs (Agent A/B), reproduced here since
+   choices.js's DOM shape doesn't share their exact selector. */
+.formio-component-select .choices__inner,
+.formio-component-select .choices > .form-control {
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+  height: auto;
+  width: 100%;
+  border: 1px solid var(--fio-border);
+  border-radius: var(--fio-radius);
+  background: var(--fio-bg);
+  padding: 4px 40px 4px 16px; /* right padding clears the chevron */
+  font-family: var(--fio-font-family, inherit);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--fio-text);
+  cursor: pointer;
+  position: relative;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+@media (hover: hover) {
+  .formio-component-select .choices__inner:hover,
+  .formio-component-select .choices > .form-control:hover {
+    border-color: var(--fio-primary);
+  }
+}
+
+/* Focused/open state drives both the border AND (via the sibling-label
+   combinator) the floated notch label color, matching Agent A's focus
+   treatment on text inputs. */
+.formio-component-select .choices.is-focused .choices__inner,
+.formio-component-select .choices.is-open .choices__inner,
+.formio-component-select .choices.is-focused > .form-control,
+.formio-component-select .choices.is-open > .form-control {
+  border-color: var(--fio-primary);
+  outline: none;
+}
+
+.formio-component-select:has(.choices.is-focused) > label,
+.formio-component-select:has(.choices.is-open) > label,
+.formio-component-select:has(.choices .has-value) > label {
+  color: var(--fio-primary);
+}
+
+/* Floated-notch trigger for select: choices.js never exposes a native
+   `:placeholder-shown` hook (no real placeholder attribute is meaningful
+   on a fake input), so we float the label whenever the field has a
+   selected value (`.has-value`, added by Select.js/choices.js to
+   containerOuter) OR is currently focused/open — reusing Agent A's
+   floated-state geometry (top:0; translateY(-50%); left:12px; padding:0 4px;
+   background:var(--fio-bg); font-size:10px;). */
+.formio-component-select:has(.choices.is-focused) > label,
+.formio-component-select:has(.choices.is-open) > label,
+.formio-component-select:has(.choices.has-value) > label {
+  top: 0;
+  transform: translateY(-50%);
+  left: 12px;
+  padding: 0 4px;
+  background: var(--fio-bg);
+  font-size: 10px;
+}
+
+.formio-component-select .choices__list--single {
+  padding: 0;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.formio-component-select .choices__item {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--fio-text);
+  line-height: 1.5;
+}
+
+.formio-component-select .choices__placeholder {
+  color: var(--fio-label);
+  opacity: 1;
+}
+
+/* Single gray chevron ("arrow_drop_down"), CSS triangle — no external
+   asset. choices.js sets `data-type="select-one"`/`select-multiple` on
+   the outer `.choices` element itself, so we key off that attribute. */
+.formio-component-select .choices[data-type*="select-one"]::after,
+.formio-component-select .choices[data-type*="select-multiple"]::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-style: solid;
+  border-width: 6px 5px 0;
+  border-color: var(--fio-label) transparent transparent;
+}
+
+.formio-component-select .choices[data-type*="select-one"].is-open::after,
+.formio-component-select .choices[data-type*="select-multiple"].is-open::after {
+  /* flip to point up while the dropdown is open */
+  border-width: 0 5px 6px;
+  border-color: transparent transparent var(--fio-label);
+}
+
+/* Dropdown popup panel. choices.js toggles `display:none|block` on this
+   node inline via JS (its own show/hide logic) — our positioning/visual
+   rules apply underneath that, but we must not fight the show/hide
+   itself, so we only set `!important` on the properties choices.js also
+   sets inline (none currently do beyond display, which we intentionally
+   leave to the library). */
+.formio-component-select .choices__list--dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 4px;
+  background: var(--fio-bg);
+  border: 1px solid var(--fio-border);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  z-index: 100;
+  overflow: hidden;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.formio-component-select .choices__list--dropdown .choices__item {
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--fio-text);
+  cursor: pointer;
+  transition: background 0.1s ease;
+}
+
+.formio-component-select .choices__list--dropdown .choices__item--selectable.is-highlighted {
+  background: rgba(24, 148, 225, 0.08); /* --fio-primary tint */
+  color: var(--fio-text);
+}
+
+.formio-component-select .choices__list--dropdown .choices__item.is-selected {
+  color: var(--fio-primary);
+  font-weight: 600;
+}
+
+/* Search input inside the field box (searchEnabled option) */
+.formio-component-select .choices__input {
+  font-family: var(--fio-font-family, inherit);
+  font-size: 14px;
+  color: var(--fio-text);
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  outline: none;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Multi-select tags (choices__list--multiple + per-item remove button) */
+.formio-component-select .choices__list--multiple {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  flex: 1;
+}
+
+.formio-component-select .choices__list--multiple .choices__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(24, 148, 225, 0.08);
+  border: 1px solid var(--fio-primary);
+  border-radius: 6px;
+  color: var(--fio-primary);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 6px;
+  margin: 2px 0;
+}
+
+.formio-component-select .choices__list--multiple .choices__button {
+  border: none;
+  background: transparent;
+  color: var(--fio-primary);
+  opacity: 0.7;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+/* Supporting text below the field ("Select all that apply") — description
+   markup is `.form-text.text-muted` per the generic component contract in
+   selector-inventory.md, rendered as a sibling AFTER the element. */
+.formio-component-select .form-text {
+  display: block;
+  margin-top: 4px;
+  padding: 0 16px;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--fio-label);
+}
+
+/* =============================================================================
+   RADIO
+   -----------------------------------------------------------------------------
+   .formio-component-radio
+     label.col-form-label            <- question label ("Was the member seen out of bed?")
+     div.form-radio.radio[role=radiogroup]
+       div.form-check[.form-check-inline]     <- one per option
+         input.form-check-input[type=radio][ref=input]
+         label.form-check-label
+   ========================================================================== */
+
+.formio-component-radio .form-radio {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+/* Per design-spec §3.7: >2 options stack vertically; 2 (Yes/No) stay
+   inline. :has(> :nth-child(3)) fires only once a 3rd `.form-check`
+   sibling exists. */
+.formio-component-radio .form-radio:has(.form-check:nth-child(3)) {
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.formio-component-radio .form-check,
+.formio-component-radio .form-check-inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* Custom circle: unselected = 20px hollow circle, 2px --fio-border.
+   appearance:none strips the native radio dot so we own the whole look. */
+.formio-component-radio input.form-check-input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  border: 2px solid var(--fio-border);
+  border-radius: 50%;
+  background: var(--fio-bg);
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  transition: border-color 0.15s ease;
+}
+
+@media (hover: hover) {
+  .formio-component-radio input.form-check-input[type="radio"]:hover {
+    border-color: var(--fio-primary);
+  }
+}
+
+/* Selected = --fio-primary ring + filled center dot (::after). */
+.formio-component-radio input.form-check-input[type="radio"]:checked {
+  border-color: var(--fio-primary);
+}
+
+.formio-component-radio input.form-check-input[type="radio"]:checked::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--fio-primary);
+  transform: translate(-50%, -50%);
+}
+
+.formio-component-radio input.form-check-input[type="radio"]:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.formio-component-radio .form-check-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fio-text);
+  line-height: 1.5;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* =============================================================================
+   SELECTBOXES + SINGLE CHECKBOX
+   -----------------------------------------------------------------------------
+   selectboxes shares radio/form.js's template — same .form-check/.form-check-input
+   wrapper vocabulary, but input.attr.type resolves to "checkbox". The
+   standalone `checkbox` component uses its own template
+   (.form-check.checkbox wrapper) but the same .form-check-input class, so
+   we style both wrapper shapes with one rule set.
+   ========================================================================== */
+
+.formio-component-selectboxes .form-radio {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.formio-component-checkbox .form-check,
+.formio-component-selectboxes .form-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.formio-component-checkbox input.form-check-input[type="checkbox"],
+.formio-component-selectboxes input.form-check-input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  border: 1px solid var(--fio-border);
+  border-radius: 4px;
+  background: var(--fio-bg);
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+@media (hover: hover) {
+  .formio-component-checkbox input.form-check-input[type="checkbox"]:hover,
+  .formio-component-selectboxes input.form-check-input[type="checkbox"]:hover {
+    border-color: var(--fio-primary);
+  }
+}
+
+.formio-component-checkbox input.form-check-input[type="checkbox"]:checked,
+.formio-component-selectboxes input.form-check-input[type="checkbox"]:checked {
+  border-color: var(--fio-primary);
+  background: var(--fio-primary);
+}
+
+/* White check mark drawn as a rotated CSS border pair (no external SVG). */
+.formio-component-checkbox input.form-check-input[type="checkbox"]:checked::after,
+.formio-component-selectboxes input.form-check-input[type="checkbox"]:checked::after {
+  content: "";
+  position: absolute;
+  top: 1px;
+  left: 5px;
+  width: 5px;
+  height: 9px;
+  border: solid #ffffff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.formio-component-checkbox input.form-check-input[type="checkbox"]:disabled,
+.formio-component-selectboxes input.form-check-input[type="checkbox"]:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.formio-component-checkbox .form-check-label,
+.formio-component-selectboxes .form-check-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--fio-text);
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+/* Header "SR" / "N/A" checkbox pills: small 18px box + 10px/600 gray
+   label, sitting inline beside the section title. These are ordinary
+   .formio-component-checkbox instances placed in the section header
+   slot (D owns the header container itself); we scope the compact
+   pill typography to a header context via a dedicated class hook so
+   Agent D can opt a checkbox into this style without us touching the
+   header markup directly. */
+.formio-component-checkbox.section-header-pill .form-check,
+.form-check.section-header-pill {
+  gap: 6px;
+}
+
+.formio-component-checkbox.section-header-pill .form-check-label,
+.form-check.section-header-pill .form-check-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--fio-label);
+  white-space: nowrap;
+}
+
+.formio-component-checkbox.section-header-pill input.form-check-input[type="checkbox"],
+.form-check.section-header-pill input.form-check-input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+}
+
+/* =============================================================================
+   BUTTONS
+   -----------------------------------------------------------------------------
+   Rendered directly (no field/label composition):
+     <button ref="button">
+       span[leftIcon]  (label text)  i[tooltip]  span[rightIcon]
+   Classes (btn, btn-primary, btn-outlined, etc.) come from Button.js's own
+   input.attr.class — cross-checked as live selectors in the prior theme.
+   ========================================================================== */
+
+.formio-form .btn,
+.formio-component-button button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 96px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  white-space: nowrap;
+}
+
+.formio-form .btn:disabled,
+.formio-component-button button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Primary / filled — solid --fio-primary bg, white label */
+.formio-form .btn-primary,
+.formio-component-button button.btn-primary {
+  background: var(--fio-primary);
+  color: #ffffff;
+  border: 1px solid var(--fio-primary);
+}
+
+@media (hover: hover) {
+  .formio-form .btn-primary:hover:not(:disabled),
+  .formio-component-button button.btn-primary:hover:not(:disabled) {
+    background: #1580c4; /* ~10% darker --fio-primary, hover only */
+  }
+}
+
+/* Outlined pill — body "Upload Media" variant: 1px --fio-primary-outline
+   border, --fio-primary 13px/600 label, transparent bg. */
+.formio-form .btn-outlined,
+.formio-form .btn-secondary,
+.formio-component-button button.btn-outlined,
+.formio-component-button button.btn-secondary {
+  background: transparent;
+  color: var(--fio-primary);
+  border: 1px solid var(--fio-primary-outline);
+  padding: 10px 20px;
+}
+
+@media (hover: hover) {
+  .formio-form .btn-outlined:hover:not(:disabled),
+  .formio-form .btn-secondary:hover:not(:disabled),
+  .formio-component-button button.btn-outlined:hover:not(:disabled),
+  .formio-component-button button.btn-secondary:hover:not(:disabled) {
+    background: rgba(24, 148, 225, 0.08);
+  }
+}
+
+/* Borderless/text variant — header "Upload Media": text + icon only, no
+   border/fill. Opt in via .btn-text (or reuse .btn-default, the generic
+   Form.io "no border" class per selector-inventory.md button classes). */
+.formio-form .btn-text,
+.formio-form .btn-default,
+.formio-component-button button.btn-text,
+.formio-component-button button.btn-default {
+  background: transparent;
+  color: var(--fio-primary);
+  border: none;
+  padding: 4px 4px;
+}
+
+@media (hover: hover) {
+  .formio-form .btn-text:hover:not(:disabled),
+  .formio-form .btn-default:hover:not(:disabled),
+  .formio-component-button button.btn-text:hover:not(:disabled),
+  .formio-component-button button.btn-default:hover:not(:disabled) {
+    background: rgba(24, 148, 225, 0.08);
+  }
+}
+
+/* Leading icon slot (component.leftIcon) spacing already handled by the
+   `gap: 8px` on .btn; ensure icon glyphs don't add their own margin. */
+.formio-form .btn > span[class*="icon"],
+.formio-form .btn > i,
+.formio-component-button button > span[class*="icon"],
+.formio-component-button button > i {
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+  font-size: 16px;
+  line-height: 1;
+}

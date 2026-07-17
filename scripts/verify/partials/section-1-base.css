@@ -1,0 +1,383 @@
+/* SECTION 1: tokens + layout + floating-label base — Agent A */
+
+/* ---------------------------------------------------------------------------
+ * Fonts
+ * Paths match assets/webview/formio-theme.css exactly (relative to this CSS
+ * file's runtime location: assets/webview/). Files confirmed present in
+ * assets/webview/assets/fonts/.
+ * ------------------------------------------------------------------------- */
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("assets/fonts/Inter-Regular.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("assets/fonts/Inter-Medium.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("assets/fonts/Inter-SemiBold.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("assets/fonts/Inter-Bold.woff2") format("woff2");
+}
+
+/* bootstrap-icons: NOT declared in the current (pre-rewrite) formio-theme.css
+ * (verified: no @font-face / bi-* rule exists there), but the woff/woff2
+ * files ARE bundled in assets/webview/assets/fonts/ and the DOM inventory
+ * shows live `i.bi.bi-calendar` (datetime suffix icon, Agent D's scope) and
+ * `i.bi.bi-list` (datagrid drag handle, Agent D's scope) selectors. Declaring
+ * the face here (Section 1 owns all @font-face) so those icons render;
+ * D/others only need the class rules, not the face declaration. */
+@font-face {
+  font-family: "bootstrap-icons";
+  src: url("assets/fonts/bootstrap-icons.woff2") format("woff2"),
+       url("assets/fonts/bootstrap-icons.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ---------------------------------------------------------------------------
+ * Design tokens (design-spec.md §1). Agent A is the SOLE owner of :root.
+ * ------------------------------------------------------------------------- */
+:root {
+  /* Color */
+  --fio-bg: #FFFFFF;
+  --fio-text: #32383F;
+  --fio-label: #6F757C;
+  --fio-primary: #1894E1;
+  --fio-border: #DADCDE;
+  --fio-divider: #F5F9FC;
+  --fio-primary-outline: rgba(33, 150, 243, 0.5);
+  --fio-error: #DC2626;
+
+  /* Typography */
+  --fio-font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  --fio-section-title-weight: 700;
+  --fio-section-title-size: 15px;
+  --fio-section-title-line-height: 1.2;
+
+  --fio-question-label-weight: 500;
+  --fio-question-label-size: 13px;
+  --fio-question-label-line-height: 1.3;
+
+  --fio-floating-label-weight: 500;
+  --fio-floating-label-size: 10px;
+  --fio-floating-label-line-height: 1.4;
+
+  --fio-input-text-weight: 500;
+  --fio-input-text-size: 14px;
+  --fio-input-text-line-height: 1.5;
+
+  --fio-option-label-weight: 600;
+  --fio-option-label-size: 14px;
+  --fio-option-label-line-height: 1.5;
+
+  --fio-pill-label-weight: 600;
+  --fio-pill-label-size: 10px;
+  --fio-pill-label-line-height: 1.4;
+
+  --fio-supporting-text-weight: 500;
+  --fio-supporting-text-size: 10px;
+  --fio-supporting-text-line-height: 1.4;
+
+  --fio-button-label-weight: 600;
+  --fio-button-label-size: 13px;
+  --fio-button-label-line-height: 1.3;
+
+  /* Spacing / geometry */
+  --fio-radius: 12px;
+  --fio-radius-pill: 96px;
+  --fio-field-height: 56px;
+  --fio-field-padding: 4px 16px;
+  --fio-question-gap: 16px;
+  --fio-question-pad-bottom: 20px;
+  --fio-section-header-height: 56px;
+  --fio-section-header-padding: 16px 12px;
+  --fio-form-body-padding: 16px 12px 20px;
+  --fio-indent-padding: 12px;
+  --fio-border-width: 1px;
+
+  /* Floating-label notch geometry (design-spec §2) */
+  --fio-notch-left: 12px;
+  --fio-notch-padding-x: 4px;
+}
+
+/* ---------------------------------------------------------------------------
+ * Global form layout
+ * ------------------------------------------------------------------------- */
+#formio-container,
+.formio-form {
+  font-family: var(--fio-font-family);
+  color: var(--fio-text);
+  background: var(--fio-bg);
+}
+
+/* Top-level Form.io wrapper (component/form.js root) */
+.formio-component-form {
+  background: var(--fio-bg);
+}
+
+/* Form body: the .formio-form itself acts as the scrollable/paddable body.
+ * Per spec: Form body padding 16px 12px 20px. */
+.formio-form {
+  padding: var(--fio-form-body-padding);
+}
+
+/* ---------------------------------------------------------------------------
+ * Section header
+ * NOTE: Section headers in this schema are panel-driven (see
+ * selector-inventory.md "### panel" — .card > .card-header / .card-body).
+ * Panel internals (.card, .card-header, .card-body, collapse icon, tooltip)
+ * are Agent D's scope. Section 1 owns only the shared per-component wrapper
+ * spacing below. If a section header ever renders as a bare generic wrapper
+ * (no panel), it inherits the same divider treatment via
+ * .formio-component + .formio-component (question divider rule below).
+ * BOUNDARY: do not add .card-header rules here — that belongs to Agent D.
+ * ------------------------------------------------------------------------- */
+
+/* ---------------------------------------------------------------------------
+ * Generic per-component wrapper (every component type gets this)
+ * selector-inventory.md: ".mb-2.formio-form-group has-feedback formio-component
+ * formio-component-<type> ..."
+ * ------------------------------------------------------------------------- */
+.formio-component {
+  font-family: var(--fio-font-family);
+}
+
+.formio-component.formio-form-group,
+.formio-component.mb-2 {
+  margin-bottom: var(--fio-question-gap);
+  padding-bottom: var(--fio-question-pad-bottom);
+  border-bottom: var(--fio-border-width) solid var(--fio-divider);
+}
+
+/* Last question in a section/form shouldn't carry a trailing divider+gap.
+ * Scoped to the direct .formio-form body to avoid reaching into datagrid
+ * rows or panel bodies (Agent D territory). */
+.formio-form > .formio-component.formio-form-group:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+/* Conditionally-hidden / dedicated-hidden components must not contribute
+ * spacing (handled definitively by Agent D's hidden-field rules per the
+ * inventory's FORM-2 note; this base only ensures the divider/margin rules
+ * above don't apply once display:none is set elsewhere — no override needed
+ * here since display:none collapses box model regardless of margin/border). */
+
+/* ---------------------------------------------------------------------------
+ * Question label ("Height", "O2 Saturation" — sits ABOVE a field group)
+ * selector-inventory.md: label.col-form-label[.field-required], BEFORE input
+ * ------------------------------------------------------------------------- */
+.formio-component > label.col-form-label {
+  display: block;
+  font-family: var(--fio-font-family);
+  font-weight: var(--fio-question-label-weight);
+  font-size: var(--fio-question-label-size);
+  line-height: var(--fio-question-label-line-height);
+  color: var(--fio-label);
+  margin-bottom: 4px;
+}
+
+/* Required asterisk — Form.io emits NO literal asterisk (verified: bare
+ * .field-required class hook only). Generated content required. */
+.field-required::after {
+  content: " *";
+  color: var(--fio-error);
+}
+
+/* Description / help text (.form-text.text-muted) */
+.form-text.text-muted {
+  display: block;
+  font-family: var(--fio-font-family);
+  font-weight: var(--fio-supporting-text-weight);
+  font-size: var(--fio-supporting-text-size);
+  line-height: var(--fio-supporting-text-line-height);
+  color: var(--fio-label);
+  margin-top: 6px;
+}
+
+/* ---------------------------------------------------------------------------
+ * Indented sub-question rule
+ * selector-inventory.md does not expose an explicit "is a follow-up" DOM
+ * hook at the generic-wrapper level (no dedicated class found in
+ * Component.className beyond formio-component-<key>). The reference image
+ * shows indentation applied per-instance (e.g. "Oxygen (L/min)", "Why?").
+ * Documenting the intended utility class here per design-spec §3 item 5;
+ * apply it via schema customClass (e.g. `fio-indent`) since no structural
+ * selector exists to key off automatically.
+ * ------------------------------------------------------------------------- */
+.formio-component.fio-indent {
+  padding-left: var(--fio-indent-padding);
+  border-left: var(--fio-border-width) solid var(--fio-border);
+}
+
+/* ---------------------------------------------------------------------------
+ * THE floating-label notch — shared base mechanism (design-spec §2)
+ * Applies to the input family: textfield, number, textarea, email, select,
+ * phoneNumber, currency, url, datetime. Agents B/C/D extend per-component.
+ *
+ * Structure (selector-inventory.md "generic input family"):
+ *   .formio-component.formio-component-<type>   -- position: relative anchor
+ *     label.col-form-label                       -- position: absolute
+ *     input.form-control / div[ref=element] > input.form-control
+ *
+ * Trigger for "filled" state relies on the placeholder=" " injected by
+ * form-shell.html (injectPlaceholders()) + :not(:placeholder-shown), per
+ * design-spec §2 — do NOT invent a new mechanism.
+ * ------------------------------------------------------------------------- */
+.formio-component-textfield,
+.formio-component-number,
+.formio-component-textarea,
+.formio-component-email,
+.formio-component-phoneNumber,
+.formio-component-currency,
+.formio-component-url,
+.formio-component-select,
+.formio-component-datetime {
+  position: relative;
+}
+
+/* Base outlined field chrome. Component-specific radius overrides (e.g.
+ * split fields' shared-border halves) belong to Agent B. */
+.formio-component-textfield .form-control,
+.formio-component-number .form-control,
+.formio-component-textarea .form-control,
+.formio-component-email .form-control,
+.formio-component-phoneNumber .form-control,
+.formio-component-currency .form-control,
+.formio-component-url .form-control {
+  box-sizing: border-box;
+  width: 100%;
+  height: var(--fio-field-height);
+  padding: var(--fio-field-padding);
+  /* Extra top padding clears the resting-label baseline + floated notch so
+   * input text (14px) never overlaps the label per design-spec §2. */
+  padding-top: 22px;
+  padding-bottom: 6px;
+  border: var(--fio-border-width) solid var(--fio-border);
+  border-radius: var(--fio-radius);
+  background: var(--fio-bg);
+  color: var(--fio-text);
+  font-family: var(--fio-font-family);
+  font-weight: var(--fio-input-text-weight);
+  font-size: var(--fio-input-text-size);
+  line-height: var(--fio-input-text-line-height);
+}
+
+.formio-component-textfield .form-control:focus,
+.formio-component-number .form-control:focus,
+.formio-component-textarea .form-control:focus,
+.formio-component-email .form-control:focus,
+.formio-component-phoneNumber .form-control:focus,
+.formio-component-currency .form-control:focus,
+.formio-component-url .form-control:focus {
+  outline: none;
+  border-color: var(--fio-primary);
+}
+
+/* Floating label base: the <label ref="label"> living inside the same
+ * .formio-component wrapper as the .form-control. */
+.formio-component-textfield > label.col-form-label,
+.formio-component-number > label.col-form-label,
+.formio-component-textarea > label.col-form-label,
+.formio-component-email > label.col-form-label,
+.formio-component-phoneNumber > label.col-form-label,
+.formio-component-currency > label.col-form-label,
+.formio-component-url > label.col-form-label,
+.formio-component-select > label.col-form-label,
+.formio-component-datetime > label.col-form-label {
+  position: absolute;
+  z-index: 1;
+  left: var(--fio-notch-left);
+  margin-bottom: 0;
+  pointer-events: none;
+  background: transparent;
+  transition: top 0.12s ease, transform 0.12s ease, font-size 0.12s ease,
+    color 0.12s ease, background-color 0.12s ease;
+  /* Resting state (empty + blurred): label vertically centered on the INPUT
+   * box, 14px, gray. design-spec §2 "resting state".
+   * NB: anchor to half the field height (input always starts at the wrapper's
+   * top, inputTop=0), NOT `top: 50%` — the wrapper is taller than the input on
+   * fields that carry the 20px question-bottom-padding + divider (measured 77px
+   * vs a 56px input), so `50%` dropped the label ~10px below the input's true
+   * center and looked inconsistent field-to-field. */
+  top: calc(var(--fio-field-height) / 2);
+  transform: translateY(-50%);
+  font-size: var(--fio-input-text-size);
+  font-weight: var(--fio-question-label-weight);
+  color: var(--fio-label);
+  padding: 0;
+}
+
+/* Placeholder/label collision fix: while the label is RESTING (field empty +
+ * unfocused) the label sits centered over the input, so a real placeholder
+ * would render underneath it (garbled overlap). Hide the placeholder text in
+ * that state only; on focus the label floats up into the notch and the
+ * placeholder becomes visible as the input hint. Higher specificity than the
+ * per-type `::placeholder { color: var(--fio-label) }` rules in section 2, so
+ * it wins regardless of source order. Fields whose placeholder is the injected
+ * " " (form-shell.html) are unaffected (nothing to see). */
+.form-control:placeholder-shown:not(:focus)::placeholder {
+  color: transparent;
+}
+
+/* Floated state trigger: focus-within OR filled (via injected placeholder).
+ * design-spec §2 "Chosen implementation" — do not invent a new mechanism. */
+.formio-component-textfield:focus-within > label.col-form-label,
+.formio-component-number:focus-within > label.col-form-label,
+.formio-component-textarea:focus-within > label.col-form-label,
+.formio-component-email:focus-within > label.col-form-label,
+.formio-component-phoneNumber:focus-within > label.col-form-label,
+.formio-component-currency:focus-within > label.col-form-label,
+.formio-component-url:focus-within > label.col-form-label,
+.formio-component-select:focus-within > label.col-form-label,
+.formio-component-datetime:focus-within > label.col-form-label,
+.formio-component-textfield:has(.form-control:not(:placeholder-shown)) > label.col-form-label,
+.formio-component-number:has(.form-control:not(:placeholder-shown)) > label.col-form-label,
+.formio-component-textarea:has(.form-control:not(:placeholder-shown)) > label.col-form-label,
+.formio-component-email:has(.form-control:not(:placeholder-shown)) > label.col-form-label,
+.formio-component-phoneNumber:has(.form-control:not(:placeholder-shown)) > label.col-form-label,
+.formio-component-currency:has(.form-control:not(:placeholder-shown)) > label.col-form-label,
+.formio-component-url:has(.form-control:not(:placeholder-shown)) > label.col-form-label,
+.formio-component-select:has(.form-control:not(:placeholder-shown)) > label.col-form-label,
+.formio-component-datetime:has(.form-control:not(:placeholder-shown)) > label.col-form-label {
+  top: 0;
+  transform: translateY(-50%);
+  left: var(--fio-notch-left);
+  padding: 0 var(--fio-notch-padding-x);
+  background: var(--fio-bg);
+  font-size: var(--fio-floating-label-size);
+  font-weight: var(--fio-floating-label-weight);
+  color: var(--fio-label);
+}
+
+.formio-component-textfield:focus-within > label.col-form-label,
+.formio-component-number:focus-within > label.col-form-label,
+.formio-component-textarea:focus-within > label.col-form-label,
+.formio-component-email:focus-within > label.col-form-label,
+.formio-component-phoneNumber:focus-within > label.col-form-label,
+.formio-component-currency:focus-within > label.col-form-label,
+.formio-component-url:focus-within > label.col-form-label,
+.formio-component-select:focus-within > label.col-form-label,
+.formio-component-datetime:focus-within > label.col-form-label {
+  /* Focused: label -> primary color per design-spec §2 "Focused" state. */
+  color: var(--fio-primary);
+}

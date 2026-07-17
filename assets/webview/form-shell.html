@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Form</title>
   <link rel="stylesheet" href="assets/formio.form.min.css" />
+  <!-- flatpickr (datetime/calendar) styles, bundled locally for offline use.
+       Form.io would otherwise fetch this from cdn.form.io at runtime. -->
+  <link rel="stylesheet" href="assets/flatpickr.min.css" />
   <link rel="stylesheet" href="formio-theme.css" />
   <style>
     *, *::before, *::after { box-sizing: border-box; }
@@ -38,6 +41,11 @@
 <body>
   <div id="formio-container"></div>
 
+  <!-- Preload flatpickr so window.flatpickr exists before any datetime field
+       initializes. Form.io's requireLibrary('flatpickr', 'flatpickr', ...)
+       short-circuits when the global is already present, so it never reaches
+       out to cdn.form.io — keeping datetime fields working fully offline. -->
+  <script src="assets/flatpickr.min.js"></script>
   <script src="assets/formio.form.min.js"></script>
   <script src="assets/formio-standard-template.js"></script>
   <script>

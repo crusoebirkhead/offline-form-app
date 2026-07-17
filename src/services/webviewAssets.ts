@@ -18,6 +18,10 @@ const ASSETS: WebViewAsset[] = [
   { module: require('../../assets/webview/assets/formio.form.min.css'), dest: 'assets/formio.form.min.css' },
   { module: require('../../assets/webview/assets/formio.form.min.js.txt'), dest: 'assets/formio.form.min.js' },
   { module: require('../../assets/webview/assets/formio-standard-template.js.txt'), dest: 'assets/formio-standard-template.js' },
+  // flatpickr (datetime/calendar) bundled locally so it works offline instead of
+  // being fetched from cdn.form.io at runtime.
+  { module: require('../../assets/webview/assets/flatpickr.min.js.txt'), dest: 'assets/flatpickr.min.js' },
+  { module: require('../../assets/webview/assets/flatpickr.min.css'), dest: 'assets/flatpickr.min.css' },
   {
     module: require('../../assets/webview/assets/fonts/bootstrap-icons.woff2'),
     dest: 'assets/fonts/bootstrap-icons.woff2',
