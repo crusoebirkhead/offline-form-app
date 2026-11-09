@@ -1,0 +1,26 @@
+{
+  "version": "2.0",
+  "routeKey": "GET /schemas/{proxy+}",
+  "rawPath": "/schemas/molina-hha-oh",
+  "headers": {
+    "content-type": "application/json",
+    "if-none-match": "\"PASTE_ETAG_FROM_FIRST_RESPONSE_HERE\""
+  },
+  "pathParameters": {
+    "proxy": "molina-hha-oh"
+  },
+  "requestContext": {
+    "http": {
+      "method": "GET",
+      "path": "/schemas/molina-hha-oh"
+    },
+    "authorizer": {
+      "jwt": {
+        "claims": {
+          "sub": "test-user-123"
+        }
+      }
+    }
+  },
+  "isBase64Encoded": false
+}

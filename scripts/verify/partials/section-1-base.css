@@ -381,3 +381,24 @@
   /* Focused: label -> primary color per design-spec §2 "Focused" state. */
   color: var(--fio-primary);
 }
+
+/* ---------------------------------------------------------------------------
+ * Accessibility utility: .visually-hidden / .sr-only
+ * Form.io's standard template emits screen-reader-only labels via the
+ * `visually-hidden` class (e.g. the datagrid add/remove column's literal
+ * "addOrRemove" i18n key). Neither Bootstrap nor this theme previously
+ * defined the class, so those spans leaked as visible on-page text. Restore
+ * the standard clip-hidden pattern so they are announced but not painted.
+ * ------------------------------------------------------------------------- */
+.visually-hidden,
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}

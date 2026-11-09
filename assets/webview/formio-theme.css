@@ -388,6 +388,27 @@
   color: var(--fio-primary);
 }
 
+/* ---------------------------------------------------------------------------
+ * Accessibility utility: .visually-hidden / .sr-only
+ * Form.io's standard template emits screen-reader-only labels via the
+ * `visually-hidden` class (e.g. the datagrid add/remove column's literal
+ * "addOrRemove" i18n key). Neither Bootstrap nor this theme previously
+ * defined the class, so those spans leaked as visible on-page text. Restore
+ * the standard clip-hidden pattern so they are announced but not painted.
+ * ------------------------------------------------------------------------- */
+.visually-hidden,
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
 /* SECTION 2: text/number/textarea inputs — Agent B */
 
 /* ==========================================================================
@@ -1101,18 +1122,22 @@
   background: var(--fio-primary);
 }
 
-/* White check mark drawn as a rotated CSS border pair (no external SVG). */
+/* White check mark drawn as a rotated CSS border pair (no external SVG).
+   Centered via translate off the box midpoint so it stays optically centered
+   regardless of the box size (18px default, 16px section-header-pill). The
+   -55% vertical bias compensates for the checkmark's ink sitting toward its
+   lower-right corner after the 45deg rotation. */
 .formio-component-checkbox input.form-check-input[type="checkbox"]:checked::after,
 .formio-component-selectboxes input.form-check-input[type="checkbox"]:checked::after {
   content: "";
   position: absolute;
-  top: 1px;
-  left: 5px;
+  top: 50%;
+  left: 50%;
   width: 5px;
   height: 9px;
   border: solid #ffffff;
   border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
+  transform: translate(-50%, -55%) rotate(45deg);
 }
 
 .formio-component-checkbox input.form-check-input[type="checkbox"]:disabled,
@@ -1447,6 +1472,22 @@
   background: var(--fio-bg);
 }
 
+/* Form.io's bundled formio.form.min.css ships a hard override that paints a
+   3px #ddd box around the grid table AND every cell:
+     .formio-component-datagrid .datagrid-table,
+     .formio-component-datagrid .datagrid-table td,
+     .formio-component-datagrid .datagrid-table th { border:3px solid #ddd!important }
+   With `!important` it beats ordinary specificity, so it's the source of the
+   redundant nested boxes on mobile. Override it in kind — `!important` at
+   higher (3-class) specificity — to strip the table + cell chrome. The
+   stacked layout supplies its own single row divider (below); note the vendor
+   rule does not touch `tr`, so that divider is unaffected. */
+.formio-component-datagrid .datagrid-table.table-bordered,
+.formio-component-datagrid .datagrid-table.table-bordered td,
+.formio-component-datagrid .datagrid-table.table-bordered th {
+  border: 0 !important;
+}
+
 /* Required-column asterisk: Form.io emits `field-required` as a bare class
    hook with no literal "*" text (selector-inventory.md "REQUIRED field
    markup") — generated content supplies the visible glyph, same convention
@@ -1478,6 +1519,10 @@
   padding: 16px 0;
 }
 
+/* Single divider between stacked rows. Scoped past the .table-bordered
+   neutralizer above (4-class specificity, and later in source) so it survives
+   the reset. */
+.formio-component-datagrid .datagrid-table.table-bordered tbody tr:not(:last-child),
 .datagrid-table tbody tr:not(:last-child) {
   border-bottom: 1px solid var(--fio-divider);
 }
@@ -1551,6 +1596,37 @@
   line-height: 1.3;
   padding: 8px 16px;
   cursor: pointer;
+}
+
+/* The bootstrap-icons glyph font isn't bundled, so Form.io's icon-only
+   remove-row button (`<button class="btn btn-secondary formio-button-remove-row">
+   <i class="bi bi-remove"></i></button>`) renders as an empty circle — the
+   `.btn.btn-secondary` pair (2-specificity) also beat the single-class pill
+   rule above. Match that specificity, hide the glyph-less icon, and supply a
+   visible "Remove" text label so the control is usable. Right-align it on its
+   own line within the stacked row. */
+.formio-component-datagrid .datagrid-table tbody td:last-child {
+  text-align: right;
+}
+
+.formio-component-datagrid .formio-button-remove-row {
+  border: 1px solid var(--fio-error);
+  background: transparent;
+  color: var(--fio-error);
+  width: auto;
+  min-width: 0;
+  padding: 6px 16px;
+}
+
+.formio-component-datagrid .formio-button-remove-row > i.bi {
+  display: none;
+}
+
+.formio-component-datagrid .formio-button-remove-row::after {
+  content: "Remove";
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 1.3;
 }
 
 .formio-drag-button {

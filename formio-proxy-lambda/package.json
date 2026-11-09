@@ -1,0 +1,14 @@
+{
+  "name": "formio-proxy-lambda",
+  "version": "1.0.0",
+  "description": "Form.io schema proxy Lambda function for Periscope offline app",
+  "type": "module",
+  "main": "index.mjs",
+  "scripts": {
+    "package": "zip -r ../formio-proxy.zip . -x '*.git*' 'node_modules/.package-lock.json'",
+    "deploy": "aws lambda update-function-code --function-name formio-proxy --zip-file fileb://../formio-proxy.zip"
+  },
+  "dependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.600.0"
+  }
+}

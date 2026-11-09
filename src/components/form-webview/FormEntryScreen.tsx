@@ -1,4 +1,11 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
 import { ActivityIndicator, Alert, StyleSheet, Text, View } from 'react-native';
 import FloatingActionMenu from '../ui/FloatingActionMenu';
 import { getEntryById, getSchemaByPath, updateEntry } from '../../db';
@@ -18,20 +25,26 @@ interface FormEntryScreenProps {
   onLastSavedUpdate?: (date: Date) => void;
 }
 
+export interface FormEntryScreenRef {
+  /**
+   * Persist the current form contents as a draft. Returns true if the save
+   * succeeded, false otherwise. Used by the parent screen to auto-save when
+   * the user navigates back out of the form (swipe/back button) so in-progress
+   * data isn't lost.
+   */
+  saveDraft: () => Promise<boolean>;
+}
+
 type SaveStatus = 'idle' | 'saving' | 'success' | 'error';
 type SendStatus = 'idle' | 'sending' | 'success' | 'error';
 
 const AUTO_SAVE_DELAY_MS = 30_000;
 const SUCCESS_DISPLAY_MS = 2_000;
 
-function FormEntryScreen({
-  entryId,
-  onSaveSuccess,
-  onError,
-  onUnsavedChangesUpdate,
-  onSendSuccess,
-  onLastSavedUpdate,
-}: FormEntryScreenProps) {
+const FormEntryScreen = forwardRef<FormEntryScreenRef, FormEntryScreenProps>(function FormEntryScreen(
+  { entryId, onSaveSuccess, onError, onUnsavedChangesUpdate, onSendSuccess, onLastSavedUpdate },
+  ref,
+) {
   const formRef = useRef<FormWebViewRef>(null);
   const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const successTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -59,6 +72,15 @@ function FormEntryScreen({
   const hasUnsavedChangesRef = useRef(hasUnsavedChanges);
   hasUnsavedChangesRef.current = hasUnsavedChanges;
   const formLoadedRef = useRef(false);
+
+  // Latest form data captured from each FORM_CHANGE event, plus a flag for
+  // whether it has been persisted. These let us flush a draft straight to the
+  // DB when the screen unmounts (back button / swipe / native back) without a
+  // round-trip to the WebView — which is being torn down at that point. This is
+  // what guarantees in-progress data is saved on leave; `beforeRemove` is
+  // unreliable for the native-stack swipe gesture.
+  const latestDataRef = useRef<Record<string, unknown> | null>(null);
+  const dirtyRef = useRef(false);
 
   // Load entry, schema, and webview assets on mount
   useEffect(() => {
@@ -120,20 +142,37 @@ function FormEntryScreen({
     formRef.current?.loadForm(schema, hasData ? submission : undefined);
   }, [shellReady, schema, entry]);
 
-  // Clear timers on unmount
+  // Clear timers and flush an unsaved draft on unmount.
   useEffect(() => {
     return () => {
       if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
       if (successTimerRef.current) clearTimeout(successTimerRef.current);
+
+      // The screen is being removed (back button, swipe, or native back). If
+      // there are unsaved edits, persist them directly to the DB using the last
+      // data captured from FORM_CHANGE. This runs on every leave path and does
+      // not need the WebView (which is unmounting), so drafts are never lost.
+      // The updateEntry promise resolves after unmount — a fire-and-forget
+      // SQLite write, which is exactly what we want here.
+      const currentEntry = entryRef.current;
+      if (dirtyRef.current && latestDataRef.current && currentEntry) {
+        if (__DEV__) console.log('[FormEntryScreen] flushing draft on unmount');
+        dirtyRef.current = false;
+        updateEntry(currentEntry.id, {
+          data_json: JSON.stringify(latestDataRef.current),
+        }).catch((err) => {
+          if (__DEV__) console.warn('[FormEntryScreen] unmount draft flush failed', err);
+        });
+      }
     };
   }, []);
 
   const persistSubmission = useCallback(
-    async (source: 'manual' | 'auto') => {
+    async (source: 'manual' | 'auto'): Promise<boolean> => {
       const currentEntry = entryRef.current;
       if (__DEV__)
         console.log(`[FormEntryScreen] persistSubmission(${source}), entry=${!!currentEntry}`);
-      if (!currentEntry) return;
+      if (!currentEntry) return false;
 
       setSaveStatus('saving');
       setErrorMessage(null);
@@ -152,6 +191,7 @@ function FormEntryScreen({
         setEntry(updated);
         setSaveStatus('success');
         setHasUnsavedChanges(false);
+        dirtyRef.current = false;
         onUnsavedChangesUpdateRef.current?.(false);
         onLastSavedUpdateRef.current?.(new Date());
 
@@ -163,11 +203,13 @@ function FormEntryScreen({
         if (source === 'manual') {
           onSaveSuccess?.(updated);
         }
+        return true;
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : 'Save failed';
         setSaveStatus('error');
         setErrorMessage(msg);
         onError?.(msg);
+        return false;
       }
     },
     [onSaveSuccess, onError],
@@ -176,13 +218,28 @@ function FormEntryScreen({
   const persistSubmissionRef = useRef(persistSubmission);
   persistSubmissionRef.current = persistSubmission;
 
+  // Expose an imperative save so the parent screen can auto-save a draft when
+  // the user navigates back out of the form (see FormScreen's beforeRemove
+  // handler), preventing data loss without requiring the manual Save Draft tap.
+  useImperativeHandle(
+    ref,
+    () => ({
+      saveDraft: () => persistSubmissionRef.current('auto'),
+    }),
+    [],
+  );
+
   const handleSave = useCallback(() => {
     persistSubmissionRef.current('manual');
   }, []);
 
   // Debounced auto-save on form change
-  const handleFormChange = useCallback((_payload: FormChangePayload) => {
+  const handleFormChange = useCallback((payload: FormChangePayload) => {
     if (__DEV__) console.log('[FormEntryScreen] handleFormChange called');
+
+    // Keep the latest data in hand so we can flush it on unmount (see below).
+    latestDataRef.current = payload.data;
+    dirtyRef.current = true;
 
     if (!hasUnsavedChangesRef.current) {
       setHasUnsavedChanges(true);
@@ -418,7 +475,7 @@ function FormEntryScreen({
       <FloatingActionMenu actions={fabActions} />
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {

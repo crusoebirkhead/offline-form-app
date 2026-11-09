@@ -1,0 +1,19 @@
+{
+  "rawPath": "/schemas",
+  "httpMethod": "GET",
+  "headers": {},
+  "pathParameters": null,
+  "requestContext": {
+    "http": {
+      "method": "GET",
+      "path": "/schemas"
+    },
+    "authorizer": {
+      "jwt": {
+        "claims": {
+          "sub": "test-user"
+        }
+      }
+    }
+  }
+}

@@ -420,18 +420,22 @@
   background: var(--fio-primary);
 }
 
-/* White check mark drawn as a rotated CSS border pair (no external SVG). */
+/* White check mark drawn as a rotated CSS border pair (no external SVG).
+   Centered via translate off the box midpoint so it stays optically centered
+   regardless of the box size (18px default, 16px section-header-pill). The
+   -55% vertical bias compensates for the checkmark's ink sitting toward its
+   lower-right corner after the 45deg rotation. */
 .formio-component-checkbox input.form-check-input[type="checkbox"]:checked::after,
 .formio-component-selectboxes input.form-check-input[type="checkbox"]:checked::after {
   content: "";
   position: absolute;
-  top: 1px;
-  left: 5px;
+  top: 50%;
+  left: 50%;
   width: 5px;
   height: 9px;
   border: solid #ffffff;
   border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
+  transform: translate(-50%, -55%) rotate(45deg);
 }
 
 .formio-component-checkbox input.form-check-input[type="checkbox"]:disabled,
